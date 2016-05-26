@@ -13,6 +13,7 @@ extern "C"{
 #include<ASU_tools.h>
 }
 
+
 class SAC_Data{
 
 	friend bool operator>>(const std::string &, SAC_Data&);
