@@ -12,6 +12,7 @@ extern "C"{
 #include<sac.h>
 #include<ASU_tools.h>
 }
+#include<ASU_tools.hpp>
 
 
 class SAC_Data{

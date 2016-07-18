@@ -1,8 +1,7 @@
 #ifndef ASU_TOOLS_HPP
 #define ASU_TOOLS_HPP
 
-//#include<SAC_Data.hpp>
-
-void kmeans(double **, int, int, int, int *);
+void Kmeans(double **, int, int, int, int *);
+unsigned RenderSeed();
 
 #endif

@@ -2,7 +2,7 @@
 
 if [ $# -ne 1 ] || ! [ -e $1 ]
 then
-    echo "Usage: input c code as \$1."
+    echo "Usage: input c++ code as \$1."
     exit 1;
 fi
 
@@ -10,11 +10,15 @@ SRCDIR=${PWD}
 CCODEDIR=/home/shule/Research/Fun.C.c002
 CPPCODEDIR=/home/shule/Research/Fun.C++.c003
 SACHOME=/opt/sac
-
 INCLUDE="-I${CPPCODEDIR} -I${CCODEDIR} -I${SACHOME}/include -I/opt/local/include -I/usr/include"
 LIBDIR="-L${CPPCODEDIR} -L${CCODEDIR} -L${SACHOME}/lib -L/opt/local/lib"
-LIBs="-lASU_tools -lsac -lsacio -lgsl -lgslcblas -lfftw3 -lm "
+LIBs="-lASU_tools_cpp -lASU_tools -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm"
 
+cd ${CCODEDIR}
+make
+cd ${CPPCODEDIR}
+make
+cd ${SRCDIR}
 
 # ======== Compile c++ code ========
 
@@ -28,5 +32,7 @@ then
 fi
 
 ./a.out
+
+rm -f ./a.out
 
 exit 0

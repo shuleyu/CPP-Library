@@ -5,13 +5,14 @@
 #include<cstdlib>
 #include<cmath>
 #include<string>
+#include<ASU_tools.hpp>
 #include<SAC_Data.hpp>
 
 using namespace std;
 
 int main(){
 
-	string A="200608250044.CN.LMN.BHT.sac";
+	string A="data/200608250044.CN.LMN.BHT.sac";
 	SAC_Data tmpdata;
 
 
@@ -19,10 +20,10 @@ int main(){
 		cout << "Read Error !" << endl;
 	}
 
-// 	cout << tmpdata.filename << endl;
-// 	cout << tmpdata.delta << endl;
-// 	cout << tmpdata.BeginTime << endl;
-// 	cout << tmpdata.NPTS << endl;
+	cout << "FileName: " << tmpdata.filename << endl;
+// 	cout << "Sampling rate: " << tmpdata.delta << endl;
+// 	cout << "BeginTime: " << tmpdata.BeginTime << endl;
+	cout << "NPTS: " << tmpdata.NPTS << endl;
 
 	return 0;
 }
