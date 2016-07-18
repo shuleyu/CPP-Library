@@ -1,7 +1,6 @@
 #include<iostream>
 #include<mlpack/methods/kmeans/kmeans.hpp>
-// #include<mlpack/methods/kmeans/refined_start.hpp>
-// #include<mlpack/core.hpp>
+#include<mlpack/methods/kmeans/refined_start.hpp>
 #include<ASU_tools.hpp>
 
 /***********************************************************
@@ -29,32 +28,32 @@ void Kmeans(double **data,int nptsx,int nptsy,int CateN,int *assignment){
     }
 
 
-// 	double *data_aux=new double [nptsx*nptsy];
-//
-// 	int index3=0;
-//     for (int index1=0;index1<nptsx;index1++){
-// 		for (int index2=0;index2<nptsy;index2++){
-// 			data_aux[index3]=data[index1][index2];
-// 			index3++;
-// 		}
-//     }
-//
-// 	arma::mat A(data_aux,nptsy,nptsx,false,true);
-// 	arma::Row<size_t> assignments;
-//
-// // 	mlpack::kmeans::KMeans<> k;
-// 	mlpack::kmeans::RefinedStart k;
-// 	k.Percentage()=0.5;
-//
-// 	k.Cluster(A,CateN,assignments);
-//
-// 	index3=0;
-//     for (int index1=0;index1<nptsx;index1++){
-// 		assignment[index1]=assignments(index3);
-// 		index3++;
-//     }
-//
-// 	delete[] data_aux;
+	double *data_aux=new double [nptsx*nptsy];
+
+	int index3=0;
+    for (int index1=0;index1<nptsx;index1++){
+		for (int index2=0;index2<nptsy;index2++){
+			data_aux[index3]=data[index1][index2];
+			index3++;
+		}
+    }
+
+	arma::mat A(data_aux,nptsy,nptsx,false,true);
+	arma::Row<size_t> assignments;
+
+// 	mlpack::kmeans::KMeans<> k;
+	mlpack::kmeans::RefinedStart k;
+	k.Percentage()=0.5;
+
+	k.Cluster(A,CateN,assignments);
+
+	index3=0;
+    for (int index1=0;index1<nptsx;index1++){
+		assignment[index1]=assignments(index3);
+		index3++;
+    }
+
+	delete[] data_aux;
 
     return;
 }

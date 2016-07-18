@@ -16,7 +16,7 @@ int main(){
 	A[2][0]=3;A[6][0]=13;A[10][0]=23;
 	A[3][0]=4;A[7][0]=14;A[11][0]=24;
 
-	Kmeans(A,12,1,0,B);
+	Kmeans(A,12,1,3,B);
 
 	for (size_t index=0;index<12;index++){
 		cout << A[index][0] << " ";
