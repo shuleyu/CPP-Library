@@ -33,6 +33,4 @@ fi
 
 ./a.out
 
-rm -f ./a.out
-
 exit 0

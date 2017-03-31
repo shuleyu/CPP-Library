@@ -1,6 +1,8 @@
 #include<string>
 #include<algorithm>
 
+#include<ASU_tools.hpp>
+
 using namespace std;
 
 string Decimal2Binary(int n){
