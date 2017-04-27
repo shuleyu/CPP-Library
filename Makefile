@@ -6,7 +6,9 @@ COMP = $(CC) $(FLAGS)
 SACHOME = /opt/sac
 SACHOME1 = /usr/local/sac
 CCODEDIR = /home/shule/Research/Fun.C.c002
-INCLUDE = -I. -I$(SACHOME)/include -I$(SACHOME1)/include -I/opt/local/include -I${CCODEDIR}
+CCODEDIR1 = /Users/shule/Research/Fun.C.c002
+CCODEDIR2 = /Users/Shule/Research/Fun.C.c002
+INCLUDE = -I. -I$(SACHOME)/include -I$(SACHOME1)/include -I/opt/local/include -I${CCODEDIR} -I${CCODEDIR1} -I${CCODEDIR2}
 
 all: libASU_tools_cpp.a
 	@echo > /dev/null
