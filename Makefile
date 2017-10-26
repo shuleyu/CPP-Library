@@ -13,8 +13,8 @@ INCLUDE = -I. -I$(SACHOME)/include -I$(SACHOME1)/include -I/opt/local/include -I
 all: libASU_tools_cpp.a
 	@echo > /dev/null
 
-libASU_tools_cpp.a: Kmeans.fun.o RenderSeed.fun.o Decimal2Binary.fun.o ShellExec.fun.o PointsInPolygon.fun.o CombinePolygons.fun.o GridStretch.fun.o StraightLineJunction.fun.o DotDist.fun.o
-	ar cr libASU_tools_cpp.a Kmeans.fun.o RenderSeed.fun.o Decimal2Binary.fun.o ShellExec.fun.o PointsInPolygon.fun.o CombinePolygons.fun.o GridStretch.fun.o StraightLineJunction.fun.o DotDist.fun.o
+libASU_tools_cpp.a: Kmeans.fun.o RenderSeed.fun.o Decimal2Binary.fun.o ShellExec.fun.o PointsInPolygon.fun.o CombinePolygons.fun.o GridStretch.fun.o StraightLineJunction.fun.o DotDist.fun.o STDCC.fun.o SolvePoly.fun.o SH_Coeff.fun.o
+	ar cr libASU_tools_cpp.a Kmeans.fun.o RenderSeed.fun.o Decimal2Binary.fun.o ShellExec.fun.o PointsInPolygon.fun.o CombinePolygons.fun.o GridStretch.fun.o StraightLineJunction.fun.o DotDist.fun.o STDCC.fun.o SolvePoly.fun.o SH_Coeff.fun.o
 
 Kmeans.fun.o: Kmeans.fun.cpp ASU_tools.hpp
 	$(COMP) -c Kmeans.fun.cpp $(INCLUDE)
@@ -34,6 +34,12 @@ StraightLineJunction.fun.o: StraightLineJunction.fun.cpp ASU_tools.hpp
 	$(COMP) -c StraightLineJunction.fun.cpp $(INCLUDE)
 DotDist.fun.o: DotDist.fun.cpp ASU_tools.hpp
 	$(COMP) -c DotDist.fun.cpp $(INCLUDE)
+STDCC.fun.o: STDCC.fun.cpp ASU_tools.hpp
+	$(COMP) -c STDCC.fun.cpp $(INCLUDE)
+SolvePoly.fun.o: SolvePoly.fun.cpp ASU_tools.hpp
+	$(COMP) -c SolvePoly.fun.cpp $(INCLUDE)
+SH_Coeff.fun.o: SH_Coeff.fun.cpp ASU_tools.hpp
+	$(COMP) -c SH_Coeff.fun.cpp $(INCLUDE)
 
 clean:
 	rm -f *.fun.o libASU_tools_cpp.a
