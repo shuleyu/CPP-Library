@@ -1,14 +1,10 @@
 #!/bin/bash
 
-if [ $# -ne 1 ] || ! [ -e $1 ]
-then
-    echo "Usage: input c++ code as \$1."
-    exit 1;
-fi
+[ $# -ne 1 ] || ! [ -e $1 ] && echo "Usage: input c++ code as \$1." && exit 1;
 
 SRCDIR=${PWD}
 CCODEDIR=/home/shule/Research/Fun.C.c002
-CPPCODEDIR=/home/shule/Research/Fun.C++.c003
+CPPCODEDIR=${PWD}/../
 SACHOME=/opt/sac
 INCLUDE="-I${CPPCODEDIR} -I${CCODEDIR} -I${SACHOME}/include -I/opt/local/include -I/usr/include"
 LIBDIR="-L${CPPCODEDIR} -L${CCODEDIR} -L${SACHOME}/lib -L/opt/local/lib"
@@ -23,14 +19,9 @@ cd ${SRCDIR}
 # ======== Compile c++ code ========
 
 c++ -std=c++14 -Wall $1 ${INCLUDE} ${LIBDIR} ${LIBs}
+[ $? -ne 0 ] && echo "$1 compile failed ..." && exit 1
 
-# ======== Run c++ code ========
-if [ $? -ne 0 ]
-then
-    echo "$1 compile failed ..."
-    exit 1
-fi
-
+# ======== Run Code ========
 ./a.out
 
 exit 0

@@ -1,29 +1,32 @@
 #include<string>
-#include<algorithm>
 
-#include<ASU_tools.hpp>
+/*************************************************
+ * This C++ function converts integer to binary 
+ * represent by string.
+ *
+ * int n  ----  Input integer.
+ *
+ * Shule Yu
+ * Dec 19 2017
+ *
+ * Key words: decimal to binary.
+*************************************************/
 
-using namespace std;
+std::string Decimal2Binary(int n){
 
-string Decimal2Binary(int n){
+	// set the sign bit.
+	std::string Ans(32,'0');
+	Ans[0]=(n<0?'1':'0');
 
-	int sign=0;
-	if (n<0){
-		n+=2147483648;
-		sign=-1;
-	}
+	// clear the sign bit.
+	n &= ~(1UL << 31);
 
-	string Ans;
-
+	// set the rest bits.
+	int i=0;
 	while(n>0){
-		Ans+=('0'+n%2);
-		n=n/2;
+		Ans[31-i++]=('0'+n%2);
+		n>>=1;
 	}
-
-	for (int i=Ans.size();i<31;i++) Ans+='0';
-	Ans+=(sign==-1)?'1':'0';
-
-	reverse(Ans.begin(),Ans.end());
 
 	return Ans;
 }
