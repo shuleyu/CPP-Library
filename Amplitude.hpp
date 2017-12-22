@@ -1,5 +1,5 @@
-#ifndef ASU_AMPLITUDE_HPP
-#define ASU_AMPLITUDE_HPP
+#ifndef ASU_AMPLITUDE
+#define ASU_AMPLITUDE
 
 #include<iostream>
 #include<vector>

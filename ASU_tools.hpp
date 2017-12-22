@@ -25,5 +25,7 @@ std::vector<double> PolyFit(const std::vector<std::pair<double,double>> &data,in
 
 #include<Amplitude.hpp>
 #include<AvrStd.hpp>
+#include<ShiftStack.hpp>
+#include<Bootstrap.hpp>
 
 #endif

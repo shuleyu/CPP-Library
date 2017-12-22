@@ -22,6 +22,6 @@ c++ -std=c++14 -Wall $1 ${INCLUDE} ${LIBDIR} ${LIBs}
 [ $? -ne 0 ] && echo "$1 compile failed ..." && exit 1
 
 # ======== Run Code ========
-./a.out
+time ./a.out
 
 exit 0
