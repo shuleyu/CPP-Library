@@ -30,5 +30,7 @@ std::vector<double> PolyFit(const std::vector<std::pair<double,double>> &data,in
 #include<Bootstrap.hpp>
 #include<Butterworth.hpp>
 #include<Cart2Sph.hpp>
+#include<GcpDistance.hpp>
+#include<CircleBin.hpp>
 
 #endif
