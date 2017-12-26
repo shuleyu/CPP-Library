@@ -9,7 +9,6 @@
 
 std::string Decimal2Binary(int);
 void Kmeans(double **, int, int, int, int *);
-unsigned RenderSeed();
 std::string ShellExec(const char *);
 std::vector<bool> PointsInPolygon(std::vector<std::pair<double,double>> &,std::vector<std::pair<double,double>> &);
 std::vector<std::vector<std::pair<double,double>>> CombinePolygons(std::vector<std::vector<std::pair<double,double>>> );
@@ -23,9 +22,13 @@ bool SolvePoly(std::vector<double> C, double &ans, double tol);
 void Interpolate(const std::vector<std::pair<double,double>> &input, std::vector<std::pair<double,double>> &output,int flag);
 std::vector<double> PolyFit(const std::vector<std::pair<double,double>> &data,int Degree,const std::vector<double> &weight={});
 
+// Note: the include order of the header files matters.
+//       Because of dependence between them.
 #include<Amplitude.hpp>
 #include<AvrStd.hpp>
 #include<ShiftStack.hpp>
 #include<Bootstrap.hpp>
+#include<Butterworth.hpp>
+#include<Cart2Sph.hpp>
 
 #endif

@@ -35,15 +35,15 @@ std::pair<std::vector<double>,std::vector<double>> Bootstrap(const std::vector<s
 	if (p.empty()) return {};
 
 	size_t N=p[0].size();
-	for (auto item:p)
+	for (auto &item:p)
 		if (item.size()!=N) {
-			std::cerr <<  __func__ << ": input 2D array dimension error ..." << std::endl;
+			std::cerr <<  __func__ << "; Error: input 2D array size error ..." << std::endl;
 			return {};
 		}
 
 	// Check weight size.
 	if (!w.empty() && w.size()!=p.size()) {
-		std::cerr <<  __func__ << ": input weight dimension error ..." << std::endl;
+		std::cerr <<  __func__ << "; Error: input weight size error ..." << std::endl;
 		return {};
 	}
 
@@ -90,6 +90,7 @@ std::pair<std::vector<double>,std::vector<double>> Bootstrap(const std::vector<s
 			Tmp.push_back(Sum/SumWeight[Cnt]);
 		}
 		RerollStack.push_back(Tmp);
+		SumWeight[Cnt]/=m;
 
 		++Cnt;
 	}
@@ -97,6 +98,7 @@ std::pair<std::vector<double>,std::vector<double>> Bootstrap(const std::vector<s
     // Calculate bootstrap mean and std.
 
 	return ShiftStack(RerollStack,{},SumWeight);
+// 	return ShiftStack(RerollStack);
 }
 
 #endif

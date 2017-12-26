@@ -22,7 +22,7 @@ template <class T>
 std::pair<T,std::vector<size_t>> Amplitude(const std::vector<T> &p){
 
 	if (p.size()==0) {
-		std::cerr <<  __func__ << ": input array length is zero ..." << std::endl; 
+		std::cerr <<  __func__ << "; Error: input array size is zero ..." << std::endl; 
 		return {};
 	}
 

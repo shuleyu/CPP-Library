@@ -12,7 +12,7 @@ extern "C" {
 using namespace std;
 
 /**************************************************************
- * This cpp function is a shell for the wiginterp c function.
+ * This cpp function is only a wrapper for the wiginterp c function.
  *
  * Shule Yu
  * Nov 14 2017

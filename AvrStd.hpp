@@ -29,7 +29,7 @@
  * Key words: standard deviation, unbiased, weighted.
  *
  * Reference:
- * 	   SPSS approach from:
+ * 	   Use SPSS approach for weighted standard deviation:
  *     http://www.analyticalgroup.com/download/WEIGHTED_MEAN.pdf
 ***********************************************************/
 
@@ -38,7 +38,7 @@ std::pair<double,double> AvrStd(const std::vector<T1> &V,const std::vector<T2> &
 
 	// Check weight size.
 	if (!W.empty() && V.size()!=W.size()) {
-		std::cerr <<  __func__ << "; Error: data array and weight array length doesn't match ..." << std::endl;
+		std::cerr <<  __func__ << "; Error: data and weight size don't match ..." << std::endl;
 		return {};
 	}
 
@@ -58,14 +58,14 @@ std::pair<double,double> AvrStd(const std::vector<T1> &V,const std::vector<T2> &
 
 	// Check weight sum.
 	if (SumW<=0) {
-		std::cout << __func__ << "; Error: weight sum <= 0 ..." << std::endl;
+		std::cerr << __func__ << "; Error: weight sum <= 0 ..." << std::endl;
 		return {};
 	}
 
 	avr/=SumW;
 
 	if (SumW<=1) {
-		std::cout << __func__ << "; Warning: weight sum <= 1 ..." << std::endl;
+		std::cerr << __func__ << "; Warning: weight sum <= 1 ..." << std::endl;
 		return {avr,0};
 	}
 
