@@ -8,11 +8,11 @@
  * This C++ function call kmeans from mlpack, do the cluster
  * analysis on the input 2d data array.
  *
- * double **data       ----  2D Array pointer. (nptsx*nptsy)
- * int    nptsx        ----  Number of records.
- * int    nptsy        ----  NPTS of each records.
- * int    CateN        ----  Assigned number of clusters.
- * int    *assignment  ----  Clustering result (1*nptsx)
+ * double **data  ----  2D Array pointer. (nptsx*nptsy)
+ * int    nptsx   ----  Number of records.
+ * int    nptsy   ----  NPTS of each records.
+ * int    CateN   ----  Assigned number of clusters.
+ * int    *res    ----  Clustering result (1*nptsx)
  * 						         Value from 1~CateN.
  *
  * Shule Yu
@@ -21,7 +21,7 @@
  * Key words: kmeans, cluster analysis.
 ***********************************************************/
 
-void Kmeans(double **data,int nptsx,int nptsy,int CateN,int *assignment){
+void Kmeans(double **data,int nptsx,int nptsy,int CateN,int *res){
 
     if (nptsx<=0||nptsy<=0||CateN<=0){
         std::cout << "In " << __func__ << ": NPTS error ..." << std::endl;
@@ -50,7 +50,7 @@ void Kmeans(double **data,int nptsx,int nptsy,int CateN,int *assignment){
 
 	index3=0;
     for (int index1=0;index1<nptsx;index1++){
-		assignment[index1]=assignments(index3);
+		res[index1]=assignments(index3);
 		index3++;
     }
 

@@ -2,9 +2,9 @@
 #include<vector>
 
 #include<ASU_tools.hpp>
-extern "C" {
-#include<ASU_tools.h>
-}
+// extern "C" {
+// #include<ASU_tools.h>
+// }
 
 using namespace std;
 
@@ -55,12 +55,12 @@ vector<bool> PointsInPolygon(vector<pair<double,double>> &Polygon,vector<pair<do
 			ey2=Polygon[(Cnt2+1)%m].second;
 
 			if (ey1<=py){
-				if (py<ey2 && crossproduct_2d(ex1-px,ey1-py,ex2-px,ey2-py)>0){
+				if (py<ey2 && CrossProduct(ex1-px,ey1-py,0,ex2-px,ey2-py,0).back()>0){
 					WN++;
 				}
 			}
 			else{
-				if (ey2<=py && crossproduct_2d(ex1-px,ey1-py,ex2-px,ey2-py)<0){
+				if (ey2<=py && CrossProduct(ex1-px,ey1-py,0,ex2-px,ey2-py,0).back()<0){
 					WN--;
 				}
 			}

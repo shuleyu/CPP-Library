@@ -1,5 +1,5 @@
-#ifndef SAC_DATA_HPP
-#define SAC_DATA_HPP
+#ifndef ASU_SACDATA
+#define ASU_SACDATA
 
 #include<iostream>
 #include<algorithm>
