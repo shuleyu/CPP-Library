@@ -17,7 +17,6 @@ std::vector<double> SH_Coeff(double rho1, double vs1, double rho2, double vs2, d
 // void STDCC(std::vector<double> &s1, std::vector<double> &s2, int &shift, double &Diff);
 // void STD2CC(std::vector<std::vector<double>> &s1, std::vector<std::vector<double>> &s2, int &m1, int &m2, double &Diff);
 bool SolvePoly(std::vector<double> C, double &ans, double tol);
-// void Interpolate(const std::vector<std::pair<double,double>> &input, std::vector<std::pair<double,double>> &output,int flag);
 
 // Note: the order of these header files matters because of dependence.
 #include<Amplitude.hpp>
@@ -37,5 +36,6 @@ bool SolvePoly(std::vector<double> C, double &ans, double tol);
 #include<CrossProduct.hpp>
 #include<PolyFit.hpp>                            // Need boost library.
 #include<SortWithIndex.hpp>
+#include<Interpolate.hpp>
 
 #endif
