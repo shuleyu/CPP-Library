@@ -1,12 +1,31 @@
+#ifndef ASU_POLYFIT
+#define ASU_POLYFIT
+
 #include<boost/numeric/ublas/matrix.hpp>
 #include<boost/numeric/ublas/lu.hpp>
 
-std::vector<double> PolyFit(const std::vector<std::pair<double,double>> &data,int Degree,const std::vector<double> &weight){
+#include<ASU_tools.hpp>
 
-	// data.first = x0
-	// data.second = y0
+/***************************************************************
+ * This C++ template return the polynominal fitting results for
+ * the given input. This is a wrapper using the LU decomposition
+ * prvided by boost.
+ * 
+ *
+ * Shule Yu
+ * Dec 28 2017
+ *
+ * Key words: LU decomposition. least square.
+*********************************************************/
 
-	int n=data.size();
+template<class T1, class T2=double>
+std::vector<double> PolyFit(const std::vector<std::pair<T1,T1>> &Data,
+                            int Degree, const std::vector<T2> &weight={}){
+
+	// Data.first = x0
+	// Data.second = y0
+
+	int n=Data.size();
 
 	// Solve Ax=b. where A = (x0^Degree ,x0^ Degree-1 ,...,1).
 	//                   b = (y0)
@@ -18,13 +37,13 @@ std::vector<double> PolyFit(const std::vector<std::pair<double,double>> &data,in
 		double t=1;
 		for (int j=Degree;j>=0;--j){
 			A(i,j)=t;
-			t*=data[i].first;
+			t*=Data[i].first;
 		}
 	}
 
 	// create b.
 	boost::numeric::ublas::matrix<double> b(n,1);
-	for (int i=0;i<n;++i) b(i,0)=data[i].second;
+	for (int i=0;i<n;++i) b(i,0)=Data[i].second;
 
 	// creat A's transpose.
 	boost::numeric::ublas::matrix<double> AT(boost::numeric::ublas::trans(A));
@@ -53,3 +72,5 @@ std::vector<double> PolyFit(const std::vector<std::pair<double,double>> &data,in
 
 	return std::vector<double> (ATb.data().begin(),ATb.data().end());
 }
+
+#endif

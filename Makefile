@@ -13,8 +13,8 @@ INCLUDE = -I. -I$(SACHOME)/include -I$(SACHOME1)/include -I/opt/local/include -I
 all: libASU_tools_cpp.a
 	@echo > /dev/null
 
-libASU_tools_cpp.a: Kmeans.fun.o Decimal2Binary.fun.o ShellExec.fun.o PointsInPolygon.fun.o CombinePolygons.fun.o GridStretch.fun.o StraightLineJunction.fun.o STDCC.fun.o SolvePoly.fun.o SH_Coeff.fun.o Interpolate.fun.o PolyFit.fun.o Combination.fun.o
-	ar cr libASU_tools_cpp.a Kmeans.fun.o Decimal2Binary.fun.o ShellExec.fun.o PointsInPolygon.fun.o CombinePolygons.fun.o GridStretch.fun.o StraightLineJunction.fun.o STDCC.fun.o SolvePoly.fun.o SH_Coeff.fun.o Interpolate.fun.o PolyFit.fun.o Combination.fun.o
+libASU_tools_cpp.a: Kmeans.fun.o Decimal2Binary.fun.o ShellExec.fun.o PointsInPolygon.fun.o CombinePolygons.fun.o GridStretch.fun.o StraightLineJunction.fun.o STDCC.fun.o SolvePoly.fun.o SH_Coeff.fun.o Interpolate.fun.o Combination.fun.o
+	ar cr libASU_tools_cpp.a Kmeans.fun.o Decimal2Binary.fun.o ShellExec.fun.o PointsInPolygon.fun.o CombinePolygons.fun.o GridStretch.fun.o StraightLineJunction.fun.o STDCC.fun.o SolvePoly.fun.o SH_Coeff.fun.o Interpolate.fun.o Combination.fun.o
 
 Kmeans.fun.o: Kmeans.fun.cpp ASU_tools.hpp
 	$(COMP) -c Kmeans.fun.cpp $(INCLUDE)
@@ -38,8 +38,6 @@ SH_Coeff.fun.o: SH_Coeff.fun.cpp ASU_tools.hpp
 	$(COMP) -c SH_Coeff.fun.cpp $(INCLUDE)
 Interpolate.fun.o: Interpolate.fun.cpp ASU_tools.hpp
 	$(COMP) -c Interpolate.fun.cpp $(INCLUDE)
-PolyFit.fun.o: PolyFit.fun.cpp ASU_tools.hpp
-	$(COMP) -c PolyFit.fun.cpp $(INCLUDE)
 Combination.fun.o: Combination.fun.cpp ASU_tools.hpp
 	$(COMP) -c Combination.fun.cpp $(INCLUDE)
 

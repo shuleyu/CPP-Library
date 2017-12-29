@@ -5,9 +5,6 @@
 #include<cmath>
 
 #include<ASU_tools.hpp>
-extern "C"{
-#include<ASU_tools.h>
-}
 
 using namespace std;
 
