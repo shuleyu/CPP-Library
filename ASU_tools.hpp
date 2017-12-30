@@ -18,7 +18,8 @@ std::vector<double> SH_Coeff(double rho1, double vs1, double rho2, double vs2, d
 // void STD2CC(std::vector<std::vector<double>> &s1, std::vector<std::vector<double>> &s2, int &m1, int &m2, double &Diff);
 bool SolvePoly(std::vector<double> C, double &ans, double tol);
 
-// Note: the order of these header files matters because of dependence.
+// Note: Some of the order of these header files can't change
+// because of dependence issues.
 #include<Amplitude.hpp>
 #include<AvrStd.hpp>
 #include<ShiftStack.hpp>
@@ -29,13 +30,20 @@ bool SolvePoly(std::vector<double> C, double &ans, double tol);
 #include<Cart2Sph.hpp>
 #include<CMT2Sph.hpp>
 #include<ComplexDivide.hpp>
+// #include<ConfidenceInterval.hpp>                 // Need gsl library. (slow)
 #include<DotDist.hpp>
 #include<GcpDistance.hpp>
 #include<CircleBin.hpp>
+#include<Convolve.hpp>
 #include<CrossCorrelation.hpp>
 #include<CrossProduct.hpp>
-#include<PolyFit.hpp>                            // Need boost library.
-#include<SortWithIndex.hpp>
+#include<Diff.hpp>
 #include<Interpolate.hpp>
+#include<LL2TP.hpp>
+#include<Normalize.hpp>
+// #include<PolyFit.hpp>                            // Need boost library. (slow)
+#include<SortWithIndex.hpp>
+#include<Sph2Cart.hpp>
+#include<TP2LL.hpp>
 
 #endif

@@ -1,0 +1,20 @@
+#include<iostream>
+#include<vector>
+
+#include<ASU_tools.hpp>
+
+using namespace std;
+
+int main(){
+
+	vector<int> p{3,2,1};
+
+    // Use function.
+    auto ans=Diff(p);
+
+	for (auto &item: ans)
+		cout << item << " ";
+	cout << endl;
+
+    return 0;    
+}

@@ -1,33 +1,34 @@
-#ifndef ASU_CART2SPH
-#define ASU_CART2SPH
+#ifndef ASU_SPH2CART
+#define ASU_SPH2CART
 
 #include<cmath>
 
 #include<ASU_tools.hpp>
 
 /***********************************************************
- * This C++ template convert x, y, z in Cartesian coordinate
- * to r, theta, phi ( in rad. ) in Shperical coordinates.
+ * This C++ template convert r, theta, phi (in rad) in
+ * Spherical Cartesian coordinates to x, y, z in
+ * Cartesian coordinates.
  *
- * double x      ----  x
- * double y      ----  y
- * double z      ----  z
  * double r      ----  r
  * double phi    ----  phi, angle from positive z direction. (rad)
  * double theta  ----  theta, angle from positive x direction.  (rad)
+ * double x      ----  x
+ * double y      ----  y
+ * double z      ----  z
  *
  * Shule Yu
- * May 15 2014
+ * Dec 29 2017
  *
  * Key words: coordinates, convertion, spherical, cartesian
 ***********************************************************/
 
 template<class T1,class T2,class T3>
-void Cart2Sph(const T1 &x, const T2 &y, const T3 &z, double &r, double &phi, double &theta){
+void Sph2Cart(const T1 &r, const T2 &theta, const T3 &phi, double &x, double &y, double &z){
 
-    r=sqrt(x*x+y*y+z*z);
-    phi=atan2(1.0*y,1.0*x);
-    theta=atan2(sqrt(1.0*x*x+y*y),1.0*z);
+    x=r*cos(phi)*sin(theta);
+    y=r*sin(phi)*sin(theta);
+    z=r*cos(theta);
 
     return;
 }
