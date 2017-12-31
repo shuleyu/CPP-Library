@@ -43,18 +43,7 @@ std::pair<double,double> TP2LL(T1 phi, T2 theta){
     if (theta==0.0) return {0.0,90.0};
     else if (theta==M_PI) return {0.0,-90.0};
 
-	double lat=(M_PI/2-theta)*180/M_PI;
-
-    // Deal with longitude, phi.
-
-	// Convert to 0 ~ 2*M_PI.
-    if (phi>=0.0) phi-=2*M_PI*((int)(phi/2/M_PI));
-    else          phi+=2*M_PI*(1+(int)(-phi/2/M_PI));
-
-	// Convert to -M_PI ~ M_PI.
-    if (phi>M_PI) phi-=2*M_PI;
-
-    return {phi*180/M_PI,lat};
+    return {Lon2180(phi*180/M_PI),(M_PI/2-theta)*180/M_PI};
 }
 
 #endif

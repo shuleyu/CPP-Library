@@ -43,18 +43,7 @@ std::pair<double,double> LL2TP(T1 lon, T2 lat){
     if (lat==90) return {0.0,0.0};
     else if (lat==-90) return {M_PI,0.0};
 
-    double theta=M_PI/2-lat*M_PI/180;
-
-    // Deal with longitude, phi.
-
-	// Convert to 0 ~ 360.
-    if (lon>=0) lon-=360*((int)(lon/360));
-    else        lon+=360*(1+(int)(-lon/360));
-
-	// Convert to -180 ~ 180
-    if (lon>180) lon-=360;
-
-    return {theta,lon*M_PI/180};
+    return {M_PI/2-lat*M_PI/180,Lon2180(lon)*M_PI/180};
 }
 
 #endif

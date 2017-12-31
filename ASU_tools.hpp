@@ -17,6 +17,9 @@ std::vector<double> SH_Coeff(double rho1, double vs1, double rho2, double vs2, d
 // void STDCC(std::vector<double> &s1, std::vector<double> &s2, int &shift, double &Diff);
 // void STD2CC(std::vector<std::vector<double>> &s1, std::vector<std::vector<double>> &s2, int &m1, int &m2, double &Diff);
 bool SolvePoly(std::vector<double> C, double &ans, double tol);
+double GetEps1(double *y, int npts, double del);
+double GetEps2(double *y, int npts, double *x);
+void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnpts, bool IsEven);
 
 // Note: Some of the order of these header files can't change
 // because of dependence issues.
@@ -39,11 +42,18 @@ bool SolvePoly(std::vector<double> C, double &ans, double tol);
 #include<CrossProduct.hpp>
 #include<Diff.hpp>
 #include<Interpolate.hpp>
+#include<Lon2180.hpp>
+#include<Lon2360.hpp>
 #include<LL2TP.hpp>
+#include<Mollifier.hpp>
 #include<Normalize.hpp>
 // #include<PolyFit.hpp>                            // Need boost library. (slow)
+#include<PREM.hpp>
+#include<RayP2TakeOff.hpp>
 #include<SortWithIndex.hpp>
 #include<Sph2Cart.hpp>
+#include<SphAngle.hpp>
+#include<LocDist.hpp>
 #include<TP2LL.hpp>
 
 #endif

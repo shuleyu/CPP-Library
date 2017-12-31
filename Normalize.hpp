@@ -33,7 +33,7 @@
 ***********************************************************/
 
 template<class T>
-T Normalize(std::vector<T> &p, std::pair<int,int> W={0,numeric_limits<int>::max()}){
+T Normalize(std::vector<T> &p, std::pair<int,int> W={0,std::numeric_limits<int>::max()}){
 
 	// Check array size.
 	if (p.empty()) {
@@ -61,7 +61,7 @@ T Normalize(std::vector<T> &p, std::pair<int,int> W={0,numeric_limits<int>::max(
 
 
 	if (W.first+W.second>n) {
-		if (W.second!=numeric_limits<int>::max())
+		if (W.second!=std::numeric_limits<int>::max())
 			std::cerr <<  __func__ << "; Warning: window end is set to p.end() ..." << std::endl; 
 		W.second=n-W.first;
 	}
