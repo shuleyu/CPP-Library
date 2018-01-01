@@ -41,6 +41,7 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<CrossCorrelation.hpp>
 #include<CrossProduct.hpp>
 #include<Diff.hpp>
+#include<FindPeak.hpp>
 #include<Interpolate.hpp>
 #include<Lon2180.hpp>
 #include<Lon2360.hpp>
@@ -49,11 +50,13 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<Normalize.hpp>
 // #include<PolyFit.hpp>                            // Need boost library. (slow)
 #include<PREM.hpp>
+#include<RampFunction.hpp>
 #include<RayP2TakeOff.hpp>
 #include<SortWithIndex.hpp>
 #include<Sph2Cart.hpp>
 #include<SphAngle.hpp>
 #include<LocDist.hpp>
 #include<TP2LL.hpp>
+#include<TriangleSignal.hpp>
 
 #endif

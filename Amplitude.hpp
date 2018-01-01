@@ -10,7 +10,7 @@
  * This C++ template returns the amplitude and the 
  * positions of that amplitude.
  *
- * vector<T> p  ----  Array of datatype T.
+ * const vector<T> &p  ----  Input array.
  *
  * Shule Yu
  * Dec 19 2017
