@@ -2,6 +2,7 @@
 #define ASU_TRIANGLESIGNAL
 
 #include<vector>
+
 #include<ASU_tools.hpp>
 
 /***********************************************************

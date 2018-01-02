@@ -42,6 +42,9 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<CrossProduct.hpp>
 #include<Diff.hpp>
 #include<FindPeak.hpp>
+#include<GaussianFunction.hpp>
+#include<GaussianSignal.hpp>
+#include<GaussianBlur.hpp>
 #include<Interpolate.hpp>
 #include<Lon2180.hpp>
 #include<Lon2360.hpp>
