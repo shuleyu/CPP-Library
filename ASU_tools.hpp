@@ -33,7 +33,7 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<Cart2Sph.hpp>
 #include<CMT2Sph.hpp>
 #include<ComplexDivide.hpp>
-// #include<ConfidenceInterval.hpp>                 // Need gsl library. (slow)
+#include<ConfidenceInterval.hpp>                 // Need gsl library. (slow)
 #include<DotDist.hpp>
 #include<GcpDistance.hpp>
 #include<CircleBin.hpp>
@@ -45,13 +45,16 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<GaussianFunction.hpp>
 #include<GaussianSignal.hpp>
 #include<GaussianBlur.hpp>
+#include<GrayCode.hpp>
 #include<Interpolate.hpp>
 #include<Lon2180.hpp>
 #include<Lon2360.hpp>
 #include<LL2TP.hpp>
 #include<Mollifier.hpp>
 #include<Normalize.hpp>
-// #include<PolyFit.hpp>                            // Need boost library. (slow)
+#include<PNorm.hpp>
+#include<PNormErr.hpp>
+#include<PolyFit.hpp>                            // Need boost library. (slow)
 #include<PREM.hpp>
 #include<RampFunction.hpp>
 #include<RayP2TakeOff.hpp>
