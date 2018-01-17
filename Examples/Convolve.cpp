@@ -12,7 +12,7 @@ int main(){
 
     // Use function.
     auto C=Convolve(A,B,0);
-    C2=Convolve(A,B,1);
+    auto C2=Convolve(A,B,1);
 
 	cout << "A : ";
     for (auto &item:A) cout << item << " ";

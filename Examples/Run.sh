@@ -23,5 +23,6 @@ c++ -std=c++14 -Wall $1 ${INCLUDE} ${LIBDIR} ${LIBs}
 
 # ======== Run Code ========
 time ./a.out
+rm -f a.out
 
 exit 0

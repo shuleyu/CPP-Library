@@ -4,8 +4,6 @@
 #include<iostream>
 #include<vector>
 
-#include<ASU_tools.hpp>
-
 /******************************************************
  * This C++ tempalte takes the difference from adjacent
  * elements from the input array.

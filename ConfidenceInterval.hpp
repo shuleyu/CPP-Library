@@ -6,8 +6,6 @@
 #include<cmath>
 #include<gsl/gsl_cdf.h>
 
-#include<ASU_tools.hpp>
-
 /*****************************************************************
  * This C++ template returns the Level% confidence interval of
  * input measurements (p). Assuming the normal distribution error.
@@ -24,7 +22,7 @@
  *
  * Key words: confidence level.
  *
- * Reference: 
+ * Reference:
  *     https://en.wikipedia.org/wiki/Student%27s_t-distribution#Confidence_intervals
 *****************************************************************/
 

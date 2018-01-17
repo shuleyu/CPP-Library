@@ -30,7 +30,7 @@ using namespace std;
  * Reference: http://geomalgorithms.com/a03-_inclusion.html
 ****************************************************************/
 
-vector<bool> PointsInPolygon(vector<pair<double,double>> &Polygon,vector<pair<double,double>> &Points){
+vector<bool> PointsInPolygon(const vector<pair<double,double>> &Polygon,const vector<pair<double,double>> &Points){
 
 	int m=Polygon.size(),n=Points.size();
 	vector<bool> Inside(n);

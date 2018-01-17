@@ -3,8 +3,6 @@
 
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C++ template convert r, theta, phi (in rad) in
  * Spherical Cartesian coordinates to x, y, z in

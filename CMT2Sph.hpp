@@ -3,8 +3,6 @@
 
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 /************************************************************
  * This C function convert the direction of slip from
  * Strike, Dip, Rake ( in deg. ) to theta and azimuth (the

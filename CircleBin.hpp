@@ -1,7 +1,7 @@
 #ifndef ASU_CIRCLEBIN
 #define ASU_CIRCLEBIN
 
-#include<ASU_tools.hpp>
+#include<GcpDistance.hpp>
 
 /*********************************************************
  * This C++ template compute circle geographyic binning
@@ -24,7 +24,7 @@ void CircleBin(const std::vector<std::pair<T1,T1>> &p, std::vector<std::pair<T2,
 
 	// Check array size.
 	if (b.size()!=r.size()) {
-		std::cerr <<  __func__ << "; Error: bins and radius size don't match ..." << std::endl; 
+		std::cerr <<  __func__ << "; Error: bins and radius size don't match ..." << std::endl;
 		return;
 	}
 

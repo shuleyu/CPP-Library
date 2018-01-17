@@ -5,7 +5,7 @@
 #include<vector>
 #include<cmath>
 
-#include<ASU_tools.hpp>
+#include<PNorm.hpp>
 
 /*************************************************
  * This C++ template returns the p-norm difference
@@ -31,12 +31,12 @@ template<class T1, class T2, class T3>
 double PNormErr(const std::vector<T1> &x, const std::vector<T2> &y, const T3 &p){
 
     if (x.size()!=y.size()) {
-		std::cerr <<  __func__ << "; Error: input arrays x and y size don't match ..." << std::endl; 
+		std::cerr <<  __func__ << "; Error: input arrays x and y size don't match ..." << std::endl;
 		return 0;
 	}
     if (x.size()<=0) return 0;
     if (p==0) {
-		std::cerr <<  __func__ << "; Error: p is zero ..." << std::endl; 
+		std::cerr <<  __func__ << "; Error: p is zero ..." << std::endl;
 		return 0;
 	}
 

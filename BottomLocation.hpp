@@ -1,6 +1,7 @@
-#include<string>
+#ifndef ASU_BOTTOMLOCATION
+#define ASU_BOTTOMLOCATION
 
-#include<ASU_tools.hpp>
+#include<string>
 
 /**************************************************
  * This C++ template use TauP toolkit to return the
@@ -34,7 +35,7 @@ std::pair<double,double> BottomLocation(const T1 &evtlon, const T2 &evtlat, cons
 
 	std::string res=ShellExec(command);
 	if (res.empty()) {
-		std::cerr <<  __func__ << "; Warning: No such phase for given parameters ..." << std::endl; 
+		std::cerr <<  __func__ << "; Warning: No such phase for given parameters ..." << std::endl;
 		Depth=0;
 		return {};
 	}
@@ -58,3 +59,5 @@ std::pair<double,double> BottomLocation(const T1 &evtlon, const T2 &evtlat, cons
 
     return {plon,plat};
 }
+
+#endif

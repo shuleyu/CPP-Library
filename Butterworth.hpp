@@ -8,7 +8,6 @@ extern "C"{
 #include<sac.h>
 #include<sacio.h>
 }
-#include<ASU_tools.hpp>
 
 /*****************************************************
  * This C++ template apply butterworth filter on data.

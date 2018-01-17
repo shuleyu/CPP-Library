@@ -4,7 +4,7 @@
 #include<iostream>
 #include<vector>
 
-#include<ASU_tools.hpp>
+#include<GaussianFunction.hpp>
 
 /***********************************************************
  * This C++ template returns the a gaussian function.

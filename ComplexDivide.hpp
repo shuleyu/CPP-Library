@@ -3,8 +3,6 @@
 
 #include<iostream>
 
-#include<ASU_tools.hpp>
-
 /******************************************************
  * This C++ template return division result between two
  * complex number:
@@ -29,7 +27,7 @@ std::pair<double,double> ComplexDivide(const T1 &a, const T2 &b, const T3 &c, co
 
 	// Check denominator.
     if (c==0 && d==0){
-		std::cerr <<  __func__ << "; Error: denominator is zero ..." << std::endl; 
+		std::cerr <<  __func__ << "; Error: denominator is zero ..." << std::endl;
         return {};
     }
 

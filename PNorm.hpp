@@ -5,8 +5,6 @@
 #include<vector>
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 /*******************************************************
  * This C++ template returns the p-norm of input vector.
  *
@@ -26,7 +24,7 @@ double PNorm(const std::vector<T1> &x, const T2 &p){
 
     if (x.size()<=0) return 0;
     if (p==0) {
-		std::cerr <<  __func__ << "; Error: p is zero ..." << std::endl; 
+		std::cerr <<  __func__ << "; Error: p is zero ..." << std::endl;
 		return 0;
 	}
 

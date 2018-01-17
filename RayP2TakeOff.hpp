@@ -3,7 +3,7 @@
 
 #include<cmath>
 
-#include<ASU_tools.hpp>
+#include<PREM.hpp>
 
 /***********************************************************
  * This C++ template convert ray parameter from Taup, event
@@ -27,7 +27,7 @@ double RayP2TakeOff(const T1 &rayp, const T2 &depth,const char &phase){
     if (phase=='P')      V=Dvp(depth);
     else if (phase=='S') V=Dvs(depth);
 	else {
-		std::cerr <<  __func__ << "; Error: input phase should be 'P' or 'S' ..." << std::endl; 
+		std::cerr <<  __func__ << "; Error: input phase should be 'P' or 'S' ..." << std::endl;
 		return -1;
 	}
 

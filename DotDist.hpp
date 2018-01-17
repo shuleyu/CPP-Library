@@ -3,8 +3,6 @@
 
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 /*********************************************************
  * This C++ template return the cartesian distance between
  * two input pionts.

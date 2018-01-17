@@ -4,8 +4,6 @@
 #include<iostream>
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C++ template returns the value of gaussian function.
  *

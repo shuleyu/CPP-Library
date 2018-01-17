@@ -4,8 +4,6 @@
 #include<iostream>
 #include<vector>
 
-#include<ASU_tools.hpp>
-
 /****************************************************************
  * This c++ template is only a wrapper for the Wiginterp function
  * included in same library. I did some modification and put the

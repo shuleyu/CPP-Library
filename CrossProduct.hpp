@@ -3,8 +3,6 @@
 
 #include<vector>
 
-#include<ASU_tools.hpp>
-
 /*********************************************************
  * This C++ template take the cross product of two vectors
  * (x1,y1,z1) and (x2,y2,z2).

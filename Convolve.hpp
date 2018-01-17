@@ -4,8 +4,6 @@
 #include<iostream>
 #include<vector>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C++ template returns convolution result of two input
  * array.

@@ -5,7 +5,7 @@
 #include<cmath>
 #include<vector>
 
-#include<ASU_tools.hpp>
+#include<GaussianSignal.hpp>
 
 /***********************************************************
  * This C++ template blur input signals with given gaussian

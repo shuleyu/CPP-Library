@@ -1,8 +1,6 @@
 #ifndef ASU_LON2180
 #define ASU_LON2180
 
-#include<ASU_tools.hpp>
-
 /*******************************************************
  * This C++ template convert input longitude (in deg) to
  * [-180,180] deg.

@@ -4,13 +4,11 @@
 #include<boost/numeric/ublas/matrix.hpp>
 #include<boost/numeric/ublas/lu.hpp>
 
-#include<ASU_tools.hpp>
-
 /***************************************************************
  * This C++ template return the polynominal fitting results for
  * the given input. This is a wrapper using the LU decomposition
  * prvided by boost.
- * 
+ *
  *
  * Shule Yu
  * Dec 28 2017

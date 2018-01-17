@@ -6,8 +6,6 @@
 #include<vector>
 #include<numeric>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C++ template returns mean and unbiased estimation of
  * standard deviation for input array. The std formula is:

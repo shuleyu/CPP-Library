@@ -6,14 +6,12 @@
 
 #include<ASU_tools.hpp>
 
-using namespace std;
-
 /*****************************************************************
  * This C++ function use "points_in_polygon.fun.c" from ASU_tools
  * to combine several polygons into another set of polygons.(The
  * union sets of given polygons)
  *
- * vector<vector<pair<double,double>>> P    ----   Input polygons.
+ * vector<vector<pair<double,double>>> &P   ----   Input polygons.
  *
  * Each polygon is denoted by a vecotr of pairs of coordinates (x,y).
  *
@@ -26,18 +24,18 @@ using namespace std;
  * Key words: polygon, union set.
 *****************************************************************/
 
-double CalcDist(pair<double,double> p1,pair<double,double> p2){
+double CalcDist(std::pair<double,double> p1,std::pair<double,double> p2){
 	return sqrt(pow(p1.first-p2.first,2)+pow(p1.second-p2.second,2));
 }
 
-bool CombineTwoPolygons(vector<pair<double,double>> &All,vector<pair<double,double>> &New){
+bool CombineTwoPolygons(std::vector<std::pair<double,double>> All,std::vector<std::pair<double,double>> New){
 
 	auto res=PointsInPolygon(All,New);
 	auto res2=PointsInPolygon(New,All);
 	int m=All.size(),n=New.size();
 
-	int nn=count(res.begin(),res.end(),true);
-	int mm=count(res2.begin(),res2.end(),true);
+	int nn=std::count(res.begin(),res.end(),true);
+	int mm=std::count(res2.begin(),res2.end(),true);
 
 	// One of the polygon contains another.
 	if (nn==n) return true;
@@ -51,7 +49,7 @@ bool CombineTwoPolygons(vector<pair<double,double>> &All,vector<pair<double,doub
 
 	// Find the new begin/end points in All.
 	bool flag=false;
-	vector<int> NB_All,NE_All;
+	std::vector<int> NB_All,NE_All;
 	for (int i=0;i<m;i++){
 		if (res2[i] && !res2[(i+1)%m]){
 			NB_All.push_back((i+1)%m);
@@ -66,7 +64,7 @@ bool CombineTwoPolygons(vector<pair<double,double>> &All,vector<pair<double,doub
 
 	// Find the new begin/end points in New.
 	flag=false;
-	vector<int> NB_New,NE_New;
+	std::vector<int> NB_New,NE_New;
 	for (int i=0;i<n;i++){
 		if (res[i] && !res[(i+1)%n]){
 			NB_New.push_back((i+1)%n);
@@ -104,29 +102,29 @@ bool CombineTwoPolygons(vector<pair<double,double>> &All,vector<pair<double,doub
 	// Bug bug.. buzz..buzz... pia !
 	n1=NB_All.size(),n2=NB_New.size();
 	if (n1!=n2){
-		vector<int> &p=(n1>n2?NB_All:NB_New);
-		vector<int> &p2=(n1>n2?NE_All:NE_New);
-		vector<pair<double,double>> &P=(n1>n2?All:New);
+		std::vector<int> &p=(n1>n2?NB_All:NB_New);
+		std::vector<int> &p2=(n1>n2?NE_All:NE_New);
+		std::vector<std::pair<double,double>> &P=(n1>n2?All:New);
 		int Diff=abs(n1-n2),N=(n1>n2?m:n);
 
 		rotate(p2.begin(),p2.end()-1,p2.end());
-		vector<pair<int,int>> pp;
+		std::vector<std::pair<int,int>> pp;
 		for (size_t i=0;i<p.size();i++){
-			pp.push_back(make_pair(p[i]-p2[i],i));
+			pp.push_back({p[i]-p2[i],i});
 			if (pp.back().first<0) pp.back().first+=N;
 		}
 		sort(pp.begin(),pp.end());
 
-		vector<int> t;
+		std::vector<int> t;
 		for (int i=0;i<Diff;i++){
 			t.push_back(pp[i].second);
 		}
 
-		sort(t.begin(),t.end(),greater<int>());
+		sort(t.begin(),t.end(),std::greater<int>());
 		for (auto item: t){
 			for(size_t i=p2[item]+1;i<(p[item]<p2[item]?(p[item]+P.size()):p[item]);i++){
 				int xx=(i>=P.size()?i-P.size():i);
-				P[xx].first=numeric_limits<double>::quiet_NaN();
+				P[xx].first=std::numeric_limits<double>::quiet_NaN();
 			}
 			p.erase(p.begin()+item);
 			p2.erase(p2.begin()+item);
@@ -136,12 +134,12 @@ bool CombineTwoPolygons(vector<pair<double,double>> &All,vector<pair<double,doub
 
 	// Find where these two shape meet.
 	int N=NB_All.size();
-	vector<int> X(N),Y(N);
+	std::vector<int> X(N),Y(N);
 
 	for (int i=0;i<N;i++){
 
-		double MinDist=numeric_limits<double>::max();
-		double MinDist2=numeric_limits<double>::max();
+		double MinDist=std::numeric_limits<double>::max();
+		double MinDist2=std::numeric_limits<double>::max();
 
 		for (int j=0;j<N;j++){
 
@@ -163,16 +161,16 @@ bool CombineTwoPolygons(vector<pair<double,double>> &All,vector<pair<double,doub
 
 	/**************
 	// Method 1. Create new polygon. 
-	vector<pair<double,double>> All_New;
+	std::vector<std::pair<double,double>> All_New;
 	for (int PB=0;PB<N;PB++){
 		for (int i=0;i<m;i++){
 			int xx=(NB_All[PB]+i)%m;
-			if (!isnan(All[xx].first)) All_New.push_back(All[xx]);
+			if (!std::isnan(All[xx].first)) All_New.push_back(All[xx]);
 			if (xx==NE_All[PB]) break;
 		}
 		for (int i=0;i<n;i++){
 			int xx=(NB_New[X[PB]]+i)%n;
-			if (!isnan(New[xx].first)) All_New.push_back(New[xx]);
+			if (!std::isnan(New[xx].first)) All_New.push_back(New[xx]);
 			if (xx==NE_New[X[PB]]) break;
 		}
 	}
@@ -187,23 +185,23 @@ bool CombineTwoPolygons(vector<pair<double,double>> &All,vector<pair<double,doub
 	// For Non-simply connected result.
 	// we ignore the center parts.
 
-	vector<vector<pair<double,double>>> Polygons;
-	vector<bool> pPB(N);
+	std::vector<std::vector<std::pair<double,double>>> Polygons;
+	std::vector<bool> pPB(N);
 	decltype(pPB.begin()) it;
 	while((it=find(pPB.begin(),pPB.end(),false))!=pPB.end()){
 		int PB=(it-pPB.begin());
-		vector<pair<double,double>> All_New;
+		std::vector<std::pair<double,double>> All_New;
 		while(!pPB[PB]){
 			pPB[PB]=true;
 
 			for (int i=0;i<m;i++){
 				int xx=(NB_All[PB]+i)%m;
-				if (!isnan(All[xx].first)) All_New.push_back(All[xx]);
+				if (!std::isnan(All[xx].first)) All_New.push_back(All[xx]);
 				if (xx==NE_All[PB]) break;
 			}
 			for (int i=0;i<n;i++){
 				int xx=(NB_New[X[PB]]+i)%n;
-				if (!isnan(New[xx].first)) All_New.push_back(New[xx]);
+				if (!std::isnan(New[xx].first)) All_New.push_back(New[xx]);
 				if (xx==NE_New[X[PB]]) break;
 			}
 
@@ -226,20 +224,20 @@ bool CombineTwoPolygons(vector<pair<double,double>> &All,vector<pair<double,doub
 	return true;
 }
 
-vector<vector<pair<double,double>>> CombinePolygons(vector<vector<pair<double,double>>> P){
+std::vector<std::vector<std::pair<double,double>>> CombinePolygons(const std::vector<std::vector<std::pair<double,double>>> &P){
 
-	vector<vector<pair<double,double>>> ans;
+	std::vector<std::vector<std::pair<double,double>>> ans;
 
 	int NP=P.size();
 
-	vector<bool> V(NP);
+	std::vector<bool> V(NP);
 
 	for (int i=0;i<NP;i++){
 
 		if (V[i]) continue;
 		V[i]=true;
 
-		vector<pair<double,double>> CurP=P[i];
+		std::vector<std::pair<double,double>> CurP=P[i];
 
 		int Cnt=0,Cnt_Prev=-1;
 		while (Cnt!=Cnt_Prev){

@@ -3,8 +3,6 @@
 
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C++ template convert x, y, z in Cartesian coordinate
  * to r, theta, phi ( in rad. ) in Shperical coordinates.

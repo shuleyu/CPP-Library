@@ -4,8 +4,6 @@
 #include<iostream>
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 // PREM            // original PREM
 //
 // PREMSmoothed    // Replace first-order discontinuities.

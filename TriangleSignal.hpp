@@ -3,8 +3,6 @@
 
 #include<vector>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C++ template returns a triangle signal.
  * The signal has peak at its center, amplitude is 1.

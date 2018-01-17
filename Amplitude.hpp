@@ -4,10 +4,8 @@
 #include<iostream>
 #include<vector>
 
-#include<ASU_tools.hpp>
-
 /*************************************************
- * This C++ template returns the amplitude and the 
+ * This C++ template returns the amplitude and the
  * positions of that amplitude.
  *
  * const vector<T> &p  ----  Input array.
@@ -23,10 +21,9 @@ std::pair<T,std::vector<size_t>> Amplitude(const std::vector<T> &p){
 
 	// Check array size.
 	if (p.size()==0) {
-		std::cerr <<  __func__ << "; Error: input array size is zero ..." << std::endl; 
+		std::cerr <<  __func__ << "; Error: input array size is zero ..." << std::endl;
 		return {};
 	}
-
 
 	T amp=p[0]>0?p[0]:-p[0];
 	std::pair<T,std::vector<size_t>> ans{amp,{0}};
@@ -39,7 +36,7 @@ std::pair<T,std::vector<size_t>> Amplitude(const std::vector<T> &p){
 			ans.second={i};
 		}
 		else if (ans.first==amp)
-			ans.second.push_back(i); 
+			ans.second.push_back(i);
 	}
 
 	return ans;

@@ -1,8 +1,6 @@
 #ifndef ASU_LON2360
 #define ASU_LON2360
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C++ template convert input longitude (in deg) to
  * [0,360] deg.
@@ -26,4 +24,4 @@ T Lon2360(T lon){
     return lon;
 }
 
-# endif
+#endif

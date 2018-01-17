@@ -4,8 +4,6 @@
 #include<iostream>
 #include<vector>
 
-#include<ASU_tools.hpp>
-
 /**************************************************************
  * This C++ template find the max(abs(amp)) position with the
  * given window for a given input array.

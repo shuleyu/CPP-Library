@@ -2,6 +2,8 @@
 
 #include<ASU_tools.hpp>
 
+using namespace std;
+
 int main(){
 
     double r,theta,phi;

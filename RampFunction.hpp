@@ -3,8 +3,6 @@
 
 #include<iostream>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C++ template returns the value of a ramp function
  * defined by given parameters:

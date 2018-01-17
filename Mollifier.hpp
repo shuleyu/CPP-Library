@@ -3,8 +3,6 @@
 
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C++ template returns the value of mollifier function
  * for the given width (delta).

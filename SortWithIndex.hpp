@@ -4,8 +4,6 @@
 #include<vector>
 #include<algorithm>
 
-#include<ASU_tools.hpp>
-
 /*************************************************
  * This C++ template takes the same input as sort
  * in the standard library. Returns the index of

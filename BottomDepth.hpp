@@ -1,6 +1,7 @@
-#include<string>
+#ifndef ASU_BOTTOMDEPTH
+#define ASU_BOTTOMDEPTH
 
-#include<ASU_tools.hpp>
+#include<string>
 
 /**************************************************
  * This C++ template use TauP toolkit to return the
@@ -38,3 +39,5 @@ void BottomDepth(const T1 &Dist,const T2 &EVDP,const std::string &Phase,T3 &Dept
 
     return;
 }
+
+#endif

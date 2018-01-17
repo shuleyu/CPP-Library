@@ -4,9 +4,7 @@
 #include<iostream>
 #include<cmath>
 #include<vector>
-#include<algorithm>
-
-#include<ASU_tools.hpp>
+#include<numeric>
 
 /**************************************************************************
  * This C function(s) calculate cross-correlation between x and y.

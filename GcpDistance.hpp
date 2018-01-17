@@ -3,8 +3,6 @@
 
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 /*****************************************************
  * This C++ template returns distance (in deg) of two
  * geographic locations.

@@ -1,18 +1,21 @@
 #ifndef ASU_LOCDIST
-#define ASU_ALOCDIST
+#define ASU_LOCDIST
 
-#include<ASU_tools.hpp>
+#include<Sph2Cart.hpp>
+
+#include<DotDist.hpp>
+#include<LL2TP.hpp>
 
 /***********************************************************
  * This C++ template caculate the straight line distance
  * between two geographic points.
  *
- * const T1 &lon1   ----  
- * const T2 &lat1   ----  
- * const T3 &r1   ----  
- * const T4 &lon2   ----  
- * const T5 &lat2   ----  
- * const T6 &r2   ----  
+ * const T1 &lon1   ----
+ * const T2 &lat1   ----
+ * const T3 &r1   ----
+ * const T4 &lon2   ----
+ * const T5 &lat2   ----
+ * const T6 &r2   ----
  *
  * Shule Yu
  * Dec 31 2017
@@ -28,7 +31,7 @@ double LocDist(const T1 &lon1, const T2 &lat1, const T3 &r1, const T4 &lon2, con
     auto res2=LL2TP(lon2,lat2);
 
     double x1,y1,z1,x2,y2,z2;
-	
+
     Sph2Cart(r1,res1.first,res1.second,x1,y1,z1);
     Sph2Cart(r2,res2.first,res2.second,x2,y2,z2);
 

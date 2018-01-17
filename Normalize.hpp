@@ -5,7 +5,9 @@
 #include<vector>
 #include<limits>
 
-#include<ASU_tools.hpp>
+#include<Amplitude.hpp>
+#include<Convolve.hpp>
+
 
 /******************************************************
  * This C++ template returns the amplitude of an array,
