@@ -25,21 +25,21 @@ std::pair<T,std::vector<size_t>> Amplitude(const std::vector<T> &p){
         return {};
     }
 
-	T amp=p[0]>0?p[0]:-p[0];
-	std::pair<T,std::vector<size_t>> ans{amp,{0}};
+    T amp=p[0]>0?p[0]:-p[0];
+    std::pair<T,std::vector<size_t>> ans{amp,{0}};
 
-	for (size_t i=1;i<p.size();++i){
-		amp=p[i]>0?p[i]:-p[i];
+    for (size_t i=1;i<p.size();++i){
+        amp=p[i]>0?p[i]:-p[i];
 
-		if (ans.first<amp) {
-			ans.first=amp;
-			ans.second={i};
-		}
-		else if (ans.first==amp)
-			ans.second.push_back(i);
-	}
+        if (ans.first<amp) {
+            ans.first=amp;
+            ans.second={i};
+        }
+        else if (ans.first==amp)
+            ans.second.push_back(i);
+    }
 
-	return ans;
+    return ans;
 }
 
 #endif
