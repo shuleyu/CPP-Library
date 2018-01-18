@@ -2,7 +2,17 @@
 #include<array>
 #include<memory>
 
-#include<ASU_tools.hpp>
+/*************************************************
+ * This C++ function returns the stdout from the
+ * execution of given shell command.
+ *
+ * const string &cmd  ----  Input command.
+ *
+ * Shule Yu
+ * Jan 17 2018
+ *
+ * Key words: Shell, standard output.
+*************************************************/
 
 std::string ShellExec(const std::string &cmd) {
 	std::array<char, 128> buffer;
@@ -12,6 +22,6 @@ std::string ShellExec(const std::string &cmd) {
 	while (!feof(pipe.get())) {
 		if (fgets(buffer.data(), 128, pipe.get()) != NULL)
 		result += buffer.data();
-	}  
+	}
 	return result;
 }

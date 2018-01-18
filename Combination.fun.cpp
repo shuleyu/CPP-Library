@@ -15,9 +15,9 @@
 **************************************************************/
 
 int Combination(const int &n, const int &k){
-    
+
     if ( n < 0 || k < 0 || k > n ){
-		std::cerr <<  __func__ << "; Error: input doesn't make sense ..." << std::endl; 
+		std::cerr <<  __func__ << "; Error: input doesn't make sense ..." << std::endl;
 		return 0;
     }
 

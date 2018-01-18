@@ -3,8 +3,6 @@
 
 #include<ASU_tools.hpp>
 
-using namespace std;
-
 /**************************************************************
  * This C function decide weather given points on 2D plane
  * located inside one give 2D polygon using Winding Number
@@ -30,10 +28,10 @@ using namespace std;
  * Reference: http://geomalgorithms.com/a03-_inclusion.html
 ****************************************************************/
 
-vector<bool> PointsInPolygon(const vector<pair<double,double>> &Polygon,const vector<pair<double,double>> &Points){
+std::vector<bool> PointsInPolygon(const std::vector<std::pair<double,double>> &Polygon,const std::vector<std::pair<double,double>> &Points){
 
 	int m=Polygon.size(),n=Points.size();
-	vector<bool> Inside(n);
+	std::vector<bool> Inside(n);
 
 	int Cnt,Cnt2;
 

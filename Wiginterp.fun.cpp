@@ -1,7 +1,5 @@
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C function uses wiggins algorithm to interpolate for
  * higher sampling rate. While used in down sampling may
@@ -24,6 +22,30 @@
  * Reference:
  *     SAC source code.
 ***********************************************************/
+
+double GetEps1(double *y, int npts, double del) {
+
+    double EPS=0;
+    int    count;
+
+    for(count=0;count<npts-1;count++){
+        EPS+=fabs(y[count+1]-y[count]);
+    }
+    EPS*=(1e-4/(npts-1)/del);
+    return EPS;
+}
+
+double GetEps2(double *y, int npts, double *x) {
+
+    double EPS=0;
+    int    count;
+
+    for(count=0;count<npts-1;count++){
+        EPS+=fabs((y[count+1]-y[count])/(x[count+1]-x[count]));
+    }
+    EPS*=(1e-4/(npts-1));
+    return EPS;
+}
 
 void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnpts, bool IsEven){
 
@@ -158,28 +180,4 @@ L_100:
     }
 
     return ;
-}
-
-double GetEps1(double *y, int npts, double del) {
-
-    double EPS=0;
-    int    count;
-
-    for(count=0;count<npts-1;count++){
-        EPS+=fabs(y[count+1]-y[count]);
-    }
-    EPS*=(1e-4/(npts-1)/del);
-    return EPS;
-}
-
-double GetEps2(double *y, int npts, double *x) {
-
-    double EPS=0;
-    int    count;
-
-    for(count=0;count<npts-1;count++){
-        EPS+=fabs((y[count+1]-y[count])/(x[count+1]-x[count]));
-    }
-    EPS*=(1e-4/(npts-1));
-    return EPS;
 }

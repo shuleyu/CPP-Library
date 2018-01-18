@@ -1,9 +1,6 @@
 #include<iostream>
+#include<vector>
 #include<cmath>
-
-#include<ASU_tools.hpp>
-
-using namespace std;
 
 /**************************************************************
  * This C function return the solution of f(x)=0 using Newton's
@@ -24,7 +21,7 @@ using namespace std;
  * examed. Use with caution!
 ****************************************************************/
 
-bool SolvePoly(vector<double> C,double &ans, double tol){
+bool SolvePoly(const std::vector<double> &C,double &ans, double tol){
 
 	bool flag=true;
 	int n=C.size();

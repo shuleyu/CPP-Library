@@ -2,8 +2,6 @@
 #include<mlpack/methods/kmeans/kmeans.hpp>
 #include<mlpack/methods/kmeans/refined_start.hpp>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C++ function call kmeans from mlpack, do the cluster
  * analysis on the input 2d data array.
@@ -24,7 +22,7 @@
 void Kmeans(double **data,int nptsx,int nptsy,int CateN,int *res){
 
     if (nptsx<=0||nptsy<=0||CateN<=0){
-        std::cout << "In " << __func__ << ": NPTS error ..." << std::endl;
+        std::cerr << "In " << __func__ << ": NPTS error ..." << std::endl;
         return;
     }
 

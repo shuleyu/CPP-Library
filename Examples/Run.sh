@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 [ $# -ne 1 ] || ! [ -e $1 ] && echo "Usage: input c++ code as \$1." && exit 1;
 
 SRCDIR=${PWD}

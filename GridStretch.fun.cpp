@@ -6,28 +6,24 @@
 
 #include<ASU_tools.hpp>
 
-using namespace std;
-
 /**************************************************************
- * This C function return the after-restoration position of a 
+ * This C function return the after-restoration position of a
  * point inside the square.
  *
- * vector<pair<pair<double,double>,pair<double,double>>> Polygon  
- *                             ----  given stretched square and its original coordinates(grids).
+ * vector<pair<pair<double,double>,pair<double,double>>> Polygon
  *
- * 	                           Polygon.size() should = 4, indicating
- * 	                           the four corners of the stretched/original square.
- * 	                           Polygon[0].first has the coordinates of the stretched
- * 	                           four corners; Polygon[0].second has the coordinates
- * 	                           of the original grid four corners.
- *                             The four corners can be unordered.
+ *       ----  give the coordinate(piont) pair of stretched and original grid.
+ * 	           Polygon.size() = 4: Each element is one coordinate pair of the corner pair of the two grids.
  *
- * vector<pair<double,double>> Point    ----  given points position.
- *                                            in the stretched coordinate.
+ * 	           Polygon[0-3].first has the coordinates of the stretched four corners;
+ * 	           Polygon[0-3].second has the coordinates of the original four corners.
  *
- * return value:
- * pair<double,double>         ans  ----  The position of the point inside
- *                                        the original gird square.
+ *             The four corners can be unordered.
+ *
+ * pair<double,double> P  ----  given point position in the stretched grid.
+ *
+ * return:
+ * pair<double,double> ans  ----  The position of the point in the original gird.
  *
  * Shule Yu
  * Mar 30 2017
@@ -35,29 +31,25 @@ using namespace std;
  * Key words: stretching.
 ****************************************************************/
 
-double DotDist(double x1,double y1,double x2,double y2){
-	return sqrt(pow((x1-x2),2)+pow((y1-y2),2));
-}
-
-pair<double,double> GridStretch(vector<pair<pair<double,double>,pair<double,double>>> &Polygon,pair<double,double> P){
+std::pair<double,double> GridStretch(std::vector<std::pair<std::pair<double,double>,std::pair<double,double>>> &Polygon,std::pair<double,double> P){
 
 
-	pair<double,double> ans;
+	std::pair<double,double> ans;
 
 	// Check polygon has four corners.
 	if (Polygon.size()!=4){
-		cout << "Error in " <<  __func__ << " : Polygon.size() != 4 ..." << endl;
+		std::cerr << "Error in " <<  __func__ << " : Polygon.size() != 4 ..." << std::endl;
 		return ans;
 	}
 
 	// Check if it's a convex polygon.
 	for (int i=0;i<4;i++){
-		vector<pair<double,double>> points,polygon;
+		std::vector<std::pair<double,double>> points,polygon;
 		points.push_back(Polygon[i].first);
 		for (int j=0;j<4;j++) if (j!=i) polygon.push_back(Polygon[j].first);
 		auto x=PointsInPolygon(polygon,points);
 		if (x[0]) {
-			cout << "Error in " <<  __func__ << " : Polygon isn't convex ..." << endl;
+			std::cerr << "Error in " <<  __func__ << " : Polygon isn't convex ..." << std::endl;
 			return ans;
 		}
 	}
@@ -65,10 +57,10 @@ pair<double,double> GridStretch(vector<pair<pair<double,double>,pair<double,doub
 
 	// Reorder the four corners.
 	// start from upper left [0] in counter-close wise order.
-	auto f1=[](pair<pair<double,double>,pair<double,double>> &p1,pair<pair<double,double>,pair<double,double>> &p2){
+	auto f1=[](std::pair<std::pair<double,double>,std::pair<double,double>> &p1,std::pair<std::pair<double,double>,std::pair<double,double>> &p2){
 		return p1.first.second>p2.first.second;
 	};
-	auto f2=[](pair<pair<double,double>,pair<double,double>> &p1,pair<pair<double,double>,pair<double,double>> &p2){
+	auto f2=[](std::pair<std::pair<double,double>,std::pair<double,double>> &p1,std::pair<std::pair<double,double>,std::pair<double,double>> &p2){
 		return p1.first.first<p2.first.first;
 	};
 	sort(Polygon.begin(),Polygon.end(),f1);
@@ -78,7 +70,7 @@ pair<double,double> GridStretch(vector<pair<pair<double,double>,pair<double,doub
 	swap(Polygon[2],Polygon[3]);
 
 	// Check whether the point is outside the polygon.
-	vector<pair<double,double>> points,polygon;
+	std::vector<std::pair<double,double>> points,polygon;
 	polygon.push_back(Polygon[0].first);
 	polygon.push_back(Polygon[1].first);
 	polygon.push_back(Polygon[2].first);
@@ -86,7 +78,7 @@ pair<double,double> GridStretch(vector<pair<pair<double,double>,pair<double,doub
 	points.push_back(P);
 	auto xx=PointsInPolygon(polygon,points);
 	if (!xx[0]) {
-		cout << "Error in " <<  __func__ << " : Point is outside of polygon ..." << endl;
+		std::cerr << "Error in " <<  __func__ << " : Point is outside of polygon ..." << std::endl;
 		return ans;
 	}
 
@@ -128,29 +120,29 @@ pair<double,double> GridStretch(vector<pair<pair<double,double>,pair<double,doub
 		s_top*=-1;
 		reverse(Polygon.begin(),Polygon.end());
 	}
-// cout << Polygon[1].first.first << " " << Polygon[1].first.second << " " << P.first << " " << P.second << endl;
+// std::cout << Polygon[1].first.first << " " << Polygon[1].first.second << " " << P.first << " " << P.second << std::endl;
 
 	// Stretch the upper edge to meet the parallel line right foot .
 
 	double xleft,yleft,xbot,ybot,xright,yright;
 	double s_left=(Polygon[0].first.second-Polygon[1].first.second)/(Polygon[0].first.first-Polygon[1].first.first);
 	double s_right=(Polygon[3].first.second-Polygon[2].first.second)/(Polygon[3].first.first-Polygon[2].first.first);
-	tie(xleft,yleft)=StraightLineJunction(Polygon[1].first.first,Polygon[1].first.second,s_left,
+	std::tie(xleft,yleft)=StraightLineJunction(Polygon[1].first.first,Polygon[1].first.second,s_left,
 										  P.first,P.second,s_top);
-	tie(xbot,ybot)=StraightLineJunction(Polygon[1].first.first,Polygon[1].first.second,0,
+	std::tie(xbot,ybot)=StraightLineJunction(Polygon[1].first.first,Polygon[1].first.second,0,
 										  P.first,P.second,s_top);
-	tie(xright,yright)=StraightLineJunction(Polygon[2].first.first,Polygon[2].first.second,s_right,
+	std::tie(xright,yright)=StraightLineJunction(Polygon[2].first.first,Polygon[2].first.second,s_right,
 										  P.first,P.second,s_top);
-	
-// cout << xleft << " " << yleft << endl;
-// cout << xbot << " " << ybot << endl;
 
-	double lr=DotDist(P.first,P.second,xright,yright);
-	double ll=min(DotDist(P.first,P.second,xleft,yleft),DotDist(P.first,P.second,xbot,ybot));
+// std::cout << xleft << " " << yleft << std::endl;
+// std::cout << xbot << " " << ybot << std::endl;
+
+	double lr=DotDist(P.first,P.second,0,xright,yright,0);
+	double ll=std::min(DotDist(P.first,P.second,0,xleft,yleft,0),DotDist(P.first,P.second,0,xbot,ybot,0));
 	double ratio1=ll/(lr+ll);
 
 	double px,py;
-	if (DotDist(P.first,P.second,xleft,yleft)<DotDist(P.first,P.second,xbot,ybot)){
+	if (DotDist(P.first,P.second,0,xleft,yleft,0)<DotDist(P.first,P.second,0,xbot,ybot,0)){
 		px=xleft;
 		py=yleft;
 	}
@@ -158,31 +150,31 @@ pair<double,double> GridStretch(vector<pair<pair<double,double>,pair<double,doub
 		px=xbot;
 		py=ybot;
 	}
-// cout << px << " " << py << endl;
+// std::cout << px << " " << py << std::endl;
 
 	double xrr,yrr;
-	tie(xrr,yrr)=StraightLineJunction(Polygon[2].first.first,Polygon[2].first.second,s_left,
+	std::tie(xrr,yrr)=StraightLineJunction(Polygon[2].first.first,Polygon[2].first.second,s_left,
 									  P.first,P.second,s_top);
 
-// cout << xrr << " " << yrr << endl;
+// std::cout << xrr << " " << yrr << std::endl;
 
 	double NewPx,NewPy;
 	NewPx=px+(xrr-px)*ratio1;
 	NewPy=py+(yrr-py)*ratio1;
-// cout << NewPy << " " << py << " " << yrr << " " << ratio1 << endl;
+// std::cout << NewPy << " " << py << " " << yrr << " " << ratio1 << std::endl;
 
 	double fxr,fyr,fxl,fyl,fxt,fyt,fxb,fyb;
-	tie(fxr,fyr)=StraightLineJunction(Polygon[2].first.first,Polygon[2].first.second,s_left,
+	std::tie(fxr,fyr)=StraightLineJunction(Polygon[2].first.first,Polygon[2].first.second,s_left,
 									  NewPx,NewPy,0);
-	tie(fxl,fyl)=StraightLineJunction(Polygon[1].first.first,Polygon[1].first.second,s_left,
+	std::tie(fxl,fyl)=StraightLineJunction(Polygon[1].first.first,Polygon[1].first.second,s_left,
 									  NewPx,NewPy,0);
-	tie(fxt,fyt)=StraightLineJunction(Polygon[0].first.first,Polygon[0].first.second,s_top,
+	std::tie(fxt,fyt)=StraightLineJunction(Polygon[0].first.first,Polygon[0].first.second,s_top,
 									  NewPx,NewPy,s_left);
-	tie(fxb,fyb)=StraightLineJunction(Polygon[1].first.first,Polygon[1].first.second,0,
+	std::tie(fxb,fyb)=StraightLineJunction(Polygon[1].first.first,Polygon[1].first.second,0,
 									  NewPx,NewPy,s_left);
 
-// cout << fxl << " " << fxr <<" " << NewPx << " " << NewPy << endl;
-// cout << fxt << " " << fxb <<" " << NewPx << " " << NewPy << endl;
+// std::cout << fxl << " " << fxr <<" " << NewPx << " " << NewPy << std::endl;
+// std::cout << fxt << " " << fxb <<" " << NewPx << " " << NewPy << std::endl;
 	ans.first=(NewPx-fxl)/(fxr-fxl);
 	ans.second=(NewPy-fyb)/(fyt-fyb);
 

@@ -6,19 +6,18 @@
 
 int Combination(const int &n, const int &k);
 std::string Decimal2Binary(int n);
-void Kmeans(double **data, int nptsx, int nptsy, int CateN, int *res);
 std::vector<std::vector<bool>> GrayCode(const int &n);
+void Kmeans(double **data, int nptsx, int nptsy, int CateN, int *res);
 std::string ShellExec(const std::string &cmd);
 std::vector<bool> PointsInPolygon(const std::vector<std::pair<double,double>> &Polygon,const std::vector<std::pair<double,double>> &Points);
 std::vector<std::vector<std::pair<double,double>>> CombinePolygons(const std::vector<std::vector<std::pair<double,double>>> &p);
 std::pair<double,double> GridStretch(std::vector<std::pair<std::pair<double,double>,std::pair<double,double>>> &,std::pair<double,double>);
 std::pair<double,double> StraightLineJunction(double,double,double,double,double,double);
-// void STDCC(std::vector<double> &s1, std::vector<double> &s2, int &shift, double &Diff);
-// void STD2CC(std::vector<std::vector<double>> &s1, std::vector<std::vector<double>> &s2, int &m1, int &m2, double &Diff);
-bool SolvePoly(std::vector<double> C, double &ans, double tol);
-double GetEps1(double *y, int npts, double del);
-double GetEps2(double *y, int npts, double *x);
+void STDCC(const std::vector<double> &s1, const std::vector<double> &s2, int &shift, double &Diff);
+void STD2CC(const std::vector<std::vector<double>> &s1, const std::vector<std::vector<double>> &s2, int &m1, int &m2, double &Diff);
+bool SolvePoly(const std::vector<double> &C, double &ans, double tol);
 void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnpts, bool IsEven);
+
 
 #include<Amplitude.hpp>
 #include<AvrStd.hpp>
@@ -61,5 +60,6 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<SphAngle.hpp>
 #include<TP2LL.hpp>
 #include<TriangleSignal.hpp>
+
 
 #endif
