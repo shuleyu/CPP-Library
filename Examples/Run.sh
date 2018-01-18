@@ -5,15 +5,12 @@ set -e
 [ $# -ne 1 ] || ! [ -e $1 ] && echo "Usage: input c++ code as \$1." && exit 1;
 
 SRCDIR=${PWD}
-CCODEDIR=/home/shule/Research/Fun.C.c002
-CPPCODEDIR=${PWD}/../
+CPPCODEDIR=${PWD}/..
 SACHOME=/opt/sac
-INCLUDE="-I${CPPCODEDIR} -I${CCODEDIR} -I${SACHOME}/include -I/opt/local/include -I/usr/include"
-LIBDIR="-L${CPPCODEDIR} -L${CCODEDIR} -L${SACHOME}/lib -L/opt/local/lib"
-LIBs="-lASU_tools_cpp -lASU_tools -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm"
+INCLUDE="-I${CPPCODEDIR} -I${SACHOME}/include -I/opt/local/include -I/usr/include"
+LIBDIR="-L${CPPCODEDIR} -L${SACHOME}/lib -L/opt/local/lib"
+LIBs="-lASU_tools_cpp -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm"
 
-cd ${CCODEDIR}
-make
 cd ${CPPCODEDIR}
 make
 cd ${SRCDIR}
@@ -26,5 +23,7 @@ c++ -std=c++14 -Wall $1 ${INCLUDE} ${LIBDIR} ${LIBs}
 # ======== Run Code ========
 time ./a.out
 rm -f a.out
+
+echo ""
 
 exit 0
