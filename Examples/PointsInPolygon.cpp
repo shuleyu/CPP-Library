@@ -8,26 +8,28 @@ using namespace std;
 
 int main(){
 
-	ifstream fpin_polygon("data/PointsInPolygon_polygon");
-	ifstream fpin_points("data/PointsInPolygon_points");
 
 	// Read in.
-	
 	vector<pair<double,double>> Points,Polygon;
 	pair<double,double> p;
-	while(fpin_points >> p.first >> p.second) Points.push_back(p);
-	while(fpin_polygon >> p.first >> p.second) Polygon.push_back(p);
-	fpin_polygon.close();
-	fpin_points.close();
+
+	ifstream fpin("data/PointsInPolygon_polygon");
+	while(fpin >> p.first >> p.second) Polygon.push_back(p);
+    fpin.close();
+
+	fpin.open("data/PointsInPolygon_points");
+	while(fpin >> p.first >> p.second) Points.push_back(p);
+    fpin.close();
 
     // Use function.
-	auto Flag=PointsInPolygon(Polygon,Points);
+	auto res=PointsInPolygon(Polygon,Points);
 
-	int n=Flag.size();
-	for (int i=0;i<n;i++){
-		cout << Points[i].first << " " << Points[i].second << " is " 
-			 << (Flag[i]?"inside":"outside") << " polygon" << endl;
-	}
+	ofstream fpout("data/PointsInPolygon_result");
+	for (size_t i=0;i<Points.size();++i){
+		fpout << (res[i]?"*":"o");
+        if (i%51==50) fpout << '\n';
+    }
+    fpout.close();
     
     return 0;    
 }

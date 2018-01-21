@@ -1,5 +1,4 @@
 #include<iostream>
-#include<cmath>
 
 #include<ASU_tools.hpp>
 
@@ -17,5 +16,5 @@ int main(){
     cout << "Azimuth: " << res.first << "\n";
 	cout << "Theta: " << res.second << endl;
 
-    return 0;    
+    return 0;
 }

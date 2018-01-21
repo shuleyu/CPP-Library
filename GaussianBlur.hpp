@@ -2,9 +2,10 @@
 #define ASU_GAUSSIANBLUR
 
 #include<iostream>
-#include<cmath>
 #include<vector>
+#include<cmath>
 
+#include<Convolve.hpp>
 #include<GaussianSignal.hpp>
 
 /***********************************************************

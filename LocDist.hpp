@@ -1,10 +1,9 @@
 #ifndef ASU_LOCDIST
 #define ASU_LOCDIST
 
-#include<Sph2Cart.hpp>
-
 #include<DotDist.hpp>
 #include<LL2TP.hpp>
+#include<Sph2Cart.hpp>
 
 /***********************************************************
  * This C++ template caculate the straight line distance

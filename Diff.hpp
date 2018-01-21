@@ -1,7 +1,6 @@
 #ifndef ASU_DIFF
 #define ASU_DIFF
 
-#include<iostream>
 #include<vector>
 
 /******************************************************

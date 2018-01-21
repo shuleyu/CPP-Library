@@ -1,6 +1,5 @@
 #include<iostream>
 #include<fstream>
-#include<vector>
 
 #include<ASU_tools.hpp>
 

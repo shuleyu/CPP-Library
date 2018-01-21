@@ -1,4 +1,5 @@
 #include<iostream>
+#include<cmath>
 
 #include<ASU_tools.hpp>
 
@@ -11,7 +12,7 @@ int main(){
     rayp=14.640;
     depth=500;
 
-	cout << "TakeOff: " << 180/M_PI*RayP2TakeOff(rayp,depth,'S');
+	cout << "TakeOff: " << 180/M_PI*RayP2TakeOff(rayp,depth,'S') << endl;
 
     return 0;    
 }

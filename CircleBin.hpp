@@ -1,6 +1,8 @@
 #ifndef ASU_CIRCLEBIN
 #define ASU_CIRCLEBIN
 
+#include<iostream>
+
 #include<GcpDistance.hpp>
 
 /*********************************************************

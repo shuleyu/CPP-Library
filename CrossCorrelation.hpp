@@ -2,9 +2,10 @@
 #define ASU_CROSSCORRELATION
 
 #include<iostream>
-#include<cmath>
 #include<vector>
+#include<cmath>
 #include<numeric>
+#include<limits>
 
 /**************************************************************************
  * This C function(s) calculate cross-correlation between x and y.

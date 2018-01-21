@@ -4,7 +4,6 @@
 #include<iostream>
 #include<cmath>
 #include<vector>
-#include<numeric>
 
 /***********************************************************
  * This C++ template returns mean and unbiased estimation of

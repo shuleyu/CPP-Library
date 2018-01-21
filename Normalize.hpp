@@ -6,8 +6,6 @@
 #include<limits>
 
 #include<Amplitude.hpp>
-#include<Convolve.hpp>
-
 
 /******************************************************
  * This C++ template returns the amplitude of an array,

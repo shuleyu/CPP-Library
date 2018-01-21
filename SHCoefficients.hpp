@@ -3,6 +3,8 @@
 
 #include<cmath>
 
+#include<PREM.hpp>
+
 /****************************************************
  * This C++ template returns SH component solid-solid
  * reflection and transmission coefficients.

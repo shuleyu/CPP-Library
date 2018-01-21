@@ -1,6 +1,5 @@
 #include<iostream>
 #include<fstream>
-#include<cmath>
 
 #include<ASU_tools.hpp>
 

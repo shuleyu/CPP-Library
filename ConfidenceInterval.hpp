@@ -1,10 +1,12 @@
 #ifndef ASU_CONFIDENCEINTERVAL
 #define ASU_CONFIDENCEINTERVAL
 
-#include<iostream>
 #include<vector>
 #include<cmath>
+
 #include<gsl/gsl_cdf.h>
+
+#include<AvrStd.hpp>
 
 /*****************************************************************
  * This C++ template returns the Level% confidence interval of

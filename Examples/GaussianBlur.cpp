@@ -1,6 +1,6 @@
 #include<iostream>
-#include<vector>
 #include<fstream>
+#include<vector>
 
 #include<ASU_tools.hpp>
 
@@ -17,13 +17,13 @@ int main(){
 		A.push_back(amp);
     fpin.close();
 
-    Normalize(A);
+//     Normalize(A);
 
 	// Use function.
 	vector<vector<double>> B;
 	B.push_back(A);
     GaussianBlur(B,dt,sigma);
-    Normalize(B[0]);
+//     Normalize(B[0]);
 
 	ofstream fpout("data/GaussianBlur_out");
 	for (size_t i=0;i<B[0].size();++i)
