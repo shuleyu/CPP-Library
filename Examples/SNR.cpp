@@ -22,7 +22,7 @@ int main(){
     }
 
     for (int i=0;i<5;++i)
-        cout << SNR(p[i],126,375,625,250) << endl;
+        cout << SNR(p[i],126,375,625,251) << endl;
 
     return 0;
 }

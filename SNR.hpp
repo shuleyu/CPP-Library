@@ -5,6 +5,7 @@
 #include<vector>
 
 #include<Envelope.hpp>
+#include<SimpsonRule.hpp>
 
 /***********************************************************
  * This C++ template evaluate the signal to noise ratio of
@@ -43,15 +44,8 @@ double SNR(const std::vector<T> &p,int nloc,int nlen,int sloc,int slen){
     auto res=Envelope(p);
 
     // integrate envelope using Simpson's rule. (ignore h/3 term).
-    double Slevel=0;
-    Slevel+=res[sloc];
-    for (int i=1;i<slen-1;++i) Slevel+=(i%2+1)*2*res[sloc+i];
-    Slevel+=res[sloc+slen-1];
-
-    double Nlevel=0;
-    Nlevel+=res[nloc];
-    for (int i=1;i<nlen-1;++i) Nlevel+=(i%2+1)*2*res[nloc+i];
-    Nlevel+=res[nloc+nlen-1];
+    double Slevel=SimpsonRule(std::vector<T> (res.begin()+sloc,res.begin()+sloc+slen));
+    double Nlevel=SimpsonRule(std::vector<T> (res.begin()+nloc,res.begin()+nloc+nlen));
 
     // average with respect to their length.
     return Slevel/Nlevel*(1.0*nlen/slen);

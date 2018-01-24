@@ -32,19 +32,25 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 // #include<DotDist.hpp>
 // #include<Envelope.hpp>
 // #include<FFT.hpp>
+// #include<FindAz.hpp>
 // #include<FindPeak.hpp>
+// #include<FindRayP.hpp>
 // #include<GaussianBlur.hpp>
 // #include<GaussianFunction.hpp>
 // #include<GaussianSignal.hpp>
 // #include<GcpDistance.hpp>
 // #include<GridStretch.hpp>
+// #include<HannTaper.hpp>
 // #include<Interpolate.hpp>
 // #include<Kmeans.hpp>                             // Need mlpack, (uncomment for faster compile), http://www.mlpack.org/
+// #include<LinearInterp.hpp>
 // #include<LineJunction.hpp>
 // #include<LL2TP.hpp>
 // #include<LocDist.hpp>
 // #include<Lon2180.hpp>
 // #include<Lon2360.hpp>
+// #include<CreateGrid.hpp>
+// #include<MeshGrid.hpp>
 // #include<Mollifier.hpp>
 // #include<Normalize.hpp>
 // #include<PNormErr.hpp>
@@ -52,18 +58,26 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 // #include<PolyFit.hpp>                            // Need dev-libs/boost, (uncomment for faster compile)
 // #include<PointsInPolygon.hpp>
 // #include<PREM.hpp>
+// #include<RadiationPattern.hpp>
 // #include<RampFunction.hpp>
 // #include<RayP2TakeOff.hpp>
+// #include<ReorderX2Y.hpp>
+// #include<ReorderY2X.hpp>
+// #include<RemoveTrend.hpp>
 // #include<SHCoefficients.hpp>
 // #include<ShiftPhase.hpp>                         // Need sci-libs/fftw.
 // #include<ShiftStack.hpp>
-#include<SNR.hpp>
+// #include<SimpsonRule.hpp>
+// #include<SNR.hpp>
 // #include<SolvePoly.hpp>
 // #include<SortWithIndex.hpp>
 // #include<Sph2Cart.hpp>
 // #include<SphAngle.hpp>
+// #include<StretchSignal.hpp>
 // #include<TP2LL.hpp>
 // #include<TriangleSignal.hpp>
 // #include<TstarOperation.hpp>
+// #include<UnionIntervals.hpp>
+#include<WayPoint.hpp>
 
 #endif
