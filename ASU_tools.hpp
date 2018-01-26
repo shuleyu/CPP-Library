@@ -28,6 +28,7 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 // #include<CrossProduct.hpp>
 // #include<CrossStd2D.hpp>
 // #include<CrossStd.hpp>
+#include<CurveJunction.hpp>
 // #include<Diff.hpp>
 // #include<DotDist.hpp>
 // #include<Envelope.hpp>
@@ -78,6 +79,6 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 // #include<TriangleSignal.hpp>
 // #include<TstarOperation.hpp>
 // #include<UnionIntervals.hpp>
-#include<WayPoint.hpp>
+// #include<WayPoint.hpp>
 
 #endif

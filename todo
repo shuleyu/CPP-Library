@@ -1,4 +1,3 @@
-140 findjunction.fun.c
 107 ray_path.fun.c              // Ray tracing.
 293 findrayp.fun.c              // Ray tracing.
 

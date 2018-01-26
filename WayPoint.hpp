@@ -30,7 +30,7 @@
  *
  * Reference:
  *     http://en.wikipedia.org/wiki/Great-circle_navigation
-***********************************************************/
+**************************************************************/
 
 template<class T1,class T2, class T3, class T4>
 std::pair<double,double> WayPoint(const T1 &lon, const T2 &lat, T3 azi, const T4 &dist){

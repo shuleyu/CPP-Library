@@ -1,5 +1,5 @@
 #ifndef ASU_CREATEGRID
-#define ASU_CREATEGIRD
+#define ASU_CREATEGRID
 
 #include<iostream>
 #include<vector>

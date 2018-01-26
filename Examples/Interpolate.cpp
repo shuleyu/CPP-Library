@@ -1,6 +1,7 @@
 #include<iostream>
 #include<fstream>
 #include<vector>
+#include<algorithm>
 
 #include<ASU_tools.hpp>
 
@@ -32,12 +33,15 @@ int main(){
 // 	vector<double> xx{1.5,2.5,3.5};
 	
     // Use function.
+    reverse(x.begin(),x.end());
+    reverse(y.begin(),y.end());
+
     auto ans=Interpolate(x,y,xx,true);
 
     // Output result.
 	ofstream fpout;
-    fpout.open("data/Interpolate_out_C");
-    for (size_t i=0;i<xx.size();++i)
+    fpout.open("data/Interpolate_out");
+    for (size_t i=0;i<ans.size();++i)
 		fpout << xx[i] << " " << ans[i] << "\n"; 
 	fpout.close();
 
