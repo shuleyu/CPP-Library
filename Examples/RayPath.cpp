@@ -18,18 +18,19 @@ int main(int argc, char **argv){
     vector<double> v;
     for (auto &item:r) v.push_back(Rvs(item));
 
-    // ScS at 0 degree, 0 km.
-    // taup_time -mod prem -h 0 -ph ScS -deg 0
-    double StartDepth=0,EndDepth=2891,TakeOff=0;
-    double rayp=(RE-StartDepth)*sin(TakeOff*M_PI/180)/Dvs(StartDepth)/180*M_PI;
-
-//     // S takeoff at 10 degree, 0 km.
-//     // taup_time -mod prem -h 0 -ph S -deg 20.9205
-//     double StartDepth=0,EndDepth=2891,TakeOff=30;
+//     // ScS at 0 degree, 0 km.
+//     // taup_time -mod prem -h 0 -ph ScS -deg 0
+//     double StartDepth=0,EndDepth=2891,TakeOff=0;
 //     double rayp=(RE-StartDepth)*sin(TakeOff*M_PI/180)/Dvs(StartDepth)/180*M_PI;
 
+    // S takeoff at 10 degree, 0 km.
+    // taup_time -mod prem -h 0 -ph S -deg 20.9205
+    double StartDepth=0,EndDepth=2891,TakeOff=30;
+    double rayp=(RE-StartDepth)*sin(TakeOff*M_PI/180)/Dvs(StartDepth)/180*M_PI;
+
     // Use function.
-    vector<double> degree,radius;
+    vector<double> degree,radius; // will output the ray path.
+//     vector<double> degree{-1e6},radius{-1e6}; // will only output the ending position.
     auto ans=RayPath(r,v,rayp,StartDepth,EndDepth,degree,radius);
 
     // outputs.

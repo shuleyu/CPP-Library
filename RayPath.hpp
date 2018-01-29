@@ -21,8 +21,8 @@
  *
  * returns:
  * pair<double,double>  ans      ----  travel time / pursuit distance.
- * vector<double>       &degree  ----  ray path, angles.
- * vector<double>       &radius  ----  ray path, radiuses.
+ * vector<double>       &degree  ----  ray path, angles. If input is {-1e6}, will only output degree.back();
+ * vector<double>       &radius  ----  ray path, radiuses. If input is {-1e6}, will only output radius.back();
  *
  * Shule Yu
  * Jan 28 2018
@@ -33,11 +33,9 @@
 template<class T1, class T2, class T3, class T4, class T5, class T6=double>
 std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2> &v,
                                  const T3 &rayp, const T4 &MinDepth, const T5 MaxDepth,
-                                 std::vector<double> &degree, std::vector<double> &radius,
+                                 std::vector<double> &degree,std::vector<double> &radius,
                                  const T6 &TurningAngle=89.9){
 
-    degree.clear();
-    radius.clear();
 
     // check inputs.
     double RE=6371.0;
@@ -72,12 +70,22 @@ std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2>
         CurMin=NewMin;
     }
 
+    // prepare output.
+    bool OutPutDegree=true,OutPutRadius=true;
+    if (!degree.empty() && degree[0]<-1e5)
+        OutPutDegree=false;
+    if (!radius.empty() && radius[0]<-1e5)
+        OutPutRadius=false;
+
+    degree.clear();
+    radius.clear();
+
     // start ray tracing.
     //   B=sin(incident_angle);
     //   C=sin(takeoff);
     //   D=sin(trun_angle);
 
-    double deg=0,dist=0,MaxAngle=sin(TurningAngle*M_PI/180),Rayp=rayp*180/M_PI;
+    double deg=0,rad=r[P1],dist=0,MaxAngle=sin(TurningAngle*M_PI/180),Rayp=rayp*180/M_PI;
     std::pair<double,double> ans{0,0};
     for (size_t i=P1;i<P2;++i){
 
@@ -98,10 +106,13 @@ std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2>
         ans.second+=dist;
 
         // store the path of this step.
+        if (OutPutDegree) degree.push_back(deg);
+        if (OutPutRadius) radius.push_back(rad);
         deg+=asin(D)*180/M_PI;
-        degree.push_back(deg);
-        radius.push_back(r[i+1]);
+        rad=r[i+1];
     }
+    degree.push_back(deg);
+    radius.push_back(rad);
 
     return ans;
 }
