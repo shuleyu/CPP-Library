@@ -28,7 +28,7 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 // #include<CrossProduct.hpp>
 // #include<CrossStd2D.hpp>
 // #include<CrossStd.hpp>
-#include<CurveJunction.hpp>
+// #include<CurveJunction.hpp>
 // #include<Diff.hpp>
 // #include<DotDist.hpp>
 // #include<Envelope.hpp>
@@ -50,7 +50,7 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 // #include<LocDist.hpp>
 // #include<Lon2180.hpp>
 // #include<Lon2360.hpp>
-// #include<CreateGrid.hpp>
+#include<CreateGrid.hpp>
 // #include<MeshGrid.hpp>
 // #include<Mollifier.hpp>
 // #include<Normalize.hpp>
@@ -58,10 +58,11 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 // #include<PNorm.hpp>
 // #include<PolyFit.hpp>                            // Need dev-libs/boost, (uncomment for faster compile)
 // #include<PointsInPolygon.hpp>
-// #include<PREM.hpp>
+#include<PREM.hpp>
 // #include<RadiationPattern.hpp>
 // #include<RampFunction.hpp>
 // #include<RayP2TakeOff.hpp>
+#include<RayPath.hpp>
 // #include<ReorderX2Y.hpp>
 // #include<ReorderY2X.hpp>
 // #include<RemoveTrend.hpp>

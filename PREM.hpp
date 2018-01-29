@@ -171,7 +171,7 @@ void PREM(const T &Depth,const int &iso, const int &ocean,
         qu =  600;
     }
 
-    else if ( 6356.0<=r && r<=6371.0 ) {
+    else if ( 6356.0<=r && r<=R+1e-5 ) {
     // crust 2
 
         rho=  2.600;
@@ -184,7 +184,7 @@ void PREM(const T &Depth,const int &iso, const int &ocean,
 
     else { // space
 
-		std::cerr <<  __func__ << "; Error: negative depth value ... ..." << std::endl;
+		std::cerr <<  __func__ << "; Error: negative depth value: " << R-r << " ..." << std::endl;
 
         rho=0;
         vpv=0;
@@ -196,7 +196,7 @@ void PREM(const T &Depth,const int &iso, const int &ocean,
 
     }
 
-    if ( ocean==1 && 6368.0<=r && r<=6371.0 ) {
+    if ( ocean==1 && 6368.0<=r && r<=R+1e-5 ) {
     // ocean
 
         rho=  1.020;
