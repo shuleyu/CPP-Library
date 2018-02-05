@@ -53,8 +53,7 @@ void GaussianBlur(std::vector<std::vector<T1>> &p, const T2 &dt, const T3 &sigma
     int GaussianN=1+(int)(GaussianLength/dt);
 
 	// Set up the gaussian signal.
-	std::vector<T1> Gaussian;
-	GaussianSignal(Gaussian,GaussianN,dt,sigma);
+	std::vector<double> Gaussian=GaussianSignal(GaussianN,dt,sigma);
 
     // Convolve input signals with guassian function.
     // Truncate the smoothed signals into original size (keep the center part.)

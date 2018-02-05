@@ -1,4 +1,3 @@
-// In development
 #ifndef ASU_COMBINEPOLYGONS
 #define ASU_COMBINEPOLYGONS
 
@@ -11,16 +10,16 @@
 #include<CombineTwoPolygons.hpp>
 
 /*****************************************************************
- * This C++ function use "CombineTwoPolygons" from ASU_tools
- * to combine a set of polygons into another set of polygons.(The
- * union sets of given polygons)
+ * This C++ function use "CombineTwoPolygons" to combine a set of
+ * overlapping polygons into another set of polygons non-overlapping
+ * polygons.(The union set).
  *
  * const vector<vector<pair<double,double>>> &P   ----   Input polygons.
  *
  * Each polygon is denoted by a vecotr of pairs of coordinates (x,y).
  *
  * Return:
- * vector<vector<pair<double,double>>> Ans  ----   Output polygons.
+ * vector<vector<pair<double,double>>> ans  ----   Output polygons.
  *
  * Shule Yu
  * Jan 19 2018
@@ -36,7 +35,7 @@ std::vector<std::vector<std::pair<T,T>>> CombinePolygons(const std::vector<std::
 	std::vector<bool> V(NP,false);
 	std::vector<std::vector<std::pair<T,T>>> ans;
 
-	for (int i=0;i<NP;i++){
+	for (int i=0;i<NP;++i){
 
 		if (V[i]) continue;
 
@@ -49,7 +48,7 @@ std::vector<std::vector<std::pair<T,T>>> CombinePolygons(const std::vector<std::
 			for (int j=0;j<NP;j++){
 				if (V[j]) continue;  // Only look at remaining polygons.
 				V[j]=CombineTwoPolygons(CurP,P[j]);
-				if (V[j]) flag=true; // If current polygon will absorb any remaining polygons, keep looking.
+				if (V[j]) flag=true; // If current polygon will absorb any remaining polygons, re-do exam all the remaining polygons.
 			}
 		}
 

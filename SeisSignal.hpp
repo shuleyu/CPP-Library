@@ -1,6 +1,32 @@
-#ifndef ASU_SACDATA
-#define ASU_SACDATA
+#ifndef ASU_SEISSIGNAL
+#define ASU_SEISSIGNAL
 
+namespace ASUSEIS{
+
+    class Signal{
+        private:
+            std::vector<double> data;
+            double dt,BeginTime;
+        public:
+            Signal(const std::vector<double> &D, const double &T, const double &BT) : data(D),dt(T),BeginTime(BT) {}
+            std::vector<double> GenerateTime();
+            size_t FindTime(const double &Time);
+    };
+
+    std::vector<double> Signal::GenerateTime(){
+        std::vector<double> ans(data.size(),BeginTime);
+        for (size_t i=1;i<data.size();++i)
+            ans[i]=ans[i-1]+dt;
+        return ans;
+    }
+
+    size_t Signal::FindTime(const double &Time){
+        if (Time<BeginTime) return -1;
+        size_t ans=(Time-BeginTime+dt/2)/dt;
+        if (ans>=data.size()) return -1;
+        return ans;
+    }
+}
 #include<iostream>
 #include<algorithm>
 #include<cmath>
@@ -14,10 +40,13 @@ extern "C"{
 }
 #include<ASU_tools.hpp>
 
+#define DMAXL 1000000
 
-class SAC_Data{
+class SeisSignal{
 
-	friend bool operator>>(const std::string &, SAC_Data&);
+    static float RAW[DMAXL];
+
+	friend bool operator>>(const std::string &, SeisSignal&);
 
 	public:
 	std::string filename="";
@@ -35,7 +64,7 @@ class SAC_Data{
 	bool bwfilter(double,double,int);
 };
 
-bool operator>>(const std::string & in, SAC_Data& s){
+bool operator>>(const std::string & in, SeisSignal& s){
 
 	// Read in sac file.
 	s.filename=in;
@@ -87,7 +116,7 @@ bool operator>>(const std::string & in, SAC_Data& s){
 	}
 }
 
-void SAC_Data::clean(){
+void SeisSignal::clean(){
 	this->NPTS=0;
 	this->Delta=0;
 	this->filename="";
@@ -99,7 +128,7 @@ void SAC_Data::clean(){
 }
 
 
-void SAC_Data::interpolate(double delta){
+void SeisSignal::interpolate(double delta){
 
 	this->NPTS=1+ceil((this->time[this->time.size()-1]-this->time[0])/delta);
 	this->Delta=delta;
@@ -130,7 +159,7 @@ void SAC_Data::interpolate(double delta){
 	return;
 }
 
-void SAC_Data::normalize(){
+void SeisSignal::normalize(){
 
 	auto result=std::minmax_element(this->data.begin(),this->data.end());
 	double tmpamp=fmax(fabs(*result.first),fabs(*result.second));
@@ -142,7 +171,7 @@ void SAC_Data::normalize(){
 	return;
 }
 
-bool SAC_Data::cut(double time1,double time2){
+bool SeisSignal::cut(double time1,double time2){
 
 	if (this->NPTS<=0){
 		return false;
@@ -202,7 +231,7 @@ bool SAC_Data::cut(double time1,double time2){
 	return true;
 }
 
-bool SAC_Data::bwfilter(double f1,double f2,int filter_flag){
+bool SeisSignal::bwfilter(double f1,double f2,int filter_flag){
 
 	if (this->NPTS<=0){
 		return false;

@@ -33,7 +33,7 @@
  * int              &shift          ----  Best fit position.
  * T3               &ccc            ----  CCC at best fit position.
  * const bool       &Dump           ----  Choose whether to return x*y[tau]
- *                                        (Save time when Dump=false)
+ *                                        (quicker when Dump=false)
  * const int        &Flip           ----  flag for compare mode.
  *                                        0     : ccc will have the larget absolute value.
  *                                        1, -1 : ccc will have the larget value.

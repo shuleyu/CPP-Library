@@ -11,8 +11,8 @@ int main(){
 	vector<double> B{1,2.5,1};
 
     // Use function.
-    auto C=Convolve(A,B,0);
-    auto C2=Convolve(A,B,1);
+    auto C=Convolve(A,B);
+    auto C2=Convolve(A,B,true);
 
 	cout << "A : ";
     for (auto &item:A) cout << item << " ";

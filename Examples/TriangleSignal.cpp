@@ -7,11 +7,10 @@ using namespace std;
 
 int main(){
 
-    vector<float> A;
-
+    
     // Use function.
-//     TriangleSignal(A,20,0.2);
-    TriangleSignal(A,20,2.0);
+//     auto A=TriangleSignal(20,0.2);
+    auto A=TriangleSignal(20,2.0);
 
 	for (auto &item:A) cout << item << "  ";
 	cout << "\n";

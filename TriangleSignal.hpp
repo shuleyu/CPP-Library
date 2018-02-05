@@ -7,9 +7,8 @@
  * This C++ template returns a triangle signal.
  * The signal has peak at its center, amplitude is 1.
  *
- * vector<T> &p        ----  the output signal.
- * const int &N        ----  request signal length.
- * double    frac  ----  request fraction of the non-zero part
+ * const int &N     ----  request signal length.
+ * const T   &frac  ----  request fraction of the non-zero part
  *                           (explaned below)
  *
  *                      *
@@ -20,6 +19,8 @@
  *
  *		  frac = 7/N = 7/29 = 0.24137931
  *
+ * return(s):
+ * vector<double> ans  ----  the output signal.
  *
  * Shule Yu
  * Dec 31 2017
@@ -28,30 +29,28 @@
 ***********************************************************/
 
 template<class T>
-void TriangleSignal(std::vector<T> &p,const int &N,double frac){
-
-	p.clear();
+std::vector<double> TriangleSignal(const int &N,const T &frac){
 
 	// Check requested size.
-	if (N<=0) return;
-	p.resize(N,0);
+	if (N<=0) return {};
 
 	// Check signal width.
-	if (frac<0) frac=0; // gives an impulse if frac<=0.
+    double Frac=(frac<0?0:frac);; // gives an impulse if frac<=0.
 
-	int L=N*frac;
-	T Inc=-2.0/(L+1);
-    p[N/2]=1;
+	int L=N*Frac;
+	double Inc=-2.0/(L+1);
+	std::vector<double> ans(N,0);
+    ans[N/2]=1;
 
     for (int i=N/2+1;i<N;i++){
-        p[i]=p[i-1]+Inc;
-		if (p[i]<0) p[i]=0;
-        p[N/2-(i-N/2)]=p[i];
+        ans[i]=ans[i-1]+Inc;
+		if (ans[i]<0) ans[i]=0;
+        ans[N/2-(i-N/2)]=ans[i];
     }
-	p[0]=p[1]+Inc;
-	if (p[0]<0) p[0]=0;
+	ans[0]=ans[1]+Inc;
+	if (ans[0]<0) ans[0]=0;
 
-	return;
+	return ans;
 }
 
 #endif

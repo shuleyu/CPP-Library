@@ -17,10 +17,12 @@
  *
  * f(x)=1/sqrt(2pi)/sigma * e^{-x^2/2/sigma^2}
  *
- * vector<T1> &p      ----  output signal.
  * const int  &N      ----  Requested signal length.
- * const T2   &dt     ----  Requested sampilng rate.
- * const T3   &sigma  ----  standard deviation, sigma.
+ * const T1   &dt     ----  Requested sampilng rate.
+ * const T2   &sigma  ----  standard deviation, sigma.
+ *
+ * return(s):
+ * vector<double> ans  ----  output signal.
  *
  * Shule Yu
  * Jan 01 2018
@@ -28,34 +30,32 @@
  * Key words: gaussian function.
 ***********************************************************/
 
-template<class T1, class T2, class T3>
-void GaussianSignal(std::vector<T1> &p, const int &N, const T2 &dt, const T3 &sigma){
-
-	p.clear();
+template<class T1, class T2>
+std::vector<double> GaussianSignal(const int &N, const T1 &dt, const T2 &sigma){
 
 	// Check parameters.
 
 	if (sigma<0 || dt<=0) {
 		std::cerr <<  __func__ << "; Error: input sigma < 0 or dt <= 0 ..." << std::endl;
-		return;
+		return {};
 	}
 
-	if (N<=0) return;
+	if (N<=0) return {};
 
 	// Construct the signal.
-	p.resize(N,0);
+	std::vector<double> ans(N,0);
 
-    p[N/2]=GaussianFunction(0,sigma,0);
+    ans[N/2]=GaussianFunction(0,sigma,0);
 
-	if (sigma==0) return;
+	if (sigma==0) return {};
 
     for (int i=N/2+1;i<N;++i){
-        p[i]=GaussianFunction((i-N/2)*dt,sigma,0);
-        p[(N&(~1))-i]=p[i];
+        ans[i]=GaussianFunction((i-N/2)*dt,sigma,0);
+        ans[(N&(~1))-i]=ans[i];
     }
-	if (N%2==0) p[0]=GaussianFunction(N/2*dt,sigma,0);
+	if (N%2==0) ans[0]=GaussianFunction(N/2*dt,sigma,0);
 
-	return;
+	return ans;
 }
 
 #endif

@@ -1,199 +1,147 @@
-// In development
 #ifndef ASU_GRIDSTRETCH
 #define ASU_GRIDSTRETCH
 
 #include<iostream>
 #include<vector>
-#include<algorithm>
-#include<tuple>
 #include<cmath>
+#include<algorithm>
 
+#include<ConvexPolygon.hpp>
+#include<CrossProduct.hpp>
 #include<DotDist.hpp>
-#include<LineJunction.hpp>
 #include<PointsInPolygon.hpp>
 
 /****************************************************************
- * This C++ template return the position of one point in the 
- * stretched grid. Input is a projection from orignial grid to
- * a stretched grid; the position of a point in the orignal grid.
+ * This C++ template return the original position of one point in
+ * a distorted grid. Input includes the location of four corners
+ * of the distroted grid, and the location of a point.
+ * Will return the location of the point inside a 1x1 grid.
  *
- * vector<pair<pair<T1,T1>,pair<T1,T1>>> Polygon
+ * const vector<pair<T1,T2>> &Polygon  ----  the coordinates of the four corners of the distorted grid.
+ *                                           Polygon.size() = 4.
+ *                                           The four corners can be unordered.
  *
- *       ----  give the coordinate(piont) pair of stretched and original grid.
- * 	           Polygon.size() = 4: Each element is one coordinate pair of the corner pair of the two grids.
- *
- * 	           Polygon[0-3].first has the coordinates of the stretched four corners;
- * 	           Polygon[0-3].second has the coordinates of the original four corners.
- *
- *             The four corners can be unordered.
- *
- * pair<T2,T2> P  ----  given point position in the stretched grid.
+ * const pair<T3,T4>         &P        ----  point coordinates in the distorted grid.
  *
  * return:
- * pair<double,double> ans  ----  The position of the point in the original gird.
+ * pair<double,double> ans  ----  The position of the point in the 1x1 gird.
  *
  * Shule Yu
- * Mar 30 2017
+ * Feb 04 2018
  *
- * Key words: stretching.
-*****************************************************/
+ * Key words: stretching, distorted, restore.
+****************************************************************/
 
-template<class T1, class T2, class T3, class T4, class T5, class T6>
-std::pair<double,double> GridStretch(std::vector<std::pair<std::pair<T1,T2>,std::pair<T3,T4>>> Polygon, std::pair<T5,T6> P){
+double klqwejrlkjqwe(const std::vector<std::pair<double,double>> &P,const std::pair<double,double> &p){
 
-	std::pair<double,double> ans;
+    double l=0,r=1,mid=0.5,eps=1e-6,err=1,ex1,ey1,ex2,ey2;
+    while (fabs(err)>eps && l<r){
+        ex1=P[1].first+(P[0].first-P[1].first)*mid;
+        ey1=P[1].second+(P[0].second-P[1].second)*mid;
+        ex2=P[2].first+(P[3].first-P[2].first)*mid;
+        ey2=P[2].second+(P[3].second-P[2].second)*mid;
+        err=CrossProduct(ex1-p.first,ey1-p.second,0,ex2-p.first,ey2-p.second,0).back();
+        if (err>0) l=mid;
+        else r=mid;
+        mid=(l+r)/2;
+    }
 
-	// Check polygon has four corners.
+    double x=DotDist(ex1,ey1,0,p.first,p.second,0),y=DotDist(p.first,p.second,0,ex2,ey2,0);
+    return x/(x+y);
+}
+
+template<class T1, class T2, class T3, class T4>
+std::pair<double,double> GridStretch(const std::vector<std::pair<T1,T2>> &Polygon, const std::pair<T3,T4> &P){
+
+	// Check the polygon has four corners.
 	if (Polygon.size()!=4){
-		std::cerr << "Error in " <<  __func__ << " : Polygon.size() != 4 ..." << std::endl;
-		return ans;
+        std::cerr <<  __func__ << "; Error: Polygon.size() != 4 ..." << std::endl;
+		return {};
 	}
-
-	// Check if it's a convex polygon.
-	for (int i=0;i<4;i++){
-		std::vector<std::pair<double,double>> points,polygon;
-		points.push_back(Polygon[i].first);
-		for (int j=0;j<4;j++) if (j!=i) polygon.push_back(Polygon[j].first);
-		auto x=PointsInPolygon(polygon,points);
-		if (x[0]) {
-			std::cerr << "Error in " <<  __func__ << " : Polygon isn't convex ..." << std::endl;
-			return ans;
-		}
-	}
-
 
 	// Reorder the four corners.
-	// start from upper left [0] in counter-close wise order.
-	auto f1=[](std::pair<std::pair<double,double>,std::pair<double,double>> &p1,std::pair<std::pair<double,double>,std::pair<double,double>> &p2){
-		return p1.first.second>p2.first.second;
+	// upper left[0], lower left[1], lower right[2], upper right[3]
+    std::vector<std::pair<double,double>> polygon=Polygon;
+	auto f1=[](const std::pair<double,double> &p1, const std::pair<double,double> &p2){
+		return p1.second>p2.second;
 	};
-	auto f2=[](std::pair<std::pair<double,double>,std::pair<double,double>> &p1,std::pair<std::pair<double,double>,std::pair<double,double>> &p2){
-		return p1.first.first<p2.first.first;
+	auto f2=[](const std::pair<double,double> &p1, const std::pair<double,double> &p2){
+		return p1.first<p2.first;
 	};
-	sort(Polygon.begin(),Polygon.end(),f1);
-	sort(Polygon.begin(),Polygon.begin()+2,f2);
-	sort(Polygon.begin()+2,Polygon.end(),f2);
-	swap(Polygon[1],Polygon[2]);
-	swap(Polygon[2],Polygon[3]);
+	sort(polygon.begin(),polygon.end(),f1);
+	sort(polygon.begin(),polygon.begin()+2,f2);
+	sort(polygon.begin()+2,polygon.end(),f2);
+	swap(polygon[1],polygon[2]);
+	swap(polygon[2],polygon[3]);
 
-	// Check whether the point is outside the polygon.
-	std::vector<std::pair<double,double>> points,polygon;
-	polygon.push_back(Polygon[0].first);
-	polygon.push_back(Polygon[1].first);
-	polygon.push_back(Polygon[2].first);
-	polygon.push_back(Polygon[3].first);
-	points.push_back(P);
-	auto xx=PointsInPolygon(polygon,points);
-	if (!xx[0]) {
-		std::cerr << "Error in " <<  __func__ << " : Point is outside of polygon ..." << std::endl;
-		return ans;
+	// Check whether the polygon is convex.
+    if (!ConvexPolygon(polygon)) {
+        std::cerr <<  __func__ << "; Error: Grid is not convex ..." << std::endl;
+        return {};
+    }
+
+	// Check whether the point is outside.
+	if (!PointsInPolygon(polygon,std::vector<std::pair<double,double>> {P},true)[0]){
+        std::cerr <<  __func__ << "; Error: Point is outside of input grid..." << std::endl;
+		return {};
+	}
+    std::pair<double,double> point=P;
+
+	// 1. Move the lower left point to (0,0);
+    double x=polygon[1].first,y=polygon[1].second;
+	for (auto &item:polygon){
+        item.first-=x;
+        item.second-=y;
+	}
+	point.first-=x;
+	point.second-=y;
+
+
+	// 2. Rotate polygon such that polygon[1] and polygon[2] overlap with the x-axis.
+	double theta=atan2(-1.0*polygon[2].second,polygon[2].first);
+    x=point.first;y=point.second;
+    point.first=x*cos(theta)-y*sin(theta);
+    point.second=x*sin(theta)+y*cos(theta);
+
+	for (auto &item:polygon){
+        x=item.first;y=item.second;
+        item.first=x*cos(theta)-y*sin(theta);
+        item.second=x*sin(theta)+y*cos(theta);
 	}
 
-	// Move the reference point to Polygon[1].first;
-	for (int i=0;i<4;i++){
-		if (i!=1){
-			Polygon[i].first.first-=Polygon[1].first.first;
-			Polygon[i].first.second-=Polygon[1].first.second;
-		}
+    // 3. Find the line on current west-east direction that intercept the left and right boundaries
+    // with the same ratio.
+    double l=klqwejrlkjqwe(polygon,point);
+
+
+	// 1*. Move the lower right point to (0,0);
+    x=polygon[2].first,y=polygon[2].second;
+	for (auto &item:polygon){
+        item.first-=x;
+        item.second-=y;
 	}
-	P.first-=Polygon[1].first.first;
-	P.second-=Polygon[1].first.second;
-	Polygon[1].first.first=Polygon[1].first.second=0;
+	point.first-=x;
+	point.second-=y;
 
+	// 2*. Rotate polygon such that polygon[2] and polygon[3] overlap with the x-axis.
+	theta=atan2(-1.0*polygon[3].second,polygon[3].first);
+    x=point.first;y=point.second;
+    point.first=x*cos(theta)-y*sin(theta);
+    point.second=x*sin(theta)+y*cos(theta);
 
-	// Rotate Polygon such that Polygon[1] and Polygon[2] becomes horizontal to x-axis.
-	double theta=atan2(-1.0*Polygon[2].first.second,Polygon[2].first.first);
-	for (int i=0;i<4;i++){
-		if (i!=1){
-			double x=Polygon[i].first.first,y=Polygon[i].first.second;
-			Polygon[i].first.first=x*cos(theta)-y*sin(theta);
-			Polygon[i].first.second=x*sin(theta)+y*cos(theta);
-		}
-	}
-
-	// Make a mirrorred image if needed.
-	bool flipit=false;
-	double s_top=(Polygon[3].first.second-Polygon[0].first.second)/(Polygon[3].first.first-Polygon[0].first.first);
-	if (s_top<0){
-		flipit=true;
-
-		for (int i=0;i<4;i++){
-			if (i!=2){
-				Polygon[i].first.first=Polygon[2].first.first-Polygon[i].first.first;
-			}
-		}
-		P.first=Polygon[2].first.first-P.first;
-		Polygon[2].first.first=0;
-		s_top*=-1;
-		reverse(Polygon.begin(),Polygon.end());
-	}
-// std::cout << Polygon[1].first.first << " " << Polygon[1].first.second << " " << P.first << " " << P.second << std::endl;
-
-	// Stretch the upper edge to meet the parallel line right foot .
-
-	double xleft,yleft,xbot,ybot,xright,yright;
-	double s_left=(Polygon[0].first.second-Polygon[1].first.second)/(Polygon[0].first.first-Polygon[1].first.first);
-	double s_right=(Polygon[3].first.second-Polygon[2].first.second)/(Polygon[3].first.first-Polygon[2].first.first);
-	std::tie(xleft,yleft)=LineJunction(Polygon[1].first.first,Polygon[1].first.second,s_left,
-										  P.first,P.second,s_top);
-	std::tie(xbot,ybot)=LineJunction(Polygon[1].first.first,Polygon[1].first.second,0,
-										  P.first,P.second,s_top);
-	std::tie(xright,yright)=LineJunction(Polygon[2].first.first,Polygon[2].first.second,s_right,
-										  P.first,P.second,s_top);
-
-// std::cout << xleft << " " << yleft << std::endl;
-// std::cout << xbot << " " << ybot << std::endl;
-
-	double lr=DotDist(P.first,P.second,0,xright,yright,0);
-	double ll=std::min(DotDist(P.first,P.second,0,xleft,yleft,0),DotDist(P.first,P.second,0,xbot,ybot,0));
-	double ratio1=ll/(lr+ll);
-
-	double px,py;
-	if (DotDist(P.first,P.second,0,xleft,yleft,0)<DotDist(P.first,P.second,0,xbot,ybot,0)){
-		px=xleft;
-		py=yleft;
-	}
-	else{
-		px=xbot;
-		py=ybot;
-	}
-// std::cout << px << " " << py << std::endl;
-
-	double xrr,yrr;
-	std::tie(xrr,yrr)=LineJunction(Polygon[2].first.first,Polygon[2].first.second,s_left,
-									  P.first,P.second,s_top);
-
-// std::cout << xrr << " " << yrr << std::endl;
-
-	double NewPx,NewPy;
-	NewPx=px+(xrr-px)*ratio1;
-	NewPy=py+(yrr-py)*ratio1;
-// std::cout << NewPy << " " << py << " " << yrr << " " << ratio1 << std::endl;
-
-	double fxr,fyr,fxl,fyl,fxt,fyt,fxb,fyb;
-	std::tie(fxr,fyr)=LineJunction(Polygon[2].first.first,Polygon[2].first.second,s_left,
-									  NewPx,NewPy,0);
-	std::tie(fxl,fyl)=LineJunction(Polygon[1].first.first,Polygon[1].first.second,s_left,
-									  NewPx,NewPy,0);
-	std::tie(fxt,fyt)=LineJunction(Polygon[0].first.first,Polygon[0].first.second,s_top,
-									  NewPx,NewPy,s_left);
-	std::tie(fxb,fyb)=LineJunction(Polygon[1].first.first,Polygon[1].first.second,0,
-									  NewPx,NewPy,s_left);
-
-// std::cout << fxl << " " << fxr <<" " << NewPx << " " << NewPy << std::endl;
-// std::cout << fxt << " " << fxb <<" " << NewPx << " " << NewPy << std::endl;
-	ans.first=(NewPx-fxl)/(fxr-fxl);
-	ans.second=(NewPy-fyb)/(fyt-fyb);
-
-	if (flipit){
-		ans.first=1-ans.first;
-		reverse(Polygon.begin(),Polygon.end());
+	for (auto &item:polygon){
+        x=item.first;y=item.second;
+        item.first=x*cos(theta)-y*sin(theta);
+        item.second=x*sin(theta)-y*cos(theta);
 	}
 
-	ans.first=Polygon[1].second.first+(Polygon[3].second.first-Polygon[1].second.first)*ans.first;
-	ans.second=Polygon[1].second.second+(Polygon[3].second.second-Polygon[1].second.second)*ans.second;
+    std::rotate(polygon.begin(),polygon.begin()+1,polygon.end());
 
-	return ans;
+    // Find the slope of the line on current west-east direction that intercept the left and right boundaries
+    // with the same ratio.
+    double r=klqwejrlkjqwe(polygon,point);
+
+	return {l,r};
 }
 
 #endif

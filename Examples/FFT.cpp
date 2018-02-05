@@ -15,9 +15,7 @@ int main(){
 
     int n=2*(int)ceil(gwidth/2/delta);
 
-    vector<double> gauss;
-
-    GaussianSignal(gauss,n,delta,sigma);
+    vector<double> gauss=GaussianSignal(n,delta,sigma);
 
     Normalize(gauss);
 

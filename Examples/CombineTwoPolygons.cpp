@@ -10,7 +10,7 @@ using namespace std;
 
 int main(){
 
-	ifstream fpin("data/CombinePolygons2.txt");
+	ifstream fpin("data/CombinePolygons.txt");
 
 	// Read in.
 	

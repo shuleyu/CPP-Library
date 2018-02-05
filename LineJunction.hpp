@@ -6,8 +6,8 @@
 #include<limits>
 
 /**************************************************************
- * This C++ template return the after-restoration position of a
- * point inside the unit square {(0,0), (1,0), (1,1), (0,1)}.
+ * This C++ template return the junction point of two straigh
+ * line.
  *
  * const T1 &x1  ----  x1.
  * const T2 &y1  ----  y1.

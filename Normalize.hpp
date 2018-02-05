@@ -1,5 +1,5 @@
 #ifndef ASU_NORMALIZE
-#define ASU_ANORMALIZE
+#define ASU_NORMALIZE
 
 #include<iostream>
 #include<vector>

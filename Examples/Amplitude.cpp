@@ -41,7 +41,6 @@ int main(){
 	fpin.close();
 
 	cout << Amplitude(C).first << endl;
-	
+
 	return 0;
 }
-

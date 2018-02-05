@@ -16,14 +16,12 @@ int main(){
     gwidth=50;
     int n=2*(int)ceil(gwidth/2/delta);
 
-    vector<double> gauss,hilbert;
-
     // Make signal.
-	GaussianSignal(gauss,n,delta,sigma);
+	vector<double>gauss=GaussianSignal(n,delta,sigma);
     Normalize(gauss);
 
     // Use function.
-    hilbert=ShiftPhase(gauss,shift);
+    vector<double> hilbert=ShiftPhase(gauss,shift);
 
     // Output.
 	ofstream fpout("data/ShiftPhase_in");

@@ -8,8 +8,6 @@ using namespace std;
 
 int main(){
 
-
-	// Read in.
 	vector<pair<double,double>> Points,Polygon;
 	pair<double,double> p;
 
@@ -22,7 +20,7 @@ int main(){
     fpin.close();
 
     // Use function.
-	auto res=PointsInPolygon(Polygon,Points);
+	auto res=PointsInPolygon(Polygon,Points,true);
 
 	ofstream fpout("data/PointsInPolygon_result");
 	for (size_t i=0;i<Points.size();++i){
@@ -30,6 +28,22 @@ int main(){
         if (i%51==50) fpout << '\n';
     }
     fpout.close();
-    
+
+    // By default, left and upper boundaries are excluded.
+	res=PointsInPolygon(Polygon,Points);
+
+	fpout.open("data/PointsInPolygon_result2");
+	for (size_t i=0;i<Points.size();++i){
+		fpout << (res[i]?"*":"o");
+        if (i%51==50) fpout << '\n';
+    }
+    fpout.close();
+
+    Points={{1,1}};
+    Polygon={{0,0},{0,2}};
+	res=PointsInPolygon(Polygon,Points);
+    for (size_t i=0;i<Points.size();++i)
+        cout << Points[i].first << " " <<  Points[i].second << (res[i]?" In":" Out") << endl;
+
     return 0;    
 }
