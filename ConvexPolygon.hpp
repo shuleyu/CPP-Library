@@ -4,7 +4,7 @@
 #include<iostream>
 #include<vector>
 
-#include<PointsInPolygon.hpp>
+#include<PointInPolygon.hpp>
 
 /****************************************************************
  * This C++ template judge whether the input polygon is convex.
@@ -12,7 +12,7 @@
  * polygons.
  *
  *
- * const vector<pair<T1,T1>> &p  ----  Given polygon.
+ * const vector<pair<T1,T2>> &p  ----  Given polygon.
  *
  * return:
  * bool ans  ----  true if it is a convex polygon.
@@ -23,8 +23,8 @@
  * Key words: convex polygon, incomplete.
 ****************************************************************/
 
-template<class T1>
-bool ConvexPolygon(const std::vector<std::pair<T1,T1>> &p){
+template<class T1,class T2>
+bool ConvexPolygon(const std::vector<std::pair<T1,T2>> &p){
 
     if (p.size()<=2) {
         std::cerr <<  __func__ << "; Error: input polygon is array size is zero ..." << std::endl;
@@ -35,9 +35,7 @@ bool ConvexPolygon(const std::vector<std::pair<T1,T1>> &p){
 		std::vector<std::pair<double,double>> polygon;
 		for (size_t j=0;j<p.size();++j)
             if (j!=i) polygon.push_back(p[j]);
-		if (PointsInPolygon(polygon,std::vector<std::pair<double,double>> {p[i]},true)[0]) {
-			return false;
-		}
+		if (PointInPolygon(polygon,p[i],-1)) return false;
 	}
 
     return true;

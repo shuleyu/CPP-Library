@@ -1,211 +1,139 @@
-// In development
 #ifndef ASU_COMBINETWOPOLYGONS
 #define ASU_COMBINETWOPOLYGONS
 
 #include<iostream>
 #include<vector>
-#include<algorithm>
-#include<numeric>
 #include<cmath>
+#include<map>
+#include<queue>
+#include<algorithm>
 
-#include<PointsInPolygon.hpp>
+#include<DotDist.hpp>
+#include<PointInPolygon.hpp>
+#include<SegmentJunction.hpp>
+#include<VectorAngle.hpp>
 
 /*****************************************************************
- * This C++ function use "PointsInPolygons" from ASU_tools
- * to combine 2 polygons(The union sets of given polygons).
+ * This C++ template combine 2 polygons (Compute the union sets of
+ * given two polygons).
  *
- * vector<vector<pair<double,double>>> &All  ----  Input polygons 1; Output combined polygon.
- * vector<vector<pair<double,double>>> New  ----  Input polygons 2.
+ * const vector<vector<pair<T1,T2>>> &p1  ----  Input polygon 1.
+ * const vector<vector<pair<T3,T4>>> &p2  ----  Input polygon 2.
  *
- * Each polygon is denoted by a vecotr of pairs of coordinates (x,y).
+ * Each polygon is denoted by a series of waypoints of pairs of
+ * coordinates (x,y).
  *
  * return:
- * If the input two polygons are separated, retrun false.
- * Otherwise return true. All is modified to the combine result.
+ * If the input two polygons are completely separated:
+ *     ans.first=false, ans.second={};
+ * Otherwise
+ *     ans.first=true, ans.second=one combined polygon.
  *
  * Shule Yu
  * Jan 19 2018
  *
- * Key words: polygon, union set.
+ * Key words: polygon, union set, gift wrapping.
 *****************************************************************/
 
-template<class T>
-bool CombineTwoPolygons(std::vector<std::pair<T,T>> &All,std::vector<std::pair<T,T>> New){
+template<class T1, class T2, class T3, class T4>
+std::pair<bool,std::vector<std::pair<double,double>>> CombineTwoPolygons(const std::vector<std::pair<T1,T2>> &p1,
+                                                                         const std::vector<std::pair<T3,T4>> &p2){
 
-	int m=All.size(),n=New.size();
+    int m=p1.size(),n=p2.size();
 
-	auto res=PointsInPolygon(All,New);
-	auto res2=PointsInPolygon(New,All);
-	int nn=std::count(res.begin(),res.end(),true);
-	int mm=std::count(res2.begin(),res2.end(),true);
+    // Vertex array.
+    std::vector<std::pair<double,double>> V;
+    for (int i=0;i<m;++i) V.push_back(p1[i]);
+    for (int i=0;i<n;++i) V.push_back(p2[i]);
 
-	// One of the polygon contains another.
-	if (nn==n) return true;
-	if (mm==m){
-		All=New;
-		return true;
-	}
+    // 1. Finding new vertices.
+    // M[i] store new vertices on edge i ~ i+1 (sorted according to its distance to vetex V[i])
+    std::map<int,std::priority_queue<std::pair<double,int>,std::vector<std::pair<double,int>>,std::greater<std::pair<double,int>>>> M;
 
-	// Two polygons are seperated.
-	if (mm==0 && nn==0) return false;
+    for (int i=0;i<m;++i){
 
-    // Combine this two polygons.
+        for (int j=m;j<m+n;++j){
 
-	// Find the New Begin/End points in All.
+            // Check whether there's a new vertex created by segments V[i]---V[i+1] and V[j]---V[j+1]
 
-	std::vector<int> NB_All,NE_All;
-	for (int i=0;i<m;i++){
-		if (res2[i] && !res2[(i+1)%m]) NB_All.push_back((i+1)%m);
-		if (!res2[i] && res2[(i+1)%m]) NE_All.push_back(i);
+            auto res=SegmentJunction(V[i],V[(i+1)%m],V[j],V[m+(j-m+1)%n],false);
 
-	}
-
-	// Find the New Begin/End points in New.
-
-	std::vector<int> NB_New,NE_New;
-	for (int i=0;i<n;i++){
-		if (res[i] && !res[(i+1)%n]) NB_New.push_back((i+1)%n);
-		if (!res[i] && res[(i+1)%n]) NE_New.push_back(i);
-
-	}
-
-    if (NB_All.size()>NB_New.size()) {
-
-        for (int i=0;i<n;++i) {
+            if (res.first) {
+                int N=V.size();
+                M[i].push(std::make_pair(DotDist(V[i].first,V[i].second,0,res.second.first,res.second.second,0),N));
+                M[j].push(std::make_pair(DotDist(V[j].first,V[j].second,0,res.second.first,res.second.second,0),N));
+                V.push_back(res.second);
+            }
         }
-        
     }
 
-// 	if (flag) rotate(NE_New.begin(),NE_New.begin()+1,NE_New.end());
+    // Judge whether the two polygons are seperated.
+    int N=V.size();
+    if (N==m+n) {
+        int mm=0,nn=0;
+        for (int i=0;i<m;++i) mm+=(PointInPolygon(p2,p1[i],1)?1:0);
+        for (int i=0;i<n;++i) nn+=(PointInPolygon(p1,p2[i],1)?1:0);
+        if (m==mm) return {true,p2};
+        if (n==nn) return {true,p1};
+        return {false,{}};
+    }
 
-// std::cout  << "HERE" << std::endl;
-// for  (auto item:NB_New) std::cout << New[item].first << " " << New[item].second << std::endl;
+    // 2. Create edges of the new graph.
 
-	// Bug ! Bug ! .... Pia ! Pia !
-	// ignore small sections.
-// 	int n1=NB_All.size(),n2=NB_New.size();
-// 	if (n1!=n2){
-// 		for (int i=n1-1;i>=0;i--){
-// 			int x=NE_All[i]-NB_All[i];
-// 			if (x<0) x+=All.size();
-// 			if (x<3){
-// 				NB_All.erase(NB_All.begin()+i);
-// 				NE_All.erase(NE_All.begin()+i);
-// 			}
-// 		}
-// 		for (int i=n2-1;i>=0;i--){
-// 			int x=NE_New[i]-NB_New[i];
-// 			if (x<0) x+=New.size();
-// 			if (x<3){
-// 				NB_New.erase(NB_New.begin()+i);
-// 				NE_New.erase(NE_New.begin()+i);
-// 			}
-// 		}
-// 	}
+    std::vector<std::vector<int>> E(N,std::vector<int> ());
+    for (int i=0;i<m+n;++i) {
+
+        // Find the index for i+1.
+        int Next;
+        if (i<m) Next=(i+1)%m;
+        else Next=m+(i+1-m)%n;
+
+        int Cur=i;
+        while (!M[i].empty()){
+            E[Cur].push_back(M[i].top().second);
+            E[M[i].top().second].push_back(Cur);
+            Cur=M[i].top().second;
+            M[i].pop();
+        }
+        E[Cur].push_back(Next);
+        E[Next].push_back(Cur);
+    }
 
 
-	// Bug bug.. buzz..buzz... pia !
-// 	n1=NB_All.size(),n2=NB_New.size();
-// 	if (n1!=n2){
-// 		std::vector<int> &p=(n1>n2?NB_All:NB_New);
-// 		std::vector<int> &p2=(n1>n2?NE_All:NE_New);
-// 		std::vector<std::pair<double,double>> &P=(n1>n2?All:New);
-// 		int Diff=abs(n1-n2),N=(n1>n2?m:n);
-// 
-// 		rotate(p2.begin(),p2.end()-1,p2.end());
-// 		std::vector<std::pair<int,int>> pp;
-// 		for (size_t i=0;i<p.size();i++){
-// 			pp.push_back({p[i]-p2[i],i});
-// 			if (pp.back().first<0) pp.back().first+=N;
-// 		}
-// 		sort(pp.begin(),pp.end());
-// 
-// 		std::vector<int> t;
-// 		for (int i=0;i<Diff;i++){
-// 			t.push_back(pp[i].second);
-// 		}
-// 
-// 		sort(t.begin(),t.end(),std::greater<int>());
-// 		for (auto item: t){
-// 			for(size_t i=p2[item]+1;i<(p[item]<p2[item]?(p[item]+P.size()):p[item]);i++){
-// 				int xx=(i>=P.size()?i-P.size():i);
-// 				P[xx].first=std::numeric_limits<double>::quiet_NaN();
-// 			}
-// 			p.erase(p.begin()+item);
-// 			p2.erase(p2.begin()+item);
-// 		}
-// 		rotate(p2.begin(),p2.begin()+1,p2.end());
-// 	}
+    // 3. Gift wrapping to find the new edges.
 
-	// Find where these two shape meet.
-	int N=NB_All.size();
-	std::vector<int> X(N),Y(N);
+    // a. Find the left most point.
+    auto it=min_element(V.begin(),V.end());
+    int Cur=distance(V.begin(),it),Begin=Cur,Prev=-1;
 
-	for (int i=0;i<N;++i){
+    std::vector<std::pair<double,double>> ans;
 
-		double MinDist=std::numeric_limits<double>::max();
-		double MinDist2=std::numeric_limits<double>::max();
+    // b. Start gift-wrapping.
+    std::vector<bool> F(N,false);
+    std::pair<double,double> v1{0,-1},v2,v3;
 
-		for (int j=0;j<N;++j){
+    do {
+        F[Cur]=true;
+        ans.push_back(V[Cur]);
+        int Next;
+        double MinAngle=3*M_PI,Angle;
+        for (auto &item:E[Cur]) {
+            if (item==Prev || (F[item] && item!=Begin)) continue;
+            v2={V[item].first-V[Cur].first,V[item].second-V[Cur].second};
+            Angle=VectorAngle(v1,v2);
+            if (Angle<=MinAngle) {
+                MinAngle=Angle;
+                Next=item;
+                v3.first=-v2.first;
+                v3.second=-v2.second;
+            }
+        }
+        Prev=Cur;
+        Cur=Next;
+        v1=v3;
+    } while(Cur!=Begin);
 
-            double dx=All[NE_All[i]].first-New[NB_New[j]].first;
-            double dy=All[NE_All[i]].second-New[NB_New[j]].second;
-            double dist=dx*dx+dy*dy;
-
-			if (MinDist>dist){
-				MinDist=dist;
-				X[i]=j;
-			}
-
-            dx=New[NE_New[i]].first-All[NB_All[j]].first;
-            dy=New[NE_New[i]].second-All[NB_All[j]].second;
-            dist=dx*dx+dy*dy;
-
-			if (MinDist2>dist){
-				MinDist2=dist;
-				Y[i]=j;
-			}
-		}
-	}
-
-	// For Non-simply connected result.
-	// we ignore the center parts.
-
-	std::vector<std::vector<std::pair<double,double>>> Polygons;
-	std::vector<bool> pPB(N);
-	decltype(pPB.begin()) it;
-	while((it=find(pPB.begin(),pPB.end(),false))!=pPB.end()){
-		int PB=(it-pPB.begin());
-		std::vector<std::pair<double,double>> All_New;
-		while(!pPB[PB]){
-			pPB[PB]=true;
-
-			for (int i=0;i<m;i++){
-				int xx=(NB_All[PB]+i)%m;
-				if (!std::isnan(All[xx].first)) All_New.push_back(All[xx]);
-				if (xx==NE_All[PB]) break;
-			}
-			for (int i=0;i<n;i++){
-				int xx=(NB_New[X[PB]]+i)%n;
-				if (!std::isnan(New[xx].first)) All_New.push_back(New[xx]);
-				if (xx==NE_New[X[PB]]) break;
-			}
-
-			PB=Y[X[PB]];
-		}
-		Polygons.push_back(All_New);
-	}
-
-	size_t MaxL=Polygons[0].size(),j=0;
-	for (size_t i=1;i<Polygons.size();i++){
-		if (MaxL<Polygons[i].size()){
-			MaxL=Polygons[i].size();
-			j=i;
-		}
-	}
-	All=Polygons[j];
-
-	return true;
+	return {true,ans};
 }
 
 #endif

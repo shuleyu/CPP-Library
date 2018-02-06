@@ -9,7 +9,7 @@
 #include<ConvexPolygon.hpp>
 #include<CrossProduct.hpp>
 #include<DotDist.hpp>
-#include<PointsInPolygon.hpp>
+#include<PointInPolygon.hpp>
 
 /****************************************************************
  * This C++ template return the original position of one point in
@@ -81,7 +81,7 @@ std::pair<double,double> GridStretch(const std::vector<std::pair<T1,T2>> &Polygo
     }
 
 	// Check whether the point is outside.
-	if (!PointsInPolygon(polygon,std::vector<std::pair<double,double>> {P},true)[0]){
+	if (!PointInPolygon(polygon,P,1)){
         std::cerr <<  __func__ << "; Error: Point is outside of input grid..." << std::endl;
 		return {};
 	}

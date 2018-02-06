@@ -10,10 +10,10 @@ using namespace std;
 
 int main(){
 
-	ifstream fpin("data/CombinePolygons.txt");
+	ifstream fpin("data/CombineTwoPolygons.txt");
 
 	// Read in.
-	
+
 	vector<vector<pair<double,double>>> Polygons;
 
 	string tmpstr;
@@ -36,10 +36,13 @@ int main(){
 	Polygons.push_back(CurP);
 
     // Use function.
-	CombineTwoPolygons(Polygons[0],Polygons[1]);
+	auto res=CombineTwoPolygons(Polygons[0],Polygons[1]);
 
-	for (auto item:Polygons[0])
-        cout << item.first << " " << item.second << endl;
-
-    return 0;    
+	if (res.first){
+        for (auto &item:res.second)
+            cout << item.first << " " << item.second << endl;
+    }
+    else
+        cout << "Inpput polygons are seperated ..." << endl;
+    return 0;
 }

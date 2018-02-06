@@ -13,9 +13,9 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<Amplitude.hpp>
 #include<AvrStd.hpp>
 #include<Bootstrap.hpp>
-#include<BottomDepth.hpp>                        // Need TauP Toolkit
-#include<BottomLocation.hpp>                     // Need TauP Toolkit
-#include<Butterworth.hpp>                        // Need SAC
+// #include<BottomDepth.hpp>                        // Need TauP Toolkit
+// #include<BottomLocation.hpp>                     // Need TauP Toolkit
+// #include<Butterworth.hpp>                        // Need SAC
 #include<Cart2Sph.hpp>
 #include<CircleBin.hpp>
 #include<CMT2Sph.hpp>
@@ -23,7 +23,7 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<CombineTwoPolygons.hpp>
 #include<CompareSignal.hpp>
 #include<ComplexDivide.hpp>
-#include<ConfidenceInterval.hpp>                 // Need sci-libs/gsl, (uncomment for faster compile)
+// #include<ConfidenceInterval.hpp>                 // Need sci-libs/gsl, (uncomment for faster compile)
 #include<ConvexPolygon.hpp>
 #include<Convolve.hpp>
 #include<CrossCorrelation.hpp>
@@ -33,8 +33,8 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<CurveJunction.hpp>
 #include<Diff.hpp>
 #include<DotDist.hpp>
-#include<Envelope.hpp>                           // Need sci-libs/fftw.
-#include<FFT.hpp>                                // Need sci-libs/fftw.
+// #include<Envelope.hpp>                           // Need sci-libs/fftw.
+// #include<FFT.hpp>                                // Need sci-libs/fftw.
 #include<FindAz.hpp>
 #include<FindPeak.hpp>
 #include<FindRayPath.hpp>
@@ -45,7 +45,7 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<GridStretch.hpp>
 #include<HannTaper.hpp>
 #include<Interpolate.hpp>
-#include<Kmeans.hpp>                             // Need mlpack, (uncomment for faster compile), http://www.mlpack.org/
+// #include<Kmeans.hpp>                             // Need mlpack, (uncomment for faster compile), http://www.mlpack.org/
 #include<LinearInterp.hpp>
 #include<LineJunction.hpp>
 #include<LL2TP.hpp>
@@ -58,9 +58,9 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<Normalize.hpp>
 #include<PNormErr.hpp>
 #include<PNorm.hpp>
-#include<PolyFit.hpp>                            // Need dev-libs/boost, (uncomment for faster compile)
-#include<PointsInPolygon.hpp>
-#include<PointsOnLine.hpp>
+// #include<PolyFit.hpp>                            // Need dev-libs/boost, (uncomment for faster compile)
+#include<PointInPolygon.hpp>
+#include<PointOnSegment.hpp>
 #include<PREM.hpp>
 #include<RadiationPattern.hpp>
 #include<RampFunction.hpp>
@@ -69,8 +69,9 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<ReorderX2Y.hpp>
 #include<ReorderY2X.hpp>
 #include<RemoveTrend.hpp>
+#include<SegmentJunction.hpp>
 #include<SHCoefficients.hpp>
-#include<ShiftPhase.hpp>                         // Need sci-libs/fftw.
+// #include<ShiftPhase.hpp>                         // Need sci-libs/fftw.
 #include<ShiftStack.hpp>
 #include<SimpsonRule.hpp>
 #include<SNR.hpp>
@@ -81,9 +82,10 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<StretchSignal.hpp>
 #include<TP2LL.hpp>
 #include<TriangleSignal.hpp>
-#include<TstarOperation.hpp>                     // Need sci-libs/fftw.
+// #include<TstarOperation.hpp>                     // Need sci-libs/fftw.
 #include<UnionIntervals.hpp>
-#include<WaterLevelDecon.hpp>                    // Need sci-libs/fftw.
+#include<VectorAngle.hpp>
+// #include<WaterLevelDecon.hpp>                    // Need sci-libs/fftw.
 #include<WayPoint.hpp>
 
 #endif
