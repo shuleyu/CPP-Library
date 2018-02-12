@@ -5,25 +5,29 @@
 
 /******************************************************
  * This C++ tempalte takes the difference from adjacent
- * elements from the input array.
+ * elements of the input array.
  *
- * const vector<T1> &p  ----  Array.
+ * input(s):
+ * const vector<T> &p  ----  Array.
+ *
+ * return(s):
+ * vector<T> ans  ----  The "Differnce" array.
  *
  * Shule Yu
  * Dec 29 2017
  *
- * Key words: derivative, diff
+ * Key words: derivative, difference.
  *
  * Note: output size is p.size()-1.
-***********************************************************/
+******************************************************/
 
 template<class T>
-std::vector<T> Diff(const std::vector<T> &p){
+inline std::vector<T> Diff(const std::vector<T> &p){
 
-	std::vector<T> ans;
+    std::vector<T> ans;
 
     for (size_t i=0;i+1<p.size();++i)
-		ans.push_back(p[i+1]-p[i]);
+        ans.push_back(p[i+1]-p[i]);
 
     return ans;
 }

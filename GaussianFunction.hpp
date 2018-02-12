@@ -14,9 +14,13 @@
  *
  * f(x)=1/sqrt(2pi)/sigma * e^{-(x-mu)^2/2/sigma^2}
  *
+ * input(s):
  * const T1 &x      ----  x.
  * const T2 &sigma  ----  standard deviation, sigma.
  * const T3 &mu     ----  mean, mu.
+ *
+ * return(s):
+ * double ans  ----  Gaussian function value.
  *
  * Shule Yu
  * Jan 01 2018
@@ -27,10 +31,10 @@
 template<class T1, class T2, class T3>
 double GaussianFunction(const T1 &x, const T2 &sigma, const T3 &mu){
 
-	if (sigma<0) {
-		std::cerr <<  __func__ << "; Error: input sigma < 0 ..." << std::endl;
-		return 0;
-	}
+    if (sigma<0) {
+        std::cerr <<  "Error in " << __func__ << ": input sigma < 0 ..." << std::endl;
+        return 0;
+    }
     if (sigma==0){
         if (x==mu) return 1;
         else return 0;

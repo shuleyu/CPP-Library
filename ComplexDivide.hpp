@@ -5,16 +5,20 @@
 
 /******************************************************
  * This C++ template return division result between two
- * complex number:
+ * complex numbers:
  *
  *        a+bi
  * e+fi= ------
  *        c+di
  *
+ * input(s):
  * const T1 &a   ----  a.
- * const T2 &b   ----  a.
- * const T3 &c   ----  a.
- * const T4 &d   ----  a.
+ * const T2 &b   ----  b.
+ * const T3 &c   ----  c.
+ * const T4 &d   ----  d.
+ *
+ * return(s):
+ * pair<double,double> ans  ----  {e,f}
  *
  * Shule Yu
  * Dec 28 2017
@@ -23,11 +27,11 @@
 ******************************************************/
 
 template<class T1, class T2, class T3, class T4>
-std::pair<double,double> ComplexDivide(const T1 &a, const T2 &b, const T3 &c, const T4 &d){
+inline std::pair<double,double> ComplexDivide(const T1 &a, const T2 &b, const T3 &c, const T4 &d){
 
-	// Check denominator.
+    // Check denominator.
     if (c==0 && d==0){
-		std::cerr <<  __func__ << "; Error: denominator is zero ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": denominator is zero ..." << std::endl;
         return {};
     }
 

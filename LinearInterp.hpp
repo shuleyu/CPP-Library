@@ -8,7 +8,7 @@
 /****************************************************************
  * This C++ template is designed for finding values inside a unit
  * cubic when the values at the corners are known, using
- * basically multiple times of linear interpolation.
+ * linear interpolation recursively.
  *
  * The variation is that when input vector is of size 2, 4 or 8,
  * corresponding to finding value within a line segment, a square
@@ -28,7 +28,7 @@
  * p[2] represents value at piont (0,1)      |  ------ copied, add 0's at back   |
  * p[3] represents value at piont (1,1)      |                                   |
  *                                                            |                  |
- *                                                            |                  | 
+ *                                                            |                  |
  * 3D:                                                        |                  |
  *                                                            |                  |
  * p[0] represents value at piont (0,0,0)                     |                  |
@@ -37,19 +37,25 @@
  * p[3] represents value at piont (1,1,0)                                        |
  * p[4] represents value at piont (0,0,1)                                        |
  * p[5] represents value at piont (1,0,1)       < ------------------------------ |
- * p[6] represents value at piont (0,1,1)                                  
+ * p[6] represents value at piont (0,1,1)
  * p[7] represents value at piont (1,1,1)
  *
  * ...
  *
- * const vector<T1> &p   ----  Unit cubic vector.
- * const vector<T2> &pp  ----  Return values at this points.
+ * input(s):
+ * const vector<T1> &p   ----  Values at unit cubic corners.
+ *                             1D: pp.size()=2.
+ *                             2D: pp.size()=4.
+ *                             3D: pp.size()=8.
+ *                             ...
+ *
+ * const vector<T2> &pp  ----  Point location (value of pp is 0~1).
  *                             1D: pp.size()=1.
  *                             2D: pp.size()=2.
  *                             3D: pp.size()=3.
  *                             ...
- * return:
- * double val            ----  value at pp.
+ * return(s):
+ * double val            ----  value at piont pp.
  *
  *
  * Shule Yu
@@ -79,12 +85,12 @@ double LinearInterp(const std::vector<T1> &p, const std::vector<T2> &pp){
 
     // check array size.
     if (n==0) {
-        std::cerr <<  __func__ << "; Error: input point dimension error ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": input point dimension error ..." << std::endl;
         return 0.0/0.0;
     }
 
     if (m!=pow(2,n)) {
-        std::cerr <<  __func__ << "; Error: input cubic dimension error ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": input cubic dimension error ..." << std::endl;
         return 0.0/0.0;
     }
 

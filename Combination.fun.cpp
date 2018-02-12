@@ -3,10 +3,12 @@
 /**************************************************************
  * This C++ function returns the combination of input integers.
  *
+ * input(s):
  * int n  ----  Lower number.
  * int k  ----  Upper number.
  *
- * Return C_{n}^{k}
+ * return(s):
+ * int ans  ---- C_n^k
  *
  * Shule Yu
  * Mar 10 2015
@@ -17,8 +19,8 @@
 int Combination(const int &n, const int &k){
 
     if ( n < 0 || k < 0 || k > n ){
-		std::cerr <<  __func__ << "; Error: input doesn't make sense ..." << std::endl;
-		return 0;
+        std::cerr <<  "Error in " << __func__ << ": mathematic error ..." << std::endl;
+        return 0;
     }
 
     int ans=1;

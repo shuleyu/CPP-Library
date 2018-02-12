@@ -4,21 +4,21 @@
 #include<cmath>
 
 /************************************************************
- * This C function convert the direction of slip from
+ * This C++ template convert the slip direction from
  * Strike, Dip, Rake ( in deg. ) to theta and azimuth (the
  * spherical coordinates center at the center of the focal
- * mechanism sphere, with North phi=0, East phi=pi/2,
+ * mechanism sphere, with North phi=0; East phi=pi/2,
  * South phi=pi; Up theta=0, Down theta=pi. in deg.)
  *
- * Return values:
- * Azimuth   : clockwise angle with the North
- *                                          0 < Phi <= 2*pi.
- * Theta     : angle with upward direction. 0 <= Theta <= pi.
+ * input(s):
+ * const T1 &strike  ----  Strike (in deg.)
+ * const T2 &dip     ----  Dip (in deg.)
+ * const T3 &rake    ----  Rake (in deg.)
  *
- *
- * T1 strike  ----  Strike.
- * T2 dip     ----  Dip.
- * T3 rake    ----  Rake.
+ * return(s):
+ * pair<double,double> ans  ----  {azimuth,theta}
+ *                   azimuth: clockwise angle with the North
+ *                   theta  : angle with upward direction.
  *
  * Shule Yu
  * Dec 27 2017

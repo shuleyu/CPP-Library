@@ -7,7 +7,7 @@ using namespace std;
 
 int main(){
 
-	vector<int> p{3,2,1};
+	vector<int> p{4,2,1};
 
     // Use function.
     auto ans=Diff(p);

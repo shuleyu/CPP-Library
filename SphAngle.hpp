@@ -10,10 +10,14 @@
  * Theta     : angle with z, 0 <= theta <= PI.
  * Phi       : angle with x, counter-clockwise.
  *
- * double theta1  ----  theta1.
- * double phi1    ----  phi1.
- * double theta2  ----  theta2.
- * double phi2    ----  phi2.
+ * input(s):
+ * const T1 &theta1  ----  theta1.
+ * const T2 &phi1    ----  phi1.
+ * const T1 &theta2  ----  theta2.
+ * const T2 &phi2    ----  phi2.
+ *
+ * return(s):
+ * double ans  ----  the angle between input directions.
  *
  * Shule Yu
  * Dec 31 2017

@@ -13,7 +13,7 @@ int main(){
     t=91*M_PI/180;
 
     // Use function.
-    auto res=TP2LL(p,t);
+    auto res=TP2LL(t,p);
 
 	cout << res.first << " " << res.second << endl;
 

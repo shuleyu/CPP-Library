@@ -10,12 +10,16 @@
  * for given fault orientation and ray path orientation on
  * the lower hamisphere.
  *
+ * input(s):
  * const T1 &strike    ----  Falut strike. (in deg, 0~360)
- * const T2 &dip       ----  Falut dip. (in deg, 0~360)
+ * const T2 &dip       ----  Falut dip. (in deg, 0~90)
  * const T3 &rake      ----  Falut rake.  (in deg, -180~180)
  * const T4 &az        ----  Ray path azimuth. (in deg)
- * const T5 &take_off  ----  Ray path take-off angle. (in deg, 0~180)
+ * const T5 &take_off  ----  Ray path take-off angle. (in deg, 0~90)
  * const string &Cmp   ----  Chosen component. ("P","SV" or "SH").
+ *
+ * return(s):
+ * double ans  ----  The radiation pattern intensity.
  *
  * Shule Yu
  * Jan 23 2018
@@ -23,14 +27,14 @@
  * Key words: radiation pattern.
  *
  * Reference:
- *     Aki 2002, Page 108~109.
+ *     Aki & Richard 2002, Page 108~109.
 *************************************************************/
 
 template<class T1, class T2, class T3, class T4, class T5>
 double RadiationPattern(const T1 &strike, const T2 &dip, const T3 &rake, const T4 &az,
                         const T5 &take_off,const std::string &Cmp){
 
-    // Convert parameters into rad unit.
+    // Convert parameters into rad.
     double s,d,r,a,t;
     s=strike*M_PI/180;
     d=dip*M_PI/180;
@@ -70,7 +74,7 @@ double RadiationPattern(const T1 &strike, const T2 &dip, const T3 &rake, const T
         return ans;
     }
 
-    std::cerr <<  __func__ << "; Error: Component error (must be \"P\",\"SV\" or \"SH\") ... " << std::endl;
+    std::cerr <<  "Error in " << __func__ << ": Component error (must be \"P\",\"SV\" or \"SH\") ... " << std::endl;
 
     return -1;
 }

@@ -2,23 +2,18 @@
 
 #include<ASU_tools.hpp>
 
+using namespace std;
+
 int main(){
 
-    double r,theta,phi;
-
-//     double x,y,z;
-//     x=19.12;
-//     y=12.3;
-//     z=23.34;
-
-	int x,y,z;
-    x=0;
-    y=0;
-    z=-1;
+    double x,y,z;
+    x=1;
+    y=1;
+    z=0;
 
     // Use function.
-    Cart2Sph(x,y,z,r,phi,theta);
-    printf("%.10lf\t%.10lf\t%.10lf\n",phi,theta,r);
+    auto ans=Cart2Sph(x,y,z);
+    cout << ans[0] << " " << ans[1] << " " << ans[2] << endl;
     return 0;
 
 }

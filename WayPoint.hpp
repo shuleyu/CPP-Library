@@ -14,14 +14,18 @@
  * Range of inputs:
  *
  *     lon : -180 ~ 180.
- *     lat : -90 ~ 90.
+ *     lat : -90  ~ 90.
  *     az  : -180 ~ 180.
- *     dist: 0 ~ 180.
+ *     dist:  0   ~ 180.
  *
+ * input(s):
  * const T1 &lon   ----  longitude of start point
  * const T2 &lat   ----  latitude  of start point
- * T3       az    ----  direction, azimuth centerd on the start piont.
+ * const T3 &azi   ----  direction, azimuth centerd on the start piont.
  * const T4 &dist  ----  GCP length from start point to waypoint. ( deg. )
+ *
+ * return(s):
+ * pair<double,double> ans  ----  {plon,plat}, location of the waypoint.
  *
  * Shule Yu
  * Jan 23 2018
@@ -33,7 +37,7 @@
 **************************************************************/
 
 template<class T1,class T2, class T3, class T4>
-std::pair<double,double> WayPoint(const T1 &lon, const T2 &lat, T3 azi, const T4 &dist){
+std::pair<double,double> WayPoint(const T1 &lon, const T2 &lat, const T3 &azi, const T4 &dist){
 
     // Step 1. Calculate azimuth from event to station. (azimuth is centered on event)
     double a,az;

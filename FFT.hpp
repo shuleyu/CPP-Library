@@ -8,16 +8,22 @@
 
 /*********************************************************************
  * This C++ template runs fft on input real signals (same length, same
- * sampling rate) and return the amplitudes and phase informations.
+ * sampling rate) and return the amplitudes and phases.
  *
- * Note: for amplitude, power normalization is not done. (not divided by NPTS)
- *       for signal length is odd number (npts is odd), a 0 is padded.
+ * Note: For amplitude, power normalization is not included. (not divided by NPTS)
+ *       If signal length is odd number (npts is odd), a 0 is padded.
  *
- * vector<vector<T1>>     &x      ----  input signal array. (NPTS is signal length)
- * const T2               &delta  ----  Sampling rate (for all signals).
- * vector<double>         &freq   ----  frequency array (for all signals). length = NPTS/2+1
- * vector<vector<double>> &amp    ----  amplitudes for each signal at each frequency (not normalize by NPTS).
- * vector<vector<double>> &phase  ----  phases for each signal at each frequency.
+ * input(s):
+ * const vector<vector<T1>>     &x      ----  input signal array. (NPTS is signal length)
+ * const T2                     &delta  ----  Sampling rate (for all signals).
+ * vector<double>               &freq   ----  frequency array (for all signals). length = NPTS/2+1
+ * vector<vector<double>>       &amp    ----  amplitudes for each signal at each frequency (not normalize by NPTS).
+ * vector<vector<double>>       &phase  ----  phases for each signal at each frequency.
+ *
+ * return(s):
+ * vector<double>               &freq (in-place)
+ * vector<vector<double>>       &amp  (in-place)
+ * vector<vector<double>>       &phase (in-place)
  *
  * Shule Yu
  * Jan 20 2018
@@ -66,7 +72,7 @@ void FFT(const std::vector<std::vector<T1>> &x, const T2 &delta, std::vector<dou
 
         amp.push_back(TmpAmp);
         phase.push_back(TmpPhase);
-        
+
     }
 
     // create frequency array.

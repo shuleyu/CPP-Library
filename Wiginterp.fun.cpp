@@ -5,6 +5,7 @@
  * higher sampling rate. While used in down sampling may
  * results in aliasing effects.
  *
+ * input(s):
  * double *x       ----  Origin signal x.
  * double *y       ----  Origin signal y=y(x).
  * int    npts     ----  Origin signal length.
@@ -13,6 +14,9 @@
  * int    Newnpts  ----  Target signal length.
  * boo    IsEven   ----  true means x is equally sampled
  *                       false means x is inconsistantly sampled.
+ *
+ * return(s):
+ * double *yy (in-place)
  *
  * Shule Yu
  * Mar 27 2014
@@ -50,50 +54,50 @@ double GetEps2(double *y, int npts, double *x) {
 void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnpts, bool IsEven){
 
     double dx,epsi;
-	if (IsEven) {
+    if (IsEven) {
         dx=(*(x+1))-(*x);
         epsi=GetEps1(y,npts,dx);
-	}
+    }
     else {
         epsi=GetEps2(y,npts,x);
         dx=0.0;
     }
 
     // taken from sac source code wigint.c
-	int j, n1;
-	double a, am, amd, amu, dxd, dxj, dxj1, dxj1s, dxjs, dxu, dy, dyd,
-	 dyu, h, hc, hs, sp, sp1, t1, t2, t3, t4, w, wd, wu;
+    int j, n1;
+    double a, am, amd, amu, dxd, dxj, dxj1, dxj1s, dxjs, dxu, dy, dyd,
+     dyu, h, hc, hs, sp, sp1, t1, t2, t3, t4, w, wd, wu;
 
-	double *const X = &x[0] - 1;
-	double *const Y = &y[0] - 1;
+    double *const X = &x[0] - 1;
+    double *const Y = &y[0] - 1;
     double t;
 
-	/*=====================================================================
-	 * PURPOSE:  Interpolates evenly or unevenly spaced data.
-	 *=====================================================================
-	 * INPUT ARGUMENTS:
-	 *    X:       X array if unevenly spaced, first x if even. [f]
-	 *    Y:       Y array. [fa]
-	 *    NPTS:    Length of (X and) Y arrays. [i]
-	 *    DX:      Set to 0.0 if unevenly spaced, to sampling interval
-	 *             if evenly spaced. [f]
-	 *    EPSI:    water level used in interpolation [f]
-	 *    T:       Time value to interpolate to. [f]
-	 *=====================================================================
-	 * OUTPUT ARGUMENTS:
-	 *    F:       Interpolated y value. [f]
-	 *=====================================================================
-	 * MODULE/LEVEL:  SCM/4
-	 *=====================================================================
-	 * REFERENCE: Wiggins, 1976, BSSA, 66, p.2077.
-	 *=====================================================================
-	 * MODIFICATION HISTORY:
-	 *    100719:  no option on epsi -- just takes input value (jas/vt)
+    /*=====================================================================
+     * PURPOSE:  Interpolates evenly or unevenly spaced data.
+     *=====================================================================
+     * INPUT ARGUMENTS:
+     *    X:       X array if unevenly spaced, first x if even. [f]
+     *    Y:       Y array. [fa]
+     *    NPTS:    Length of (X and) Y arrays. [i]
+     *    DX:      Set to 0.0 if unevenly spaced, to sampling interval
+     *             if evenly spaced. [f]
+     *    EPSI:    water level used in interpolation [f]
+     *    T:       Time value to interpolate to. [f]
+     *=====================================================================
+     * OUTPUT ARGUMENTS:
+     *    F:       Interpolated y value. [f]
+     *=====================================================================
+     * MODULE/LEVEL:  SCM/4
+     *=====================================================================
+     * REFERENCE: Wiggins, 1976, BSSA, 66, p.2077.
+     *=====================================================================
+     * MODIFICATION HISTORY:
+     *    100719:  no option on epsi -- just takes input value (jas/vt)
          *    970202:  Modified order of input arguments.
-	 *    86xxxx:  Original version.
-	 *=====================================================================
-	 * DOCUMENTED/REVIEWED:  870202 (Prolog only.)
-	 *===================================================================== */
+     *    86xxxx:  Original version.
+     *=====================================================================
+     * DOCUMENTED/REVIEWED:  870202 (Prolog only.)
+     *===================================================================== */
     int count;
     double *movex=xx;
     double *movey=yy;

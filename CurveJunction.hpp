@@ -1,6 +1,7 @@
 #ifndef ASU_CURVEJUNCTION
 #define ASU_CURVEJUNCTION
 
+#include<iostream>
 #include<vector>
 #include<cmath>
 #include<algorithm>
@@ -10,25 +11,28 @@
 
 /***********************************************************
  * This C++ template returns the junction piont of two input
- * signals s1 and s2 (X|Y).
+ * signals s1 and s2 (x for time; y for amplitude).
  *
  * x1 and x2 should be sorted.
  *
- * The algorithm is simple: use interpolate to create another
- * two signals s1*,s2* with the same X value. Then find
- * the cloest (Y value) point within tolerance.
+ * The algorithm is simple: use interpolate to create two
+ * more signals s1*,s2* with the same, new X value. Then find
+ * the cloest (new Y values) point within tolerance.
  *
+ * The search also terminates when new npts>1e6.
+ *
+ * input(s):
  * vector<T1> &x1   ----  Signal 1, X.
  * vector<T2> &y1   ----  Signal 1, Y.
  * vector<T3> &x2   ----  Signal 2, X.
  * vector<T4> &y2   ----  Signal 2, Y.
  * const T5   &tol  ----  tolerance of Y (0<tol<1).
- *                        e.g. tol=0.01 and y1,y2 intercept at 99,
- *                        then when |NewY1-NewY2| < 99*tol = 0.99
+ *                        e.g. tol=0.01 and y1,y2 intercept at Y=-99,
+ *                        then when |NewY1-NewY2| < |99|*tol = 0.99
  *                        the search terminates.
  *
- * return:
- * pair<double,double> ans  ----  junction point.
+ * return(s):
+ * pair<double,double> ans  ----  the junction point ({x,y}).
  *
  * Shule Yu
  * Jan 24 2018
@@ -49,11 +53,11 @@ std::pair<double,double> CurveJunction(const std::vector<T1> &x1, const std::vec
     };
 
     if (!std::is_sorted(x1.begin(),x1.end(),cmp1) && !std::is_sorted(x1.rbegin(),x1.rend(),cmp1)) {
-        std::cerr <<  __func__ << "; Error: input x1 is not sorted/has repeated values ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": input x1 is not sorted/has repeated values ..." << std::endl;
         return {};
     }
     if (!std::is_sorted(x2.begin(),x2.end(),cmp2) && !std::is_sorted(x2.rbegin(),x2.rend(),cmp2)) {
-        std::cerr <<  __func__ << "; Error: input x2 is not sorted/has repeated values ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": input x2 is not sorted/has repeated values ..." << std::endl;
         return {};
     }
 

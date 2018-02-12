@@ -21,8 +21,12 @@
  * Longitude: -180 < lon <= 180. (Lon=0 at poles.)
  * Latitude : -90 <= lat <= 90.
  *
- * T1 theta  ----  theta.
- * T2 phi    ----  phi.
+ * input(s):
+ * const T1 &theta  ----  theta.
+ * const T2 &phi    ----  phi.
+ *
+ * return(s):
+ * pair<double,double> ans  ----  {lon,lat}
  *
  * Shule Yu
  * Dec 29 2017
@@ -31,14 +35,14 @@
 *****************************************************/
 
 template<class T1, class T2>
-std::pair<double,double> TP2LL(T1 phi, T2 theta){
+std::pair<double,double> TP2LL(const T1 &theta,const T2 &phi){
 
     // Deal with latitude, theta.
-	// Check theta.
-	if ( theta > M_PI || theta < 0.0 ) {
-		std::cerr <<  __func__ << "; Error: input theta need to be 0 ~ pi ..." << std::endl;
-		return {};
-	}
+    // Check theta.
+    if ( theta > M_PI || theta < 0.0 ) {
+        std::cerr <<  "Error in " << __func__ << ": input theta need to be 0 ~ pi ..." << std::endl;
+        return {};
+    }
 
     if (theta==0.0) return {0.0,90.0};
     else if (theta==M_PI) return {0.0,-90.0};

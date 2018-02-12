@@ -13,7 +13,7 @@
  * The Cartesian coordinate x,y,z axis is as follows:
  * x axis: lon=0 ,lat=0
  * y axis: lon=90,lat=0.
- * z axis: lon=  ,lat=90.
+ * z axis: lat=90.
  *
  * Theta : angle with z, 0 <= theta <= PI.
  * Phi   : angle with x, counter-clockwise.
@@ -21,8 +21,12 @@
  * Longitude: -180 < lon <= 180. (Lon=0 at poles.)
  * Latitude : -90 <= lat <= 90.
  *
- * T1 Lon  ----  Longitude.
- * T2 Lat  ----  Latitude.
+ * input(s):
+ * const T1 &Lon  ----  Longitude.
+ * const T2 &Lat  ----  Latitude.
+ *
+ * return(s):
+ * pair<double,double> ans  ----  {theta,phi}
  *
  * Shule Yu
  * Dec 29 2017
@@ -31,14 +35,14 @@
 *****************************************************/
 
 template<class T1, class T2>
-std::pair<double,double> LL2TP(T1 lon, T2 lat){
+inline std::pair<double,double> LL2TP(const T1 &lon, const T2 &lat){
 
     // Deal with latitude, theta.
-	// Check latitude.
+    // Check latitude.
     if ( lat < -90 || lat > 90 ){
-		std::cerr <<  __func__ << "; Error: input latitude need to be -90 ~ 90 ..." << std::endl;
-		return {};
-	}
+        std::cerr <<  "Error in " << __func__ << ": input latitude need to be -90 ~ 90 ..." << std::endl;
+        return {};
+    }
 
     if (lat==90) return {0.0,0.0};
     else if (lat==-90) return {M_PI,0.0};

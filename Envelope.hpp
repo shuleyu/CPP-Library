@@ -2,17 +2,20 @@
 #define ASU_ENVELOPE
 
 #include<vector>
+#include<cmath>
 
 #include<ShiftPhase.hpp>
 
 /**************************************************************
  * This C++ template calculate the envelope of the input trace.
+ *
  * First make a Hilbert transform of input: y=Hilbert(x).
  * Then calculate the envelope as: z=sqrt(x^2+y^2).
  *
+ * input(s):
  * const vector<T> &x  ----  Input signal.
  *
- * return:
+ * return(s):
  * vector<double> ans  ----  Envelope signal.
  *
  * Shule Yu

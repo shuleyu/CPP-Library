@@ -6,9 +6,10 @@
 #include<vector>
 
 /***********************************************************
- * This C++ template taper the two end of input signal,
- * using Hanning Window.
+ * This C++ template taper both ends of the input signal,
+ * using a Hanning Window.
  *
+ * input(s):
  * vector<T1> &p  ----  Signal that get tapered. length is npts.
  * const T2   &w  ----  Taper one-side length compared to npts.
  *                      (width max at 0.5, which means the taper
@@ -21,7 +22,8 @@
  *
  *                                    --> input w should be 4/25.
  *
- *
+ * return(s):
+ * vector<T1> &p (in-place)
  * Shule Yu
  * Jan 22 2018
  *
@@ -34,7 +36,7 @@ template<class T1, class T2>
 void HannTaper(std::vector<T1> &p,const T2 &w){
 
     if (w>0.5) {
-        std::cerr <<  __func__ << "; Error: taper window too big ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": taper window too big ..." << std::endl;
         return;
     }
 

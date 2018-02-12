@@ -12,7 +12,7 @@ int main(){
     rayp=14.640;
     depth=500;
 
-	cout << "TakeOff: " << 180/M_PI*RayP2TakeOff(rayp,depth,'S') << endl;
+	cout << "TakeOff: " << RayP2TakeOff(rayp,depth,'S') << endl;
 
     return 0;    
 }

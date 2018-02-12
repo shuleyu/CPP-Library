@@ -5,43 +5,47 @@
 #include<vector>
 
 /**************************************************************
- * This C++ template find the max(abs(amp)) position with the
+ * This C++ template find the max(abs(amp)) position within the
  * given window for a given input array.
  *
+ * input(s):
  * const vector<T> &p     ----  Input array.
- * int             &Peak  ----  Input : rough peak position.
- *                              Output: correct peak position.
+ * const int       &Peak  ----  rough peak position.
  * const int       &WB    ----  Window begin, relative to Input Peak.
  * const int       &WL    ----  Window length.
+ *
+ * return(s):
+ * size_t ans  ----  correct peak position.
+ *
  *
  * Shule Yu
  * Dec 31 2017
  *
  * Key words: peak position
-***********************************************************/
+**************************************************************/
 
 template <class T>
-void FindPeak(const std::vector<T> &p, int &Peak, const int &WB, const int &WL){
+size_t FindPeak(const std::vector<T> &p, const int &Peak, const int &WB, const int &WL){
 
-	int n=p.size();
+    int n=p.size();
 
-	// Check window.
+    // Check window.
     if (n<=0 || WL<=0 || Peak+WB<0 || Peak+WB>=n || Peak+WB+WL-1>=n){
-		std::cerr <<  __func__ << "; Error: input window exceed array size ..." << std::endl; 
-        return;
+        std::cerr <<  "Error in " << __func__ << ": input window exceed array size ..." << std::endl;
+        return -1;
     }
 
-	T MaxAmp=p[Peak+WB];
-	T Amp;
-    for (int i=Peak+WB+1;i<Peak+WB+WL;++i){
-		Amp=p[i]>0?p[i]:-p[i];
+    size_t ans=Peak;
+    T MaxAmp=p[Peak]>0?p[Peak]:-p[Peak],Amp;
+    for (int i=Peak+WB;i<Peak+WB+WL;++i){
+        Amp=p[i]>0?p[i]:-p[i];
         if (MaxAmp<Amp){
-			MaxAmp=Amp;
-			Peak=i;
+            MaxAmp=Amp;
+            ans=i;
         }
     }
 
-    return;
+    return ans;
 }
 
 #endif

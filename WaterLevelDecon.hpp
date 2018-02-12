@@ -19,6 +19,7 @@
  * x and y will be padded (at both ends) with zeros to be the same length
  * [2*max(y.size(),x[0].size())] to prevent wrap around artifacts.
  *
+ * input(s):
  * const vector<vector<T1>> &x      ----  2-D array x (signals).
  * const vector<T2>         &px     ----  Peak positions on signals.
  * const vector<T3>         &y      ----  1-D array y (source).
@@ -26,7 +27,10 @@
  * const T5                 &delta  ----  Signals and source sampling rate.
  * const T6                 &wl     ----  Water level. (percentage of the peak spectrum value)
  *
- * ?
+ * return(s):
+ * vector<vector<double>>   &ans  ----  Deconed result, 2-D.
+ *
+ * ?return these? no for now ==================
  * vector<double>           &filled_amp      ----  (Optional) The spectrum of zero-padded source.
  * vector<double>           &filled_phase    ----  (Optional) The phase of zero-padded source.
  * vector<vector<double>>   &original_amp    ----  (Optional) The spectrum of zero-padded x.
@@ -34,9 +38,7 @@
  * vector<vector<double>>   &divided_amp     ----  (Optional) The spectrum of deconed x.
  * vector<vector<double>>   &divided_phase   ----  (Optional) The phase of deconed x.
  * const bool               &Dump            ----  (Optional) Wheter output the above 6 details. Default is false.
- *
- * return(s):
- * vector<vector<double>>   &ans  ----  Deconed result, 2-D.
+ * ============================================
  *
  * Note: Amplitudes of the deconed traces is not normalized (probably will do some post-process with normalization later).
  *       The peak position is tricky: the results should have original peaks (px) near their center.
@@ -58,7 +60,7 @@ std::vector<std::vector<double>> WaterLevelDecon(const std::vector<std::vector<T
     int m=x.size(),n=x[0].size(),N=y.size();
 
     if (n<=1 || N<=1){
-        std::cerr <<  __func__ << "; Error: input array too small ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": input array too small ..." << std::endl;
         return {};
     }
 
@@ -101,7 +103,7 @@ std::vector<std::vector<double>> WaterLevelDecon(const std::vector<std::vector<T
                 filled_imag[i]=Out[i][1]*(WL/amp);
             }
             else {
-                std::cerr <<  __func__ << "; Warning : amplitude = 0 @ " << df*i << " Hz ..." << std::endl;
+                std::cerr <<  "Warning in " << __func__ << ": amplitude = 0 @ " << df*i << " Hz ..." << std::endl;
                 filled_real[i]=WL;
                 filled_imag[i]=0;
             }

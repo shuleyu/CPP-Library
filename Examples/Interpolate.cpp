@@ -36,7 +36,7 @@ int main(){
     reverse(x.begin(),x.end());
     reverse(y.begin(),y.end());
 
-    auto ans=Interpolate(x,y,xx,true);
+    auto ans=Interpolate(x,y,xx);
 
     // Output result.
 	ofstream fpout;

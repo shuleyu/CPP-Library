@@ -9,6 +9,7 @@
  * This C++ template return the angle between two vectors.
  * (0~2*pi).
  *
+ * input(s):
  * const pair<T1,T2> &v1  ----  vector 1 (0,0) -> (v1)
  * const pair<T3,T4> &v2  ----  vector 2 (0,0) -> (v2)
  *

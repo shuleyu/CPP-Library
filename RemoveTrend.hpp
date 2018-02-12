@@ -1,15 +1,20 @@
 #ifndef ASU_REMOVETREND
 #define ASU_REMOVETREND
 
-#include<iostream>
 #include<vector>
 
 /***********************************************************
  * This C++ template remove linear trend of input signal.
+ * Signal should be even sampled at delta.
  *
+ * input(s):
  * vector<T1> &p       ----  Signal.
- * const T2   &delta   ----  Sampling rate.
- * const T3   &TBegin  ----  Begin time of the signal.
+ * const T2   &delta   ----  Sampling rate (in sec.)
+ * const T3   &TBegin  ----  Begin time of the signal (in sec.)
+ *
+ * return(s):
+ * vector<T1> &p (in-place)
+ * pair<double,double> ans  ----  {slope,intercept} Polynominal degree 1 fitting result.
  *
  * Shule Yu
  * Jan 23 2018
@@ -21,12 +26,12 @@
 ***********************************************************/
 
 template<class T1, class T2, class T3>
-void RemoveTrend(std::vector<T1> &p,const T2 &delta, const T3 &TBegin){
+std::pair<double,double> RemoveTrend(std::vector<T1> &p,const T2 &delta, const T3 &TBegin){
 
-    if (p.size()<=1) return;
+    if (p.size()<=1) return {0,0};
 
     int n=p.size();
-    double slope,intercept,sumx2=0,sumy=0,sumxy=0,t=TBegin,avx=TBegin+(n-1)*delta/2.0;
+    double sumx2=0,sumy=0,sumxy=0,t=TBegin,avx=TBegin+(n-1)*delta/2.0;
 
     for (int i=0;i<n;++i){
 
@@ -39,8 +44,8 @@ void RemoveTrend(std::vector<T1> &p,const T2 &delta, const T3 &TBegin){
     }
 
     // calculate the fitting line's slope and intercept value.
-    slope=(sumxy-sumy*avx)/(sumx2-n*avx*avx);
-    intercept=sumy/n-slope*avx;
+    double slope=(sumxy-sumy*avx)/(sumx2-n*avx*avx);
+    double intercept=sumy/n-slope*avx;
 
     // remove the trend and average for input data points.
     t=TBegin;
@@ -49,7 +54,7 @@ void RemoveTrend(std::vector<T1> &p,const T2 &delta, const T3 &TBegin){
         t+=delta;
     }
 
-    return;
+    return {slope,intercept};
 }
 
 #endif

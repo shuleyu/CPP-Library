@@ -12,7 +12,9 @@ int main(){
     ifstream fpin("data/RemoveTrend_in");
     while (fpin >> a >> b) p.push_back(b);
 
-	RemoveTrend(p,0.01,0);
+	auto ans=RemoveTrend(p,0.01,0);
+
+    cout << ans.first << " " << ans.second << endl;
 	
 	return 0;
 }

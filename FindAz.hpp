@@ -7,10 +7,14 @@
  * This C++ template returns azimuth (in deg) of two
  * geographic locations, centered at the first point.
  *
+ * input(s):
  * const T1 &lo1  ----  longitude of point 1
  * const T2 &la1  ----  latitude  of point 1
  * const T3 &lo2  ----  longitude of point 2
  * const T4 &la2  ----  latitude  of point 2
+ *
+ * return(s):
+ * double ans  ----  azimuth from p1 to p2 centered on p1.
  *
  * Shule Yu
  * Jan 23 2018

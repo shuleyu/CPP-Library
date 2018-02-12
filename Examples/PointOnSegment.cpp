@@ -7,11 +7,11 @@ using namespace std;
 
 int main(){
 
-	pair<double,double> x{0,1},y{1,2},p{0.5,1.5};
+	pair<double,double> x{2,-1},y{2,1},p{2,-1};
 
     // Use function.
 	auto ans=PointOnSegment(x,y,p);
-    cout << p.first << " " << p.second << (ans?" On":" Outof") << '\n';
+    cout << p.first << " " << p.second << (ans?" On (":" Off (") << x.first << "," << x.second << ") -- (" << y.first << "," << y.second << ")" << '\n';
 
     return 0;    
 }

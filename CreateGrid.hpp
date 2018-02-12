@@ -6,8 +6,9 @@
 #include<cmath>
 
 /***********************************************************
- * This C++ template returns the 1D grid meshing result.
+ * This C++ template returns the 1D grid meshing results.
  *
+ * input(s):
  * const T1  &lowerbound   ----  Grid lower bound.
  * const T2  &upperbound   ----  Grid upper bound.
  * const T3  &Para         ----  meaning-changing parameter.
@@ -16,48 +17,51 @@
  * const int &mode         ----  select mode.
  *                               Define the meaning of Para and return vector.
  *
- * 							     0: Para means number of gird points.
- * 							        Return a vector (ans) of size Para:
+ *                               0: Para means number of gird points.
+ *                                  Return a vector (ans) of size Para:
  *
- * 							        ans.size()=Para;
- * 							        ans[0]=lowerbound;
- * 							        ans[Para-1]=upperbound;
+ *                                  ans.size()=Para;
+ *                                  ans[0]=lowerbound;
+ *                                  ans[Para-1]=upperbound;
  *
  *                               1: Para means grid increment.
  *                                  Last grid point is less equal to higherbound.
- * 							        Return a vector (ans) of calculated size:
+ *                                  Return a vector (ans) of calculated size:
  *
- * 							        ans[0]=lowerbound;
- * 							        ans[1]-ans[0]=Para;
- * 							        upperbound-Para<ans.back();
- * 							        ans.back()<=upperbound;
+ *                                  ans[0]=lowerbound;
+ *                                  ans[1]-ans[0]=Para;
+ *                                  upperbound-Para<ans.back();
+ *                                  ans.back()<=upperbound;
  *
- * 							    -1: Same as 1. Will only return the grid property:
+ *                              -1: Same as 1. Will only return the grid property:
  *
- * 							        ans.size()=2;
- * 							        ans[0] = calculated grid size.
- * 							        ans[1] = adjusted upperbound.
+ *                                  ans.size()=2;
+ *                                  ans[0] = calculated grid size.
+ *                                  ans[1] = adjusted upperbound.
  *
  *
- * 							     2: Para means an estimation of grid increment.
- * 							        The calculated grid increment (Para*) is (possibly)
- * 							        sightly decreased such that the higherbound is meet.
- * 							        Return a vector (ans) of calculated size:
+ *                               2: Para means an estimation of grid increment.
+ *                                  The calculated grid increment (Para*) is (possibly)
+ *                                  sightly decreased such that the higherbound is meet.
+ *                                  Return a vector (ans) of calculated size:
  *
- * 							        ans[0]=lowerbound;
- * 							        ans[1]-ans[0]=Para* (<=Para);
- * 							        ans.back()=upperbound;
+ *                                  ans[0]=lowerbound;
+ *                                  ans[1]-ans[0]=Para* (<=Para);
+ *                                  ans.back()=upperbound;
  *
- * 							    -2: Same as 2. Will only return the grid property:
+ *                              -2: Same as 2. Will only return the grid property:
  *
- * 							        ans.size()=2;
- * 							        ans[0] = calculated grid size.
- * 							        ans[1] = adjusted Para (Para*).
+ *                                  ans.size()=2;
+ *                                  ans[0] = calculated grid size.
+ *                                  ans[1] = adjusted Para (Para*).
+ *
+ * return(s):
+ * vector<double> ans  ----  Created grid or grid properties, depending on mode.
  *
  * Shule Yu
  * Jan 23 2018
  *
- * Key words: meshing size.
+ * Key words: creating grid.
 ***********************************************************/
 
 template<class T1, class T2, class T3>
@@ -65,17 +69,17 @@ std::vector<double> CreateGrid(const T1 &lowerbound, const T2 &upperbound, const
 
     // check lower and upper bound.
     if (upperbound<lowerbound) {
-        std::cerr <<  __func__ << "; Error: lower bound > upper bound ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": lower bound > upper bound ..." << std::endl;
         return {};
     }
 
-	if (mode==0){
+    if (mode==0){
 
         int N=Para;
 
         // check number of points.
         if (N<=1) {
-            std::cerr <<  __func__ << "; Error: target array size <=1 ..." << std::endl;
+            std::cerr <<  "Error in " << __func__ << ": target array size <=1 ..." << std::endl;
             return {};
         }
 
@@ -83,9 +87,9 @@ std::vector<double> CreateGrid(const T1 &lowerbound, const T2 &upperbound, const
 
         std::vector<double> ans(N,lowerbound);
         for (int i=1;i<N;++i) ans[i]=ans[i-1]+Inc;
-		return ans;
-	}
-	if (mode==1 || mode==-1){
+        return ans;
+    }
+    if (mode==1 || mode==-1){
 
         double Inc=Para;
 
@@ -103,8 +107,8 @@ std::vector<double> CreateGrid(const T1 &lowerbound, const T2 &upperbound, const
             Cur+=Inc;
         }
         return ans;
-	}
-	if (mode==2 || mode==-2){
+    }
+    if (mode==2 || mode==-2){
 
         double Inc=Para;
         int N=1+(int)ceil((upperbound-lowerbound)/Inc);
@@ -122,9 +126,9 @@ std::vector<double> CreateGrid(const T1 &lowerbound, const T2 &upperbound, const
             Cur+=Inc;
         }
         return ans;
-	}
+    }
 
-    std::cerr <<  __func__ << "; Error: mode error ..." << std::endl;
+    std::cerr <<  "Error in " << __func__ << ": mode error ..." << std::endl;
     return {};
 }
 

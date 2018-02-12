@@ -7,10 +7,9 @@ using namespace std;
 
 int main(){
 
-	double dist=80,evdp=500,depth;
+	double dist=80,evdp=500;
 	string phase="S";
-	BottomDepth(dist,evdp,phase,depth);
-	cout << depth  << endl;
+	cout << BottomDepth(dist,evdp,phase) << endl;
 
 	return 0;
 }

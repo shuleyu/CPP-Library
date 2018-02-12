@@ -6,10 +6,11 @@ using namespace std;
 
 int main(){
 
-	auto res=CrossProduct(1,0,0,0.984808,0.173648,0);
+	auto res=CrossProduct(0,0,0,0,-1,0);
 
 	for (auto &item: res) 
-		cout << item << " ";
+        printf("%.12lf\n",item);
+// 		cout << item << " ";
 	cout << endl;
 	
 	return 0;

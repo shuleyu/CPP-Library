@@ -1,22 +1,25 @@
 #ifndef ASU_FINDRAYPATH
 #define ASU_FINDRAYPATH
 
+#include<iostream>
 #include<vector>
+#include<cmath>
 
 #include<RayPath.hpp>
 
 /*************************************************************
  * This C++ template finds the ray path connecting two points.
  *
+ * input(s):
  * const vector<T1> &r  ----  layer radius array. r[0] is the shallowest layer.
  * const vector<T2> &v  ----  velocity at each radius.
  * const T3 &r1         ----  Radius of the first point.
  * const T4 &r2         ----  Radius of the second point.
- * const T5 &t          ----  Distance (in deg) between these points.
- * const T6 &tol        ----  (Optional) Takeoff angle error tolerance (in deg).
+ * const T5 &t          ----  Distance (in deg) between the two points.
+ * const T6 &tol        ----  (Optional) Takeoff angle error tolerance (in deg, default is 0.001).
  *
- * return:
- * double rayp  ----  Ray parameter.
+ * return(s):
+ * double rayp  ----  Ray parameter connection the two points.
  *
  * Shule Yu
  * Jan 29 2018
@@ -33,13 +36,13 @@ double FindRayPath(const std::vector<T1> &r, const std::vector<T2> &v,
         return a>=b;
     };
     if (!std::is_sorted(r.begin(),r.end(),cmp)) {
-        std::cerr <<  __func__ << "; Error: layers (radius) is not strict monotonic decreasing..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": layers (radius) is not strict monotonic decreasing..." << std::endl;
         return -1;
     }
 
     double R1=std::max(r1,r2),R2=std::min(r1,r2);
     if (R2<r.back() || R1>r[0]){
-        std::cerr <<  __func__ << "; Error: Start/End point depth error ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": Start/End point depth error ..." << std::endl;
         return -1;
     }
 

@@ -25,12 +25,8 @@ int main(){
 		for (int j=0;j<Npx;++j)
 			p.push_back({-10+PIncx*j,-25+PIncy*i});
 
-
-	// Make results.
-	vector<vector<bool>> ans;
-
 	// Use function.
-	CircleBin(p,b,r,ans);
+	auto ans=CircleBin(p,b,r);
 
 	// Output.
 	ofstream fpout;
@@ -40,7 +36,7 @@ int main(){
 		for (int j=0;j<Npx;++j){
 			bool flag=true;
 			for (int k=0;k<Nb;++k){
-				if (ans[(Npy-1-i)*Npx+j][k]){
+				if (ans.second[(Npy-1-i)*Npx+j][k]){
 					fpout << setw(3) << left << k+1;
 					flag=false;
 					break;
@@ -54,7 +50,7 @@ int main(){
 
     fpout.open("data/CircleBin_bincenter");
 	for (int i=0;i<Nb;++i)
-		fpout << b[i].first << " " << b[i].second << "\n";
+		fpout << ans.first[i].first << " " << ans.first[i].second << "\n";
 	fpout.close();
 
     return 0;

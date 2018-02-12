@@ -1,7 +1,6 @@
 #ifndef ASU_POINTINPOLYGON
 #define ASU_POINTINPOLYGON
 
-#include<iostream>
 #include<vector>
 
 #include<CrossProduct.hpp>
@@ -15,9 +14,8 @@
  * input(s):
  * const vector<pair<double,double>> &Polygon         ----  given polygon.
  * const pair<double,double>         &Point           ----  given point.
- * int                               BoundaryMode     ----  (optional)
- *                                       0 (default value):
- *                                          left and bottom edges are decided to be inside.
+ * const int                         &BoundaryMode    ----  (Optional), default is 0
+ *                                       0: left and bottom edges are decided to be inside.
  *                                          right and top edges are decided to be outside.
  *                                       1: point on all boundaries are counted as inside.
  *                                      -1: point on all boundaries are counted as outside.
@@ -25,7 +23,7 @@
  * bool  ans  ----  true means the point is inside the polygon.
  *
  * Notice: We define the inside of the polygon as the left hand
- *	side area as one walks on its edge in the order of input.
+ * side area as one walks on its edge in the order of input.
  *
  * Shule Yu
  * Jan 18 2018
@@ -35,9 +33,9 @@
 ****************************************************************/
 
 template<class T1,class T2,class T3, class T4>
-bool PointInPolygon(const std::vector<std::pair<T1,T2>> &Polygon,const std::pair<T3,T4> &Point,int BoundaryMode=0){
+bool PointInPolygon(const std::vector<std::pair<T1,T2>> &Polygon,const std::pair<T3,T4> &Point,const int BoundaryMode=0){
 
-	int n=Polygon.size(),WN=0;
+    int n=Polygon.size(),WN=0;
     double px=Point.first,py=Point.second;
 
     for (int i=0;i<n;++i){

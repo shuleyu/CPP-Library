@@ -7,12 +7,12 @@ using namespace std;
 
 int main(){
 
-	double evdp=500,depth;
+	double evdp=500;
 	string phase="S";
 
-	auto ans=BottomLocation(16,80,evdp,32.3,56.23,phase,depth);
-	cout << ans.first << " " << ans.second << endl;
-	cout << depth  << endl;
+	auto ans=BottomLocation(16,80,evdp,32.3,56.23,phase);
+	cout << ans[1] << " " << ans[2] << endl;
+	cout << ans[0] << endl;
 
 	return 0;
 }

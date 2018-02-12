@@ -13,19 +13,32 @@
 //                 // Then degree2 from 600 km to the proper depth.
 
 /***********************************************************
- * This C++ template returns PREM model values.
+ * This C++ template returns PREM model values at certain depth.
+ * There's some small template you can use for just one value.
  *
- * const T   &Depth
- * const int &iso    (set to 1 if want isotropy result)
- * const int &ocean  (set to 1 if want ocean properties near surface)
- * double    &rho    (density)
- * dobule    &vpv
- * dobule    &vph
- * dobule    &vsv
- * dobule    &vsh
- * dobule    &qu
- * dobule    &qk
- * dobule    &yita
+ * input(s):
+ * const T   &Depth  ----  Given depth (in km)
+ * const int &iso    ----  0/1: (set to 1 if want isotropy result)
+ * const int &ocean  ----  0/1: (set to 1 if want ocean properties near surface)
+ * double    &rho    ----  density (g/cm^3)
+ * double    &vpv    ----  Vertical polarity P-wave speed (P-wave speed when traveling along the radius direction)
+ * double    &vph    ----  Horizontal polarity P-wave speed (P-wave speed when traveling perpendicular to the radius direction)
+ * double    &vsv    ----  Vertical polarity S-wave speed (SV-wave speed when traveling perpendicular to the radius direction)
+ * double    &vsh    ----  Horizontal polarity S-wave speed (SH-wave speed when traveling perpendicular to the radius direction)
+ *                                                          (also, SV- and SH-wave speed when traveling along the radius direction)
+ * double    &qu     ----  Isotropic dissipation of shear energy.
+ * double    &qk     ----  Isotropic dissipation of compressional energy.
+ * double    &yita   ----  Anisotropic parameter.
+ *
+ * output(s):
+ * double    &rho  (in-place)
+ * double    &vpv  (in-place)
+ * double    &vph  (in-place)
+ * double    &vsv  (in-place)
+ * double    &vsh  (in-place)
+ * double    &qu   (in-place)
+ * double    &qk   (in-place)
+ * double    &yita (in-place)
  *
  * Shule Yu
  * Dec 29 2017
@@ -39,7 +52,7 @@
 template<class T>
 void PREM(const T &Depth,const int &iso, const int &ocean,
           double &rho, double &vpv, double &vph, double &vsv,
-		  double &vsh, double &qu, double &qk, double &yita){
+          double &vsh, double &qu, double &qk, double &yita){
 
     double R=6371.0;
     double r=R-Depth;
@@ -184,7 +197,7 @@ void PREM(const T &Depth,const int &iso, const int &ocean,
 
     else { // space
 
-		std::cerr <<  __func__ << "; Error: negative depth value: " << R-r << " ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": negative depth value: " << R-r << " ..." << std::endl;
 
         rho=0;
         vpv=0;
@@ -275,8 +288,8 @@ double Rrho(const T &Radius){
 template<class T>
 void PREMSmoothed(const T &Depth, double &rho,double &vpv,double &vph,
                   double &vsv,double &vsh,double &qu,double &qk,double &yita,
-				  const int &RemoveCrust,const int &Remove220,
-				  const int &Remove400, const int &Remove670){
+                  const int &RemoveCrust,const int &Remove220,
+                  const int &Remove400, const int &Remove670){
 
 // Inspired from Mike Thorne.
 // By default, no ocean (0), no anisotropy (1).
@@ -285,38 +298,38 @@ void PREMSmoothed(const T &Depth, double &rho,double &vpv,double &vph,
     double r=6371.0-Depth;
     PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
 
-	// Remove Crust.
+    // Remove Crust.
     if ( RemoveCrust==1 && 6346.6<=r ) {
-		vsv=4.49100712;
-		vpv=8.11061727;
-		rho=3.38074821;
-	}
+        vsv=4.49100712;
+        vpv=8.11061727;
+        rho=3.38074821;
+    }
 
-	// Remove 220km.
-	if ( Remove220==1 && 6121.0<=r && r<6181.0 ){
-		vsv=Rvs(6181.0)+(Rvs(6121.0)-Rvs(6181.0))/(6121.0-6181.0)*(r-6181.0);
-		vpv=Rvp(6181.0)+(Rvp(6121.0)-Rvp(6181.0))/(6121.0-6181.0)*(r-6181.0);
-		rho=Rrho(6181.0)+(Rrho(6121.0)-Rrho(6181.0))/(6121.0-6181.0)*(r-6181.0);
-	}
+    // Remove 220km.
+    if ( Remove220==1 && 6121.0<=r && r<6181.0 ){
+        vsv=Rvs(6181.0)+(Rvs(6121.0)-Rvs(6181.0))/(6121.0-6181.0)*(r-6181.0);
+        vpv=Rvp(6181.0)+(Rvp(6121.0)-Rvp(6181.0))/(6121.0-6181.0)*(r-6181.0);
+        rho=Rrho(6181.0)+(Rrho(6121.0)-Rrho(6181.0))/(6121.0-6181.0)*(r-6181.0);
+    }
 
-	// Remove 400km.
-	if ( Remove400==1 && 5941.0<=r && r<6001.0 ){
-		vsv=Rvs(6001.0)+(Rvs(5941.0)-Rvs(6001.0))/(5941.0-6001.0)*(r-6001.0);
-		vpv=Rvp(6001.0)+(Rvp(5941.0)-Rvp(6001.0))/(5941.0-6001.0)*(r-6001.0);
-		rho=Rrho(6001.0)+(Rrho(5941.0)-Rrho(6001.0))/(5941.0-6001.0)*(r-6001.0);
-	}
+    // Remove 400km.
+    if ( Remove400==1 && 5941.0<=r && r<6001.0 ){
+        vsv=Rvs(6001.0)+(Rvs(5941.0)-Rvs(6001.0))/(5941.0-6001.0)*(r-6001.0);
+        vpv=Rvp(6001.0)+(Rvp(5941.0)-Rvp(6001.0))/(5941.0-6001.0)*(r-6001.0);
+        rho=Rrho(6001.0)+(Rrho(5941.0)-Rrho(6001.0))/(5941.0-6001.0)*(r-6001.0);
+    }
 
-	// Remove 670km.
-	if ( Remove670==1 && 5671.0<=r && r<5731.0 ){
-		vsv=Rvs(5731.0)+(Rvs(5671.0)-Rvs(5731.0))/(5671.0-5731.0)*(r-5731.0);
-		vpv=Rvp(5731.0)+(Rvp(5671.0)-Rvp(5731.0))/(5671.0-5731.0)*(r-5731.0);
-		rho=Rrho(5731.0)+(Rrho(5671.0)-Rrho(5731.0))/(5671.0-5731.0)*(r-5731.0);
-	}
+    // Remove 670km.
+    if ( Remove670==1 && 5671.0<=r && r<5731.0 ){
+        vsv=Rvs(5731.0)+(Rvs(5671.0)-Rvs(5731.0))/(5671.0-5731.0)*(r-5731.0);
+        vpv=Rvp(5731.0)+(Rvp(5671.0)-Rvp(5731.0))/(5671.0-5731.0)*(r-5731.0);
+        rho=Rrho(5731.0)+(Rrho(5671.0)-Rrho(5731.0))/(5671.0-5731.0)*(r-5731.0);
+    }
 
-	vsh=vsv;
-	vph=vpv;
+    vsh=vsv;
+    vph=vpv;
 
-	return;
+    return;
 }
 
 template<class T>
@@ -346,19 +359,19 @@ double DrhoS(const T &Depth,const int &RemoveCrust, const int &Remove220,
 template<class T>
 double RvsS(const T &Radius,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
-	return DvsS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
+    return DvsS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
 }
 
 template<class T>
 double RvpS(const T &Radius,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
-	return DvpS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
+    return DvpS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
 }
 
 template<class T>
 double RrhoS(const T &Radius,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
-	return DrhoS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
+    return DrhoS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
 }
 
 // PREMX
@@ -374,27 +387,27 @@ void PREMX(const T &Depth, double &rho,double &vpv,double &vph,
     double x=r/R;
 
 
-	if (Depth<=400) {
-		vsh= -1147.226569441673*x*x*x + 3481.648723871561*x*x - 3521.617739418105*x + 1191.686592108216;
-		vsv= vsh;
-		rho=   734.780041069559*x*x*x - 2071.193615789281*x*x + 1938.047108369886*x -  598.252785440164;
-		vph=   -4.9208884249226*x*x*x + 274.0496803031463*x*x - 533.3366953315248*x + 272.3185207233010;
-		vpv= vph;
-	}
+    if (Depth<=400) {
+        vsh= -1147.226569441673*x*x*x + 3481.648723871561*x*x - 3521.617739418105*x + 1191.686592108216;
+        vsv= vsh;
+        rho=   734.780041069559*x*x*x - 2071.193615789281*x*x + 1938.047108369886*x -  598.252785440164;
+        vph=   -4.9208884249226*x*x*x + 274.0496803031463*x*x - 533.3366953315248*x + 272.3185207233010;
+        vpv= vph;
+    }
 
-	if (600<=Depth && Depth<=1155.674) {
-		vsh= -84.46554942*x*x + 134.4361189*x - 46.95411628;
-		vsv= vsh;
-	}
-	if (600<=Depth && Depth<=1726.323) {
-		rho= -13.29902926*x*x + 16.06334012*x + 0.3373366175;
-	}
-	if (600<=Depth && Depth<=970.426) {
-		vph= -189.1928756*x*x + 310.1340153*x - 115.5330402;
-		vpv= vph;
-	}
+    if (600<=Depth && Depth<=1155.674) {
+        vsh= -84.46554942*x*x + 134.4361189*x - 46.95411628;
+        vsv= vsh;
+    }
+    if (600<=Depth && Depth<=1726.323) {
+        rho= -13.29902926*x*x + 16.06334012*x + 0.3373366175;
+    }
+    if (600<=Depth && Depth<=970.426) {
+        vph= -189.1928756*x*x + 310.1340153*x - 115.5330402;
+        vpv= vph;
+    }
 
-	return;
+    return;
 }
 
 template<class T>
@@ -420,17 +433,17 @@ double DrhoX(const T &Depth){
 
 template<class T>
 double RvsX(const T &Radius){
-	return DvsX(6371.0-Radius);
+    return DvsX(6371.0-Radius);
 }
 
 template<class T>
 double RvpX(const T &Radius){
-	return DvpX(6371.0-Radius);
+    return DvpX(6371.0-Radius);
 }
 
 template<class T>
 double RrhoX(const T &Radius){
-	return DrhoX(6371.0-Radius);
+    return DrhoX(6371.0-Radius);
 }
 
 #endif

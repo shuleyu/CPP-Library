@@ -4,30 +4,32 @@
 #include<PointOnSegment.hpp>
 #include<LineJunction.hpp>
 
-/*********************************************************
- * This C++ template return the junction point of two line
- * segments.
+/**************************************************************************************************
+ * This C++ template return the junction point of two line segments.
  *
- * const pair<T1,T2> &p1  ----  First end point of the first segment.
- * const pair<T3,T4> &q1  ----  Second end point of the first segment.
- * const pair<T5,T6> &p2  ----  First end point of the second segment.
- * const pair<T7,T8> &q2  ----  Second end point of the second segment.
- * bool              EndPoint  ----  End points counted as a junction?
- *                                   true (default value): return true for junction happens at any end ponts.
- *                                   false: return false for junction happens at any end ponts.
+ * input(s):
+ * const pair<T1,T2> &p1        ----  First end point of the first segment.
+ * const pair<T3,T4> &q1        ----  Second end point of the first segment.
+ * const pair<T5,T6> &p2        ----  First end point of the second segment.
+ * const pair<T7,T8> &q2        ----  Second end point of the second segment.
+ * const bool        &EndPoint  ----  (Optional) End points counted as a junction? Default is true.
+ *                                      true : return true for junction happens at any end ponts.
+ *                                      false: return false for junction happens at any end ponts.
  *
- * return value:
- * pair<bool,pair<double,double>>  ans  ----  Return flag and the position of the junction point.
+ * return(s):
+ * pair<bool,pair<double,double>>  ans  ----  {flag, position of the junction point}
+ *                                            If no junction point, flag is set to false.
  *
  * Shule Yu
  * Jan 19 2018
  *
  * Key words: segment junction.
-*********************************************************/
+**************************************************************************************************/
 
 template<class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
 std::pair<bool,std::pair<double,double>> SegmentJunction(const std::pair<T1,T2> &p1,const std::pair<T3,T4> &q1,
-                                                         const std::pair<T5,T6> &p2,const std::pair<T7,T8> &q2,bool EndPoint=true){
+                                                         const std::pair<T5,T6> &p2,const std::pair<T7,T8> &q2,
+                                                         const bool &EndPoint=true){
 
     // Check end points.
     if (PointOnSegment(p1,q1,p2)) return {EndPoint,p2};

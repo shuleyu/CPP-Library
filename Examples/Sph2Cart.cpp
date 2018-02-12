@@ -6,21 +6,15 @@ using namespace std;
 
 int main(){
 
-    double r,theta,phi;
-	double xx,yy,zz;
-
-	int x,y,z;
-    x=0;
-    y=0;
-    z=-1;
+	int x=0,y=0,z=-1;
 
     // Use function.
 	cout << x << " " <<  y << " " << z << endl;
-    Cart2Sph(x,y,z,r,phi,theta);
-	cout << r << " " <<  phi << " " << theta << endl;
+    auto ans=Cart2Sph(x,y,z);
+	cout << ans[0] << " " <<  ans[1] << " " << ans[2] << endl;
 
-    Sph2Cart(r,theta,phi,xx,yy,zz);
-	cout << xx << " " <<  yy << " " << zz << endl;
+    auto res=Sph2Cart(ans[0],ans[1],ans[2]);
+	cout << res[0] << " " <<  res[1] << " " << res[2] << endl;
 
     return 0;
 

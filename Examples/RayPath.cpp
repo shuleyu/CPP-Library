@@ -23,7 +23,7 @@ int main(int argc, char **argv){
 //     double StartDepth=0,EndDepth=2891,TakeOff=0;
 //     double rayp=(RE-StartDepth)*sin(TakeOff*M_PI/180)/Dvs(StartDepth)/180*M_PI;
 
-    // S takeoff at 10 degree, 0 km.
+    // S takeoff at 30 degree, 0 km, gcp distance at 20.9205 degree.
     // taup_time -mod prem -h 0 -ph S -deg 20.9205
     double StartDepth=0,EndDepth=2891,TakeOff=30;
     double rayp=(RE-StartDepth)*sin(TakeOff*M_PI/180)/Dvs(StartDepth)/180*M_PI;

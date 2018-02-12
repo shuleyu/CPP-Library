@@ -1,9 +1,7 @@
 #ifndef ASU_COMBINETWOPOLYGONS
 #define ASU_COMBINETWOPOLYGONS
 
-#include<iostream>
 #include<vector>
-#include<cmath>
 #include<map>
 #include<queue>
 #include<algorithm>
@@ -17,17 +15,19 @@
  * This C++ template combine 2 polygons (Compute the union sets of
  * given two polygons).
  *
+ * input(s):
  * const vector<vector<pair<T1,T2>>> &p1  ----  Input polygon 1.
  * const vector<vector<pair<T3,T4>>> &p2  ----  Input polygon 2.
  *
  * Each polygon is denoted by a series of waypoints of pairs of
  * coordinates (x,y).
  *
- * return:
- * If the input two polygons are completely separated:
- *     ans.first=false, ans.second={};
- * Otherwise
- *     ans.first=true, ans.second=one combined polygon.
+ * return(s):
+ * pair<bool,vector<pair<double,double>>> ans  ----
+ *            If the input two polygons are completely separated:
+ *                ans.first=false, ans.second={};
+ *            Otherwise,
+ *                ans.first=true, ans.second=one combined polygon.
  *
  * Shule Yu
  * Jan 19 2018
@@ -133,7 +133,7 @@ std::pair<bool,std::vector<std::pair<double,double>>> CombineTwoPolygons(const s
         v1=v3;
     } while(Cur!=Begin);
 
-	return {true,ans};
+    return {true,ans};
 }
 
 #endif

@@ -9,29 +9,27 @@ int main(){
 
     vector<vector<int>> data;
 
-    data.push_back({1});
-    data.push_back({2});
-    data.push_back({3});
-    data.push_back({4});
-    data.push_back({11});
-    data.push_back({12});
-    data.push_back({13});
-    data.push_back({14});
-    data.push_back({21});
-    data.push_back({22});
-    data.push_back({23});
-    data.push_back({24});
+    data.push_back({1,1});
+    data.push_back({2,3});
+    data.push_back({3,2});
+    data.push_back({2,5});
+    data.push_back({-1,4});
+    data.push_back({-3,2});
+    data.push_back({-4,1});
+    data.push_back({-3,4});
+    data.push_back({-4,-5});
+    data.push_back({-2,-4});
+    data.push_back({-3,-2});
+    data.push_back({-1,-1});
 
 	auto res=Kmeans(data,3);
 
-	for (size_t i=0;i<data.size();++i)
-            cout << data[i][0] << " ";
-
-	cout << endl <<  "=========="  << endl;
-
-	for (auto &item:res) cout << item << " ";
-
-	cout << endl <<  "=========="  << endl;
+	for (size_t i=0;i<data.size();++i) {
+        cout << "Catergory: " << res[i] << ": ";
+        for (size_t j=0;j<data[j].size();++j) 
+            cout << data[i][j] << " ";
+        cout << endl;
+    }
 
 	return 0;
 }

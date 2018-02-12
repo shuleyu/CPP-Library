@@ -7,19 +7,15 @@ using namespace std;
 
 int main(){
 
-// 	vector<pair<double,double>> Data{
-// 		{1,2},
-// 		{3,6},
-// 		{8,16},
-// 		{5,10}
-// 	};
-
-    vector<pair<double,double>> Data;
     double a,b;
+    vector<double> x,y;
     ifstream fpin("data/RemoveTrend_in");
-    while (fpin >> a >> b) Data.push_back({a,b});
+    while (fpin >> a >> b) {
+        x.push_back(a);
+        y.push_back(b);
+    }
 
-	auto res=PolyFit(Data,1);
+	auto res=PolyFit(x,y,1);
 
 	for (auto &item:res)
 		cout << item << " ";

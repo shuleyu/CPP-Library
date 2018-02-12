@@ -5,7 +5,11 @@
  * This C++ template convert input longitude (in deg) to
  * [-180,180] deg.
  *
- * T lon  ----  Longitude.
+ * input(s):
+ * const T &lon  ----  Longitude.
+ *
+ * return(s):
+ * double ans  ----  Longitude in -180 ~ 180.
  *
  * Shule Yu
  * Dec 29 2017
@@ -14,14 +18,14 @@
 *******************************************************/
 
 template<class T>
-T Lon2180(T lon){
+inline double Lon2180(const T &lon){
 
-    if (lon>=0) lon-=360*((int)(lon/360));
-    else lon+=360*(1+(int)(-lon/360));
+    double ans=lon;
+    if (ans>=0) ans-=360*((int)(ans/360));
+    else ans+=360*(1+(int)(-ans/360));
 
-    if (lon>180) lon-=360;
-
-    return lon;
+    if (ans>180) ans-=360;
+    return ans;
 }
 
 #endif

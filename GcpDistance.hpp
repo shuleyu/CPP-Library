@@ -7,10 +7,14 @@
  * This C++ template returns distance (in deg) of two
  * geographic locations.
  *
- * T1 lo1  ----  longitude of point 1
- * T2 la1  ----  latitude  of point 1
- * T3 lo2  ----  longitude of point 2
- * T4 la2  ----  latitude  of point 2
+ * input(s):
+ * const T1 lo1  ----  longitude of point 1
+ * const T2 la1  ----  latitude  of point 1
+ * const T3 lo2  ----  longitude of point 2
+ * const T4 la2  ----  latitude  of point 2
+ *
+ * return(s):
+ * double ans  ----  distance.
  *
  * Shule Yu
  * Dec 26 2017

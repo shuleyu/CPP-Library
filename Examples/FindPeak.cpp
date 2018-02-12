@@ -18,8 +18,8 @@ int main(){
 
 	int Peak=50;
     // Use function.
-    printf("Widow: %d ~ %d\n",Peak-10,Peak+10);
-	FindPeak(A,Peak,-10,20);
+    printf("Widow: %d ~ %d\n",Peak-10,Peak+10-1);
+	Peak=FindPeak(A,Peak,-10,20);
     printf("Peak is at: %d\n",Peak);
 
 	for (int i=35;i<65;++i){

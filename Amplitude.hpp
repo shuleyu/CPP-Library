@@ -8,7 +8,14 @@
  * This C++ template returns the amplitude and the
  * positions of that amplitude.
  *
+ * input(s):
  * const vector<T> &p  ----  Input array.
+ *
+ * output(s):
+ * pair<T,vector<size_t>> ans
+ *                     ----  ans.first is the ampiltude.
+ *                           ans.second is the position(s)
+ *                           this amplitude occurs in p.
  *
  * Shule Yu
  * Dec 19 2017
@@ -20,8 +27,8 @@ template <class T>
 std::pair<T,std::vector<size_t>> Amplitude(const std::vector<T> &p){
 
     // Check array size.
-    if (p.size()==0) {
-        std::cerr <<  __func__ << "; Error: input array size is zero ..." << std::endl;
+    if (p.empty()) {
+        std::cerr <<  "Error in " << __func__ << ": input array size is zero ..." << std::endl;
         return {};
     }
 
@@ -35,8 +42,7 @@ std::pair<T,std::vector<size_t>> Amplitude(const std::vector<T> &p){
             ans.first=amp;
             ans.second={i};
         }
-        else if (ans.first==amp)
-            ans.second.push_back(i);
+        else if (ans.first==amp) ans.second.push_back(i);
     }
 
     return ans;

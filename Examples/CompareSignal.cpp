@@ -34,27 +34,27 @@ int main(){
 
     //
 	auto res=CompareSignal(p,P1,p,P1,delta,-3,3,0.25);
-    cout << ">V1 : " << res.first << '\n';
-    cout << ">V2 : " << res.second.first << '\n';
-    cout << ">V3 : " << res.second.second << "\n\n";
+    cout << ">V1 : " << res[0] << '\n';
+    cout << ">V2 : " << res[1] << '\n';
+    cout << ">V3 : " << res[2] << "\n\n";
 
     //
 	res=CompareSignal(p,P1,pp,P2,delta,-3,3,0.25);
-    cout << ">V1 : " << res.first << '\n';
-    cout << ">V2 : " << res.second.first << '\n';
-    cout << ">V3 : " << res.second.second << "\n\n";
+    cout << ">V1 : " << res[0] << '\n';
+    cout << ">V2 : " << res[1] << '\n';
+    cout << ">V3 : " << res[2] << "\n\n";
 
     //
 	res=CompareSignal(p,P1,ppp,P3,delta,-3,3,0.25);
-    cout << ">V1 : " << res.first << '\n';
-    cout << ">V2 : " << res.second.first << '\n';
-    cout << ">V3 : " << res.second.second << "\n\n";
+    cout << ">V1 : " << res[0] << '\n';
+    cout << ">V2 : " << res[1] << '\n';
+    cout << ">V3 : " << res[2] << "\n\n";
 
     //
 	res=CompareSignal(p,P1,pppp,P4,delta,-3,3,0.25);
-    cout << ">V1 : " << res.first << '\n';
-    cout << ">V2 : " << res.second.first << '\n';
-    cout << ">V3 : " << res.second.second << "\n\n";
+    cout << ">V1 : " << res[0] << '\n';
+    cout << ">V2 : " << res[1] << '\n';
+    cout << ">V3 : " << res[2] << "\n\n";
 
     for (size_t i=0;i<p.size();++i) cout << delta*i-delta*P1 << " " << p[i] << '\n';
     cout << ">\n";

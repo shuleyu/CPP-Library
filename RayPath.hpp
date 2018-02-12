@@ -9,20 +9,23 @@
 #include<LocDist.hpp>
 
 /********************************************************************
- * This C++ template finds the ray path for the given ray parameters.
+ * This C++ template calculate the ray path for the given ray
+ * parameters.
  *
+ * input(s):
  * const vector<T1> &r             ----  layer radius array. r[0] is the shallowest layer.
  * const vector<T2> &v             ----  velocity array at each radius.
  * const T3         &rayp          ----  ray parameter. (rad/sec, same unit as the output of taup)
  * const T4         &MinDepth      ----  depth to start the ray tracing.
  * const T5         &MaxDepth      ----  depth to stop the ray tracing.
- * const T6         &TurningAngle  ----  (optional) the critical angle for turning assessment.
+ * vector<double>   &degree        ----  Output ray path, angles. If degree[0]<-1e5, will only output degree.back();
+ * vector<double>   &radius        ----  Output ray path, radiuses. If input[0]<-1e5, will only output radius.back();
+ * const T6         &TurningAngle  ----  (Optional) the critical angle for turning assessment.
  *                                       default value is 89.9 deg.
- *
- * returns:
- * pair<double,double>  ans      ----  travel time / pursuit distance.
- * vector<double>       &degree  ----  ray path, angles. If input is {-1e6}, will only output degree.back();
- * vector<double>       &radius  ----  ray path, radiuses. If input is {-1e6}, will only output radius.back();
+ * return(s):
+ * pair<double,double>  ans  ----  {travel time / pursuit distance}
+ * vector<double> &degree (in-place)
+ * vector<double> &radius (in-place)
  *
  * Shule Yu
  * Jan 28 2018
@@ -36,11 +39,10 @@ std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2>
                                  std::vector<double> &degree,std::vector<double> &radius,
                                  const T6 &TurningAngle=89.9){
 
-
     // check inputs.
     double RE=6371.0;
     if (MaxDepth<=MinDepth || MaxDepth>RE-r.back() || MinDepth<RE-r[0]){
-        std::cerr <<  __func__ << "; Error: MinDepth/MaxDepth input error ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ":  MinDepth/MaxDepth input error ..." << std::endl;
         return {-1,-1};
     }
 
@@ -48,7 +50,7 @@ std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2>
         return a>=b;
     };
     if (!std::is_sorted(r.begin(),r.end(),cmp)) {
-        std::cerr <<  __func__ << "; Error: layers (radius) is not strict monotonic decreasing..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ":  layers (radius) is not strict monotonic decreasing..." << std::endl;
         return {-1,-1};
     }
 
@@ -98,8 +100,8 @@ std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2>
         // Judge turning.
         if (B>=MaxAngle) break;
 
-		dist=r[i+1]/C*D;
-		if (std::isnan(dist)) dist=LocDist(0,0,r[i],asin(D)*180/M_PI,0,r[i+1]);
+        dist=r[i+1]/C*D;
+        if (std::isnan(dist)) dist=LocDist(0,0,r[i],asin(D)*180/M_PI,0,r[i+1]);
 
         // store travel time and distance of this step.
         ans.first+=dist/v[i];

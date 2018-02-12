@@ -1,6 +1,7 @@
 #ifndef ASU_STRETCHSIGNAL
 #define ASU_STRETCHSIGNAL
 
+#include<iostream>
 #include<cmath>
 #include<vector>
 
@@ -10,12 +11,16 @@
  * This C++ template stretch/squeeze input signal horizontally
  * according to the given parameter.
  *
+ * inpput(s):
  * const vector<T1> &p  ----  Input signal. signal length is npts.
- * const T2         &r  ----  Horizontal stretch factor. output signal length is r*npts. 
+ * const T2         &r  ----  Horizontal stretch factor. output signal length is r*npts.
  *
- *                    r = 1 means the original trace.
- *                    r = 0.5 gives a squeezed trace. (squeeze by half) 
- *                    r = 2 gives stretched trace. (stretch by half)
+ *                             e.g.
+ *                             r = 1 means the original trace.
+ *                             r = 0.5 gives a squeezed trace. (squeeze by half)
+ *                             r = 2 gives stretched trace. (stretch by half)
+ * return(s):
+ * vector<double> ans  ----  Stretched trace.
  *
  * Shule Yu
  * Jan 21 2018
@@ -30,7 +35,7 @@ std::vector<double> StretchSignal(const std::vector<T1> &p, const T2 &r){
     std::vector<double> ans;
 
     if (p.size()<=1) {
-        std::cerr <<  __func__ << "; Error: input array size <=1 ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": input array size <=1 ..." << std::endl;
         return ans;
     }
 
@@ -47,7 +52,7 @@ std::vector<double> StretchSignal(const std::vector<T1> &p, const T2 &r){
 
     ans=Interpolate(x,p,xx,true);
 
-	return ans;
+    return ans;
 }
 
 #endif

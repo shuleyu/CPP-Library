@@ -8,11 +8,11 @@
  * This C++ template returns the union result of input close
  * intervals.
  *
+ * input(s):
  * vector<pair<T,T>> &x  ----  Intervals.
  *
- * return:
+ * return(s):
  * vector<pair<T,T>> &y  ----  Union results.
- *
  *
  * Shule Yu
  * Jan 21 2018

@@ -11,10 +11,11 @@
  * frquency with a constant phase. Then ifft back to time domain and
  * output the result.
  *
+ * input(s):
  * const vector<T1> &x      ----  1-D input signal.
  * const T2         &shift  ----  Constant phase shift value. (in deg.)
  *
- * return:
+ * return(s):
  * vector<double> y         ----  Phase-shifted signal. (same length as x)
  *
  * Shule Yu
