@@ -51,7 +51,7 @@ std::vector<double> ShiftPhase(const std::vector<T1> &x,const T2 &shift){
     // Shift phase.
     double amp,phase;
     for (int i=0;i<N/2+1;++i){
-        amp=sqrt(pow(Out[i][0],2)+pow(Out[i][1],2));
+        amp=sqrt(Out[i][0]*Out[i][0]+Out[i][1]*Out[i][1]);
         phase=atan2(Out[i][1],Out[i][0]);
         Out[i][0]=amp*cos(phase+shift*M_PI/180.0);
         Out[i][1]=amp*sin(phase+shift*M_PI/180.0);

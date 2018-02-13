@@ -2,47 +2,47 @@
 #include<fstream>
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 extern "C"{
-#include<sacio.h>
 #include<sac.h>
+#include<sacio.h>
 }
+
+#include<ASU_tools.hpp>
 
 using namespace std;
 
 int main(){
 
-
-    double delta;
-
-    delta=0.025;
-
-    int n=(int)ceil(4*M_PI/delta);
-
-    vector<double> Sin(n,0);
-
-    for (int i=0;i<n;++i) Sin[i]=sin(i*delta);
+    vector<double> A;
+    ifstream fpin("data/200608250044.CN.LMN.BHT.txt");
+    double x,y,delta=0.025;
+    while (fpin >> x >> y) A.push_back(y);
+    fpin.close();
+    Normalize(A);
 
     // Use function.
-    auto ans=Envelope(Sin);
+    auto ans=Envelope(A);
 
     // Use SAC library
-    float *Sin_float= new float [n];
+    int n=A.size();
+    float *A_float= new float [n];
     float *ans_SAC= new float [n];
-    for (int i=0;i<n;++i) Sin_float[i]=Sin[i];
-    envelope(n,Sin_float,ans_SAC);
+    for (int i=0;i<n;++i) A_float[i]=A[i];
+    envelope(n,A_float,ans_SAC);
 
     // Output.
-    ofstream fpout("data/Envelope_in");
-    for (int i=0;i<n;++i) fpout << delta*i << " " << Sin[i] << '\n';
-    fpout.close();
-
+    ofstream fpout;
     fpout.open("data/Envelope_out");
-    for (size_t i=0;i<ans.size();++i) fpout << delta*i << " " <<  ans[i] << " " << ans_SAC[i] << '\n';
+    for (size_t i=0;i<A.size();++i)
+        fpout << delta*i << " " <<  ans[i] << '\n';
     fpout.close();
 
-    delete [] Sin_float;
+    fpout.open("data/Envelope_SAC_out");
+    for (size_t i=0;i<A.size();++i)
+        fpout << delta*i << " " <<  ans_SAC[i] << '\n';
+    fpout.close();
+
+    delete [] A_float;
     delete [] ans_SAC;
 
     return 0;

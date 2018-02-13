@@ -24,7 +24,7 @@
  * Dependence: fftw-3.
  *
  * Key words : fast fourier transform, envelope, hilbert.
-****************************************************************************/
+**************************************************************/
 
 template<class T>
 std::vector<double> Envelope(const std::vector<T> &x){

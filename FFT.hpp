@@ -31,7 +31,7 @@
  * Dependence: fftw-3.
  *
  * Key words : fast fourier transform, fft.
-***********************************************************/
+*********************************************************************/
 
 template<class T1, class T2>
 void FFT(const std::vector<std::vector<T1>> &x, const T2 &delta, std::vector<double> &freq, std::vector<std::vector<double>> &amp, std::vector<std::vector<double>> &phase){

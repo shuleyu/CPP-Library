@@ -2,6 +2,11 @@
 #include<fstream>
 #include<vector>
 
+extern "C"{
+#include<sac.h>
+#include<sacio.h>
+}
+
 #include<ASU_tools.hpp>
 
 using namespace std;
@@ -17,7 +22,7 @@ int main(){
     int n=2*(int)ceil(gwidth/2/delta);
 
     // Make signal.
-	vector<double>gauss=GaussianSignal(n,delta,sigma);
+	vector<double> gauss=GaussianSignal(n,delta,sigma);
     Normalize(gauss);
 
     // Use function.

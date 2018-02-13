@@ -4,6 +4,7 @@
 #include<iostream>
 #include<vector>
 #include<cmath>
+#include<algorithm>
 
 #include<Amplitude.hpp>
 #include<Envelope.hpp>
@@ -25,7 +26,7 @@
  *
  * method=2
  * 1. Find the peak within the signal window.
- * 2. Find the averaged absolute amplitude through the noise window. (by taking envelope)
+ * 2. Find the averaged absolute amplitude through the noise window. (after taking envelope)
  * 3. Take the ratio.
  *
  * input(s):
@@ -69,8 +70,8 @@ double SNR(const std::vector<T> &p,const int &nloc,const int &nlen,const int &sl
             res=Envelope(p);
 
             // integrate the envelope using Simpson's rule. (ignore h/3 term).
-            Slevel=SimpsonRule(std::vector<T> (res.begin()+sloc,res.begin()+sloc+slen));
-            Nlevel=SimpsonRule(std::vector<T> (res.begin()+nloc,res.begin()+nloc+nlen));
+            Slevel=SimpsonRule(std::vector<double> (res.begin()+sloc,res.begin()+sloc+slen));
+            Nlevel=SimpsonRule(std::vector<double> (res.begin()+nloc,res.begin()+nloc+nlen));
 
             // average with respect to their length.
             return Slevel/Nlevel*(1.0*nlen/slen);
@@ -87,7 +88,8 @@ double SNR(const std::vector<T> &p,const int &nloc,const int &nlen,const int &sl
             res=Envelope(p);
 
             Slevel=Amplitude(std::vector<T> (p.begin()+sloc,p.begin()+sloc+slen)).first;
-            Nlevel=Amplitude(std::vector<T> (res.begin()+nloc,res.begin()+nloc+nlen)).first;
+//             Nlevel=Amplitude(std::vector<double> (res.begin()+nloc,res.begin()+nloc+nlen)).first;
+            Nlevel=std::accumulate(res.begin()+nloc,res.begin()+nloc+nlen,0.0)/nlen;
 
             return Slevel/Nlevel;
 

@@ -34,7 +34,7 @@
  *       window to fit the data and gives a warning.
  *
  * Key words: normalize
-***********************************************************/
+******************************************************/
 
 template<class T>
 T Normalize(std::vector<T> &p, std::pair<int,int> W={0,std::numeric_limits<int>::max()}){
