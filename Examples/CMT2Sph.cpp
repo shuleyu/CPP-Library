@@ -9,7 +9,7 @@ int main(){
     double strike,dip,rake;
     strike=45;
     dip=90;
-    rake=-45;
+    rake=0;
 
     // Use function.
     auto res=CMT2Sph(strike,dip,rake);

@@ -65,7 +65,8 @@ std::pair<double,double> AvrStd(const std::vector<T1> &V,const std::vector<T2> &
     avr/=SumW;
 
     if (SumW<=1) {
-        std::cerr <<  "Warning in " << __func__ << ": weight sum <= 1 ..." << std::endl;
+        std::cerr <<  "Warning in " << __func__ << ": weight sum = " << SumW << " <= 1 ..." << std::endl;
+        std::cerr <<  "                               Not enough significant records ..." << std::endl;
         return {avr,0};
     }
 

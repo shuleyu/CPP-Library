@@ -1,6 +1,13 @@
 #ifndef ASU_SEISSIGNAL
 #define ASU_SEISSIGNAL
 
+#include<vector>
+
+extern "C"{
+#include<sacio.h>
+#include<sac.h>
+}
+
 namespace ASUSEIS{
 
     class Signal{
@@ -27,17 +34,12 @@ namespace ASUSEIS{
         return ans;
     }
 }
+
 #include<iostream>
 #include<algorithm>
 #include<cmath>
 #include<string>
 #include<cstring>
-#include<vector>
-extern "C"{
-#include<sacio.h>
-#include<sac.h>
-#include<ASU_tools.h>
-}
 #include<ASU_tools.hpp>
 
 #define DMAXL 1000000

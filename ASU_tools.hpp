@@ -41,6 +41,7 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<GaussianBlur.hpp>
 #include<GaussianFunction.hpp>
 #include<GaussianSignal.hpp>
+#include<GetRayP.hpp>                            // Need TauP Toolkit
 #include<GcpDistance.hpp>
 #include<GridStretch.hpp>
 #include<HannTaper.hpp>
