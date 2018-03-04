@@ -19,7 +19,7 @@
  *
  * return(s):
  * double ans  ----  ray parameter (in sec/rad.)
- *                   -1 if there's no such ray.
+ *                   return -1 if there's no such ray.
  *
  * Shule Yu
  * Feb 27 2018
