@@ -63,16 +63,22 @@ void Butterworth(std::vector<std::vector<T1>> &p, const T2 &delta, const T3 &f1,
     // Call SAC function.
     float *rawdata= new float [N];
 
+    // In sac.h, we have:
+    char *BU = (char *)"BU";
+    char *BP = (char *)"BP";
+    char *HP = (char *)"HP";
+    char *LP = (char *)"LP";
+
     for (size_t Cnt=0;Cnt<p.size();++Cnt){
 
         for (size_t Cnt2=0;Cnt2<N;++Cnt2) rawdata[Cnt2]=p[Cnt][Cnt2];
 
         if (f1<=0)
-            xapiir(rawdata,(int)N,SAC_BUTTERWORTH,0.0,0.0,order,SAC_LOWPASS,0.0,f2,delta,passes);
+            xapiir(rawdata,(int)N,BU,0.0,0.0,order,LP,0.0,f2,delta,passes);
         else if (f2>=nf)
-            xapiir(rawdata,(int)N,SAC_BUTTERWORTH,0.0,0.0,order,SAC_HIGHPASS,f1,0.0,delta,passes);
+            xapiir(rawdata,(int)N,BU,0.0,0.0,order,HP,f1,0.0,delta,passes);
         else
-            xapiir(rawdata,(int)N,SAC_BUTTERWORTH,0.0,0.0,order,SAC_BANDPASS,f1,f2,delta,passes);
+            xapiir(rawdata,(int)N,BU,0.0,0.0,order,BP,f1,f2,delta,passes);
 
         for (size_t Cnt2=0;Cnt2<N;++Cnt2) p[Cnt][Cnt2]=rawdata[Cnt2];
     }

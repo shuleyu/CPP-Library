@@ -6,7 +6,7 @@ set -e
 
 SRCDIR=${PWD}
 CPPCODEDIR=${PWD}/..
-SACHOME=/opt/sac
+SACHOME=/opt/sac-101.6
 INCLUDE="-I${CPPCODEDIR} -I${SACHOME}/include -I/opt/local/include -I/usr/include"
 LIBDIR="-L${CPPCODEDIR} -L${SACHOME}/lib -L/opt/local/lib"
 LIBs="-lASU_tools_cpp -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm"

@@ -47,6 +47,7 @@ void Wiginterp(double *x, double *y, int npts, double *xx, double *yy, int Newnp
 #include<HannTaper.hpp>
 #include<Interpolate.hpp>
 #include<Kmeans.hpp>                             // Need mlpack, (uncomment for less compile time), http://www.mlpack.org/
+#include<LayerRayPath.hpp>
 #include<LinearInterp.hpp>
 #include<LineJunction.hpp>
 #include<LL2TP.hpp>

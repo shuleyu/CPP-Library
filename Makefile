@@ -1,11 +1,10 @@
 
 CC = c++
-FLAGS = --std=c++14 -Wall
+FLAGS = --std=c++14 -Wall -fPIC
 COMP = $(CC) $(FLAGS)
 
-SACHOME = /opt/sac
-SACHOME1 = /usr/local/sac
-INCLUDE = -I. -I/opt/local/include -I$(SACHOME)/include -I$(SACHOME1)/include
+SACHOME = /opt/sac-101.6
+INCLUDE = -I. -I/opt/local/include -I$(SACHOME)/include
 
 all: libASU_tools_cpp.a
 	@echo > /dev/null

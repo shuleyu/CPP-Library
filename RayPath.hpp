@@ -15,15 +15,15 @@
  * input(s):
  * const vector<T1> &r             ----  layer radius array. r[0] is the shallowest layer.
  * const vector<T2> &v             ----  velocity array at each radius.
- * const T3         &rayp          ----  ray parameter. (rad/sec, same unit as the output of taup)
+ * const T3         &rayp          ----  ray parameter. (sec/rad, same unit as the output of taup)
  * const T4         &MinDepth      ----  depth to start the ray tracing.
  * const T5         &MaxDepth      ----  depth to stop the ray tracing.
  * vector<double>   &degree        ----  Output ray path, angles. If degree[0]<-1e5, will only output degree.back();
- * vector<double>   &radius        ----  Output ray path, radiuses. If input[0]<-1e5, will only output radius.back();
+ * vector<double>   &radius        ----  Output ray path, radiuses. If radius[0]<-1e5, will only output radius.back();
  * const T6         &TurningAngle  ----  (Optional) the critical angle for turning assessment.
  *                                       default value is 89.9 deg.
  * return(s):
- * pair<double,double>  ans  ----  {travel time / pursuit distance}
+ * pair<double,double>  ans  ----  {travel time (s) / pursuit distance (km)}
  * vector<double> &degree (in-place)
  * vector<double> &radius (in-place)
  *
@@ -35,7 +35,7 @@
 
 template<class T1, class T2, class T3, class T4, class T5, class T6=double>
 std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2> &v,
-                                 const T3 &rayp, const T4 &MinDepth, const T5 MaxDepth,
+                                 const T3 &rayp, const T4 &MinDepth, const T5 &MaxDepth,
                                  std::vector<double> &degree,std::vector<double> &radius,
                                  const T6 &TurningAngle=89.9){
 
