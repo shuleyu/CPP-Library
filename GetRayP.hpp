@@ -18,7 +18,9 @@
  * const string &Phase  ----  seismic phase.
  *
  * return(s):
- * double ans  ----  ray parameter (in sec/rad.)
+ * double ans  ----  ray parameter (same unit as
+ *                   current version of taup, usually
+ *                   in sec/deg, p=Rsin/c/180*PI)
  *                   return -1 if there's no such ray.
  *
  * Shule Yu

@@ -31,8 +31,10 @@ bool PointOnSegment(const std::pair<T1,T2> &p1,const std::pair<T3,T4> &p2,const 
     double EPS=fabs(CrossProduct(dx1,dy1,0,dx2,dy2,0).back());
     if (EPS!=0) EPS/=(sqrt(dx1*dx1+dy1*dy1)*sqrt(dx2*dx2+dy2*dy2));
 
-    return (std::min(p1.first,p2.first)<=p.first && p.first<=std::max(p1.first,p2.first) &&
-            std::min(p1.second,p2.second)<=p.second && p.second<=std::max(p1.second,p2.second) && EPS<1e-7);
+    return (fabs(EPS)<1e-7 &&
+            ( (std::min(p1.first,p2.first)<=p.first && p.first<=std::max(p1.first,p2.first)) ||
+              (std::min(p1.second,p2.second)<=p.second && p.second<=std::max(p1.second,p2.second)) )
+           );
 }
 
 #endif

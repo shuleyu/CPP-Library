@@ -15,17 +15,17 @@
  * input(s):
  * const vector<T1> &r             ----  layer radius array. r[0] is the shallowest layer.
  * const vector<T2> &v             ----  velocity array at each radius.
- * const T3         &rayp          ----  ray parameter. (sec/rad, same unit as the output of taup)
+ * const T3         &rayp          ----  ray parameter. (in sec/deg, p=Rsin/c/180*PI)
  * const T4         &MinDepth      ----  depth to start the ray tracing.
  * const T5         &MaxDepth      ----  depth to stop the ray tracing.
  * vector<double>   &degree        ----  Output ray path, angles. If degree[0]<-1e5, will only output degree.back();
- * vector<double>   &radius        ----  Output ray path, radiuses. If radius[0]<-1e5, will only output radius.back();
+ * size_t           &radius        ----  Output ray path end index in "r".
  * const T6         &TurningAngle  ----  (Optional) the critical angle for turning assessment.
  *                                       default value is 89.9 deg.
  * return(s):
- * pair<double,double>  ans  ----  {travel time (s) / pursuit distance (km)}
+ * pair<pair<double,double>,bool>  ans  ----  {{travel time (s) / pursuit distance (km)}, RayTurns?}
  * vector<double> &degree (in-place)
- * vector<double> &radius (in-place)
+ * size_t         &radius (in-place)
  *
  * Shule Yu
  * Jan 28 2018
@@ -34,16 +34,16 @@
 ********************************************************************/
 
 template<class T1, class T2, class T3, class T4, class T5, class T6=double>
-std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2> &v,
-                                 const T3 &rayp, const T4 &MinDepth, const T5 &MaxDepth,
-                                 std::vector<double> &degree,std::vector<double> &radius,
-                                 const T6 &TurningAngle=89.9){
+std::pair<std::pair<double,double>,bool> RayPath(const std::vector<T1> &r, const std::vector<T2> &v,
+                                                 const T3 &rayp, const T4 &MinDepth, const T5 &MaxDepth,
+                                                 std::vector<double> &degree,size_t &radius,
+                                                 const T6 &TurningAngle=89.9){
 
     // check inputs.
     double RE=6371.0;
     if (MaxDepth<=MinDepth || MaxDepth>RE-r.back() || MinDepth<RE-r[0]){
         std::cerr <<  "Error in " << __func__ << ":  MinDepth/MaxDepth input error ..." << std::endl;
-        return {-1,-1};
+        return {{-1,-1},false};
     }
 
     auto cmp=[](const T1 &a, const T1 &b){
@@ -51,7 +51,7 @@ std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2>
     };
     if (!std::is_sorted(r.begin(),r.end(),cmp)) {
         std::cerr <<  "Error in " << __func__ << ":  layers (radius) is not strict monotonic decreasing..." << std::endl;
-        return {-1,-1};
+        return {{-1,-1},false};
     }
 
     // locate our start Layer and end Layer.
@@ -73,22 +73,16 @@ std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2>
     }
 
     // prepare output.
-    bool OutPutDegree=true,OutPutRadius=true;
-    if (!degree.empty() && degree[0]<-1e5)
-        OutPutDegree=false;
-    if (!radius.empty() && radius[0]<-1e5)
-        OutPutRadius=false;
-
+    bool OutPutDegree=(degree.empty() || degree[0]>=-1e5);
     degree.clear();
-    radius.clear();
 
     // start ray tracing.
     //   B=sin(incident_angle);
     //   C=sin(takeoff);
     //   D=sin(trun_angle);
 
-    double deg=0,rad=r[P1],dist=0,MaxAngle=sin(TurningAngle*M_PI/180),Rayp=rayp*180/M_PI;
-    std::pair<double,double> ans{0,0};
+    double deg=0,MaxAngle=sin(TurningAngle*M_PI/180),Rayp=rayp*180/M_PI;
+    std::pair<std::pair<double,double>,bool> ans{{0,0},false};
     for (size_t i=P1;i<P2;++i){
 
         double B,C,D;
@@ -98,23 +92,26 @@ std::pair<double,double> RayPath(const std::vector<T1> &r, const std::vector<T2>
         D=B*sqrt(1-C*C)-sqrt(1-B*B)*C;
 
         // Judge turning.
-        if (B>=MaxAngle) break;
+        if (B>=MaxAngle) {
+            radius=i;
+            degree.push_back(deg);
+            ans.second=true;
+            return ans;
+        }
 
-        dist=r[i+1]/C*D;
+        double dist=r[i+1]/C*D;
         if (std::isnan(dist)) dist=LocDist(0,0,r[i],asin(D)*180/M_PI,0,r[i+1]);
 
         // store travel time and distance of this step.
-        ans.first+=dist/v[i];
-        ans.second+=dist;
+        ans.first.first+=dist/v[i];
+        ans.first.second+=dist;
 
         // store the path of this step.
         if (OutPutDegree) degree.push_back(deg);
-        if (OutPutRadius) radius.push_back(rad);
         deg+=asin(D)*180/M_PI;
-        rad=r[i+1];
     }
     degree.push_back(deg);
-    radius.push_back(rad);
+    radius=P2;
 
     return ans;
 }

@@ -19,7 +19,7 @@
  * const T6 &tol        ----  (Optional) Takeoff angle error tolerance (in deg, default is 0.001).
  *
  * return(s):
- * double rayp  ----  Ray parameter connection the two points.
+ * double rayp  ----  Ray parameter connection the two points. (in sec/deg, p=Rsin/c/180*PI)
  *
  * Shule Yu
  * Jan 29 2018

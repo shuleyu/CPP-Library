@@ -18,13 +18,13 @@
  * const T4         &MinDepth      ----  depth to start the ray tracing.
  * const T5         &MaxDepth      ----  depth to stop the ray tracing.
  * vector<double>   &X             ----  Output ray path, horizontal distance from source. If X[0]<-1e5, will only output X.back();
- * vector<double>   &D             ----  Output ray path, vertical distance from z=0. If D[0]<-1e5, will only output D.back();
+ * size_t           &D             ----  Output ray path end index in "z".
  * const T6         &TurningAngle  ----  (Optional) the critical angle for turning assessment.
  *                                       default value is 89.9 deg.
  * return(s):
- * pair<double,double>  ans  ----  {travel time (s) / pursuit distance (km)}
+ * pair<pair<double,double>,bool>  ans  ----  {{travel time (s) / pursuit distance (km)}, RayTurns?}
  * vector<double> &X (in-place)
- * vector<double> &D (in-place)
+ * size_t &D (in-place)
  *
  * Shule Yu
  * Mar 06 2018
@@ -33,15 +33,15 @@
 ********************************************************************/
 
 template<class T1, class T2, class T3, class T4, class T5, class T6=double>
-std::pair<double,double> LayerRayPath(const std::vector<T1> &z, const std::vector<T2> &v,
-                                 const T3 &rayp, const T4 &MinDepth, const T5 &MaxDepth,
-                                 std::vector<double> &X,std::vector<double> &D,
-                                 const T6 &TurningAngle=89.9){
+std::pair<std::pair<double,double>,bool> LayerRayPath(const std::vector<T1> &z, const std::vector<T2> &v,
+                                         const T3 &rayp, const T4 &MinDepth, const T5 &MaxDepth,
+                                         std::vector<double> &X,size_t &D,
+                                         const T6 &TurningAngle=89.9){
 
     // check inputs.
     if (MaxDepth<=MinDepth || MaxDepth>z.back() || MinDepth<z[0]){
         std::cerr <<  "Error in " << __func__ << ":  MinDepth/MaxDepth input error ..." << std::endl;
-        return {-1,-1};
+        return {{-1,-1},false};
     }
 
     auto cmp=[](const T1 &a, const T1 &b){
@@ -49,7 +49,7 @@ std::pair<double,double> LayerRayPath(const std::vector<T1> &z, const std::vecto
     };
     if (!std::is_sorted(z.begin(),z.end(),cmp)) {
         std::cerr <<  "Error in " << __func__ << ":  layers (depth) is not strict monotonic increasing..." << std::endl;
-        return {-1,-1};
+        return {{-1,-1},false};
     }
 
     // locate our start layer and end layer.
@@ -72,35 +72,37 @@ std::pair<double,double> LayerRayPath(const std::vector<T1> &z, const std::vecto
 
     // prepare output.
     bool OutPutX=(X.empty() || X[0]>=-1e5);
-    bool OutPutD=(D.empty() || D[0]>=-1e5);
-    X.clear(); D.clear();
+    X.clear();
 
     // start ray tracing.
     //   A=sin(takeoff);
 
-    double x=0,d=z[P1],MaxAngle=sin(TurningAngle*M_PI/180);
-    std::pair<double,double> ans{0,0};
-    for (size_t i=P1;i<P2-1;++i){
+    double x=0,MaxAngle=sin(TurningAngle*M_PI/180);
+    std::pair<std::pair<double,double>,bool> ans{{0,0},false};
+    for (size_t i=P1;i<P2;++i){
 
         double A=rayp*v[i];
 
         // Judge turning.
-        if (A>=MaxAngle) break;
+        if (A>=MaxAngle) {
+            D=i;
+            X.push_back(x);
+            ans.second=true;
+            return ans;
+        }
 
         double dist=(z[i+1]-z[i])/sqrt(1-A*A);
 
         // store travel time and distance of this step.
-        ans.first+=dist/v[i];
-        ans.second+=dist;
+        ans.first.first+=dist/v[i];
+        ans.first.second+=dist;
 
         // store the path of this step.
         if (OutPutX) X.push_back(x);
-        if (OutPutD) D.push_back(d);
         x+=A*dist;
-        d=z[i+1];
     }
     X.push_back(x);
-    D.push_back(d);
+    D=P2;
 
     return ans;
 }
