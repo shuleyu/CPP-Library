@@ -77,8 +77,10 @@ std::pair<std::pair<double,double>,bool> RayPath(const std::vector<T1> &r, const
     degree.clear();
 
     // start ray tracing.
-    //   B=sin(incident_angle);
-    //   C=sin(takeoff);
+    //
+    //   B,C are angles in the same layer, B=C+D.
+    //   B=sin(incident_angle on current layer);
+    //   C=sin(takeoff_angle from last layer);
     //   D=sin(trun_angle);
 
     double deg=0,MaxAngle=sin(TurningAngle*M_PI/180),Rayp=rayp*180/M_PI;
@@ -87,12 +89,12 @@ std::pair<std::pair<double,double>,bool> RayPath(const std::vector<T1> &r, const
 
         double B,C,D;
 
-        B=Rayp*v[i]/r[i+1];
-        C=Rayp*v[i]/r[i];
+        B=Rayp*v[i+1]/r[i+1];
+        C=Rayp*v[i+1]/r[i];
         D=B*sqrt(1-C*C)-sqrt(1-B*B)*C;
 
         // Judge turning.
-        if (B>=MaxAngle) {
+        if (C>=1 || B>1) {
             radius=i;
             degree.push_back(deg);
             ans.second=true;
@@ -103,15 +105,23 @@ std::pair<std::pair<double,double>,bool> RayPath(const std::vector<T1> &r, const
         if (std::isnan(dist)) dist=LocDist(0,0,r[i],asin(D)*180/M_PI,0,r[i+1]);
 
         // store travel time and distance of this step.
-        ans.first.first+=dist/v[i];
+        ans.first.first+=dist/v[i+1];
         ans.first.second+=dist;
 
         // store the path of this step.
         if (OutPutDegree) degree.push_back(deg);
         deg+=asin(D)*180/M_PI;
+
+        // Judge turning.
+        if (B>=MaxAngle) {
+            radius=i+1;
+            degree.push_back(deg);
+            ans.second=true;
+            return ans;
+        }
     }
-    degree.push_back(deg);
     radius=P2;
+    degree.push_back(deg);
 
     return ans;
 }

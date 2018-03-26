@@ -23,7 +23,7 @@
  * Shule Yu
  * Jan 19 2018
  *
- * Key words: segment junction.
+ * Key words: segment junction, intercept, cross.
 **************************************************************************************************/
 
 template<class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
@@ -38,7 +38,6 @@ std::pair<bool,std::pair<double,double>> SegmentJunction(const std::pair<T1,T2> 
     if (PointOnSegment(p2,q2,q1)) return {EndPoint,q1};
 
     auto res=LineJunction(p1,(p1.second-q1.second)/(p1.first-q1.first),p2,(p2.second-q2.second)/(p2.first-q2.first));
-
     if (res.first && PointOnSegment(p1,q1,res.second) && PointOnSegment(p2,q2,res.second)) return {true,res.second};
     return {false,{}};
 }

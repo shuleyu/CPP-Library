@@ -22,7 +22,7 @@
  * Shule Yu
  * Jan 19 2018
  *
- * Key words: line junction.
+ * Key words: line junction, intercept, cross.
 ****************************************************************/
 
 template<class T1,class T2,class T3,class T4,class T5,class T6>
