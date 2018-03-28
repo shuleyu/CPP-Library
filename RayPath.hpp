@@ -71,6 +71,7 @@ std::pair<std::pair<double,double>,bool> RayPath(const std::vector<T1> &r, const
         if (CurMin<NewMin) {--P2;break;}
         CurMin=NewMin;
     }
+    if (P2==r.size()) --P2;
 
     // prepare output.
     bool OutPutDegree=(degree.empty() || degree[0]>=-1e5);
