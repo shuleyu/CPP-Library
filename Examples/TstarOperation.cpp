@@ -1,7 +1,8 @@
 #include<iostream>
 #include<fstream>
 
-#include<ASU_tools.hpp>
+#include<Normalize.hpp>
+#include<TstarOperation.hpp>
 
 using namespace std;
 

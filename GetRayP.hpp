@@ -1,8 +1,11 @@
 #ifndef ASU_GETRAYP
 #define ASU_GETRAYP
+// Need TauP Toolkit
 
 #include<iostream>
 #include<string>
+
+#include<ASU_tools.hpp>
 
 /*****************************************************
  * This C++ template use TauP toolkit to calculate the

@@ -1,5 +1,6 @@
 #ifndef ASU_CONFIDENCEINTERVAL
 #define ASU_CONFIDENCEINTERVAL
+// Need sci-libs/gsl
 
 #include<vector>
 #include<cmath>

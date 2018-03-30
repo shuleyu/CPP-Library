@@ -2,6 +2,8 @@
 #include<array>
 #include<memory>
 
+#include<ASU_tools.hpp>
+
 /*************************************************
  * This C++ function returns the stdout from the
  * execution of given shell command.

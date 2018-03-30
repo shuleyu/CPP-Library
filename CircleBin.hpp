@@ -2,6 +2,7 @@
 #define ASU_CIRCLEBIN
 
 #include<iostream>
+#include<vector>
 
 #include<GcpDistance.hpp>
 

@@ -1,7 +1,7 @@
 #include<iostream>
 #include<cmath>
 
-#include<ASU_tools.hpp>
+#include<RampFunction.hpp>
 
 using namespace std;
 

@@ -1,5 +1,6 @@
 #ifndef ASU_POLYFIT
 #define ASU_POLYFIT
+// Need dev-libs/boost
 
 #include<boost/numeric/ublas/matrix.hpp>
 #include<boost/numeric/ublas/lu.hpp>

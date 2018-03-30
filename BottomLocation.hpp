@@ -1,9 +1,12 @@
 #ifndef ASU_BOTTOMLOCATION
 #define ASU_BOTTOMLOCATION
+// Need TauP Toolkit
 
 #include<iostream>
 #include<vector>
 #include<string>
+
+#include<ASU_tools.hpp>
 
 /**************************************************
  * This C++ template use TauP toolkit to return the

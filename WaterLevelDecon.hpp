@@ -1,5 +1,6 @@
 #ifndef ASU_WATERLEVELDECON
 #define ASU_WATERLEVELDECON
+// Need sci-libs/fftw
 
 #include<iostream>
 #include<vector>

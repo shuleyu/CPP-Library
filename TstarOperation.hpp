@@ -1,5 +1,6 @@
 #ifndef ASU_TSTAROPERATION
 #define ASU_TSTAROPERATION
+// Need sci-libs/fftw
 
 #include<iostream>
 #include<vector>

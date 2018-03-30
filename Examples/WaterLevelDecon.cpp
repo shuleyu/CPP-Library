@@ -2,7 +2,10 @@
 #include<fstream>
 #include<algorithm>
 
-#include<ASU_tools.hpp>
+#include<Normalize.hpp>
+#include<GaussianBlur.hpp>
+#include<TriangleSignal.hpp>
+#include<WaterLevelDecon.hpp>
 
 using namespace std;
 

@@ -1,6 +1,8 @@
 #include<iostream>
 
-#include<ASU_tools.hpp>
+#include<Normalize.hpp>
+#include<StretchSignal.hpp>
+#include<TstarOperation.hpp>
 
 using namespace std;
 

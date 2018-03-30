@@ -7,7 +7,9 @@ extern "C"{
 #include<sacio.h>
 }
 
-#include<ASU_tools.hpp>
+#include<GaussianSignal.hpp>
+#include<Normalize.hpp>
+#include<ShiftPhase.hpp>
 
 using namespace std;
 

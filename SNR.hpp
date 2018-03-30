@@ -4,7 +4,7 @@
 #include<iostream>
 #include<vector>
 #include<cmath>
-#include<algorithm>
+#include<numeric>
 
 #include<Amplitude.hpp>
 #include<Envelope.hpp>

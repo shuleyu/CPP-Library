@@ -1,8 +1,11 @@
-#ifndef ASU_BOTTOMDEPTH
+#ifndef ASU_BOTTOMDEPTH 
 #define ASU_BOTTOMDEPTH
+// Need TauP Toolkit
 
 #include<iostream>
 #include<string>
+
+#include<ASU_tools.hpp>
 
 /*****************************************************
  * This C++ template use TauP toolkit to calculate the

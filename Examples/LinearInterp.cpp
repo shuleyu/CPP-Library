@@ -1,6 +1,6 @@
 #include<iostream>
 
-#include<ASU_tools.hpp>
+#include<LinearInterp.hpp>
 
 using namespace std;
 

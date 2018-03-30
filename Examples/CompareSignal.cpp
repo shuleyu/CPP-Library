@@ -1,7 +1,10 @@
 #include<iostream>
 #include<algorithm>
 
-#include<ASU_tools.hpp>
+#include<Butterworth.hpp>
+#include<CompareSignal.hpp>
+#include<GaussianSignal.hpp>
+#include<StretchSignal.hpp>
 
 using namespace std;
 

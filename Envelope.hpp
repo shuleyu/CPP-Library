@@ -1,5 +1,6 @@
 #ifndef ASU_ENVELOPE
 #define ASU_ENVELOPE
+// Need sci-libs/fftw
 
 #include<vector>
 #include<cmath>

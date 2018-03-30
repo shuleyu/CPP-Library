@@ -3,7 +3,7 @@
 #include<random>
 #include<chrono>
 
-#include<ASU_tools.hpp>
+#include<FindPeak.hpp>
 
 using namespace std;
 

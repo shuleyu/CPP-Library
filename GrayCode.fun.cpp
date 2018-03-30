@@ -1,6 +1,8 @@
 #include<iostream>
 #include<vector>
 
+#include<ASU_tools.hpp>
+
 /***************************************************
  * This C++ function returns gray code sequence for
  * certain number of bits.

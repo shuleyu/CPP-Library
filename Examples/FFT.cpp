@@ -1,7 +1,9 @@
 #include<iostream>
 #include<fstream>
 
-#include<ASU_tools.hpp>
+#include<FFT.hpp>
+#include<GaussianSignal.hpp>
+#include<Normalize.hpp>
 
 using namespace std;
 

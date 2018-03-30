@@ -58,16 +58,17 @@ double FindRayPath(const std::vector<T1> &r, const std::vector<T2> &v,
 
     // Start Calculating.
     double RE=6371.0,theta=fabs(t),ll=0,rr=90,mid,rayp=0;
-    std::vector<double> degree{0},radius{0};
+    std::vector<double> degree;
+    size_t radius;
 
     while (rr-ll>tol){
         mid=ll+(rr-ll)/2;
 
-        degree[0]=radius[0]=-1e6;
+        degree=std::vector<double> (1,-1e6);
         rayp=R1*sin(mid*M_PI/180)/v[P1]/180*M_PI;
-        RayPath(r,v,rayp,RE-R1,RE-R2,degree,radius);
+        auto ans=RayPath(r,v,rayp,RE-R1,RE-R2,degree,radius);
 
-        if (degree[0]>theta || radius[0]>R2+1e-6) rr=mid;
+        if (degree[0]>theta || ans.second) rr=mid;
         else ll=mid;
     }
 

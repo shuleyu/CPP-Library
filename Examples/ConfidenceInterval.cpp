@@ -1,7 +1,8 @@
 #include<iostream>
 #include<vector>
 
-#include<ASU_tools.hpp>
+#include<AvrStd.hpp>
+#include<ConfidenceInterval.hpp>
 
 using namespace std;
 

@@ -1,5 +1,7 @@
 #include<string>
 
+#include<ASU_tools.hpp>
+
 /*************************************************
  * This C++ function converts integer to binary
  * represent by string. (32-bit)

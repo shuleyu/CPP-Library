@@ -1,5 +1,6 @@
 #ifndef ASU_SHIFTPHASE
 #define ASU_SHIFTPHASE
+// Need sci-libs/fftw
 
 #include<vector>
 #include<cmath>

@@ -1,7 +1,8 @@
 #include<iostream>
 #include<fstream>
+#include<algorithm>
 
-#include<ASU_tools.hpp>
+#include<SNR.hpp>
 
 using namespace std;
 

@@ -2,7 +2,7 @@
 #include<fstream>
 #include<vector>
 
-#include<ASU_tools.hpp>
+#include<Normalize.hpp>
 
 using namespace std;
 

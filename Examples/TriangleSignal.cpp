@@ -1,7 +1,7 @@
 #include<iostream>
 #include<vector>
 
-#include<ASU_tools.hpp>
+#include<TriangleSignal.hpp>
 
 using namespace std;
 

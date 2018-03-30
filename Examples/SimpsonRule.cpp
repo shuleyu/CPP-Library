@@ -1,6 +1,6 @@
 #include<iostream>
 
-#include<ASU_tools.hpp>
+#include<SimpsonRule.hpp>
 
 using namespace std;
 

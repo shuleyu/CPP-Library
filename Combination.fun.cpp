@@ -1,5 +1,7 @@
 #include<iostream>
 
+#include<ASU_tools.hpp>
+
 /**************************************************************
  * This C++ function returns the combination of input integers.
  *

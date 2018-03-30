@@ -7,7 +7,8 @@ extern "C"{
 #include<sacio.h>
 }
 
-#include<ASU_tools.hpp>
+#include<Envelope.hpp>
+#include<Normalize.hpp>
 
 using namespace std;
 

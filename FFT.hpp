@@ -1,5 +1,6 @@
 #ifndef ASU_FFT
 #define ASU_FFT
+// Need sci-libs/fftw
 
 #include<vector>
 #include<cmath>
