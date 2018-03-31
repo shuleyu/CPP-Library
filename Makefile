@@ -1,44 +1,40 @@
-
-# Compilor settings.
-CC       := c++
-FLAGS    := --std=c++14 -Wall -fPIC
-COMP     := $(CC) $(FLAGS)
-
-# library include/lib directories.
+# Related directories.
 SACHOME  := /opt/sac-101.6
-INCLUDE  := -I. -I/opt/local/include -I$(SACHOME)/include
+
+# Compile parameters & dirs.
+COMP     := c++ --std=c++14 -Wall -fPIC
+INCDIR   := -I. -I/opt/local/include -I$(SACHOME)/include
 LIBDIR   := -L. -L$(SACHOME)/lib
+LIBS     := -lASU_tools_cpp -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm
 
-# library names.
-LIBs     := -lASU_tools_cpp -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm
-
-# *fun.cpp files under ./
+# function files
 SRCFILES := $(wildcard *.cpp)
-OBJFILES := $(patsubst %.cpp, %.o, $(SRCFILES))
 DEPFILES := $(patsubst %.cpp, %.d, $(SRCFILES))
+OBJS     := $(patsubst %.cpp, %.o, $(SRCFILES))
 
-# *cpp example programs under EGDIR.
+# example main files under $(EGDIR)
 EGDIR    := ./Examples
 EGFILES  := $(wildcard $(EGDIR)/*.cpp)
 EGEXECS  := $(patsubst %.cpp, %.out, $(EGFILES))
 EGDEPS   := $(patsubst %.cpp, %.d, $(EGFILES))
 
+all: libASU_tools_cpp.a $(OBJS)
+	@echo > /dev/null
 
-all: libASU_tools_cpp.a $(EGEXECS)
-	rm -f *d *.o $(EGDIR)/*.d
+examples: libASU_tools_cpp.a $(EGEXECS)
 	@echo > /dev/null
 
 # resolve dependencies automatically.
 -include $(DEPFILES) $(EGDEPS)
 
-libASU_tools_cpp.a: $(OBJFILES)
-	ar cr libASU_tools_cpp.a $(OBJFILES)
+libASU_tools_cpp.a: $(OBJS)
+	ar cr libASU_tools_cpp.a $(OBJS)
 
 %.o: %.cpp
-	$(COMP) -MMD -MP -c $< -o $@ $(INCLUDE)
+	$(COMP) -MMD -MP -c $< -o $@ $(INCDIR)
 
 $(EGDIR)/%.out: $(EGDIR)/%.cpp
-	$(COMP) -MMD -MP $< -o $@ $(INCLUDE) $(LIBDIR) $(LIBs)
+	$(COMP) -MMD -MP $< -o $@ $(INCDIR) $(LIBDIR) $(LIBS)
 
 clean:
 	rm -f *.d *.o libASU_tools_cpp.a $(EGDIR)/*.d $(EGDIR)/*.out
