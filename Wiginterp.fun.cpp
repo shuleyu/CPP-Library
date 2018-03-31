@@ -1,7 +1,5 @@
 #include<cmath>
 
-#include<ASU_tools.hpp>
-
 /***********************************************************
  * This C function uses wiggins algorithm to interpolate for
  * higher sampling rate. While used in down sampling may

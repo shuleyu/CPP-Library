@@ -28,13 +28,20 @@ examples: libASU_tools_cpp.a $(EGEXECS)
 -include $(DEPFILES) $(EGDEPS)
 
 libASU_tools_cpp.a: $(OBJS)
-	ar cr libASU_tools_cpp.a $(OBJS)
+	@echo "Updating $@ ..."
+	@ar cr libASU_tools_cpp.a $(OBJS)
 
 %.o: %.cpp
-	$(COMP) -MMD -MP -c $< -o $@ $(INCDIR)
+	@echo "Updating $@ ..."
+	@$(COMP) -MMD -MP -c $< -o $@ $(INCDIR)
 
-$(EGDIR)/%.out: $(EGDIR)/%.cpp
-	$(COMP) -MMD -MP $< -o $@ $(INCDIR) $(LIBDIR) $(LIBS)
+$(EGDIR)/%.out: $(EGDIR)/%.cpp 
+	@echo "Updating $@ ..."
+	@$(COMP) -MMD -MP $< -o $@ $(INCDIR) $(LIBDIR) $(LIBS)
+
+# for code depends on ASU_tools.hpp
+ASU_tools.hpp: libASU_tools_cpp.a
+	@touch ASU_tools.hpp
 
 clean:
 	rm -f *.d *.o libASU_tools_cpp.a $(EGDIR)/*.d $(EGDIR)/*.out
