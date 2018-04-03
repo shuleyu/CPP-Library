@@ -41,7 +41,7 @@ $(EGDIR)/%.out: $(EGDIR)/%.cpp
 
 # for code depends on ASU_tools.hpp
 ASU_tools.hpp: libASU_tools_cpp.a
-	@touch ASU_tools.hpp
+	@touch $@
 
 clean:
 	rm -f *.d *.o libASU_tools_cpp.a $(EGDIR)/*.d $(EGDIR)/*.out
