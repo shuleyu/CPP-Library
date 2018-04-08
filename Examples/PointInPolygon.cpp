@@ -8,31 +8,31 @@ using namespace std;
 
 int main(){
 
-	vector<pair<double,double>> Polygon;
-	pair<double,double> p;
+    vector<pair<double,double>> Polygon;
+    pair<double,double> p;
 
-	ifstream fpin("data/PointInPolygon_polygon");
-	while(fpin >> p.first >> p.second) Polygon.push_back(p);
+    ifstream fpin("data/PointInPolygon_polygon");
+    while(fpin >> p.first >> p.second) Polygon.push_back(p);
     fpin.close();
 
-	fpin.open("data/PointInPolygon_points");
-	ofstream fpout("data/PointInPolygon_result");
-	ofstream fpout1("data/PointInPolygon_result1");
-	ofstream fpout2("data/PointInPolygon_result-1");
+    fpin.open("data/PointInPolygon_points");
+    ofstream fpout("data/PointInPolygon_result");
+    ofstream fpout1("data/PointInPolygon_result1");
+    ofstream fpout2("data/PointInPolygon_result-1");
     bool res;
     int i=0;
-	while(fpin >> p.first >> p.second) {
+    while(fpin >> p.first >> p.second) {
 
         // Use function.
         // By default, left and upper boundaries are excluded.
         res=PointInPolygon(Polygon,p);
-		fpout << (res?"*":"o");
+        fpout << (res?"*":"o");
 
         res=PointInPolygon(Polygon,p,1);
-		fpout1 << (res?"*":"o");
+        fpout1 << (res?"*":"o");
 
         res=PointInPolygon(Polygon,p,-1);
-		fpout2 << (res?"*":"o");
+        fpout2 << (res?"*":"o");
 
         if (i%51==50) {
             fpout << '\n';

@@ -14,7 +14,7 @@ int main(){
     // Use function.
     auto res=CMT2Sph(strike,dip,rake);
     cout << "Azimuth: " << res.first << "\n";
-	cout << "Theta: " << res.second << endl;
+    cout << "Theta: " << res.second << endl;
 
     return 0;
 }

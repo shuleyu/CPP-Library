@@ -29,7 +29,7 @@ int main(){
 
     // Make source.
 //     auto y=GaussianSignal(NPTS_source,delta,sigma);
-	auto y=TriangleSignal(NPTS_source,10.0/(NPTS_source*delta));
+    auto y=TriangleSignal(NPTS_source,10.0/(NPTS_source*delta));
     Normalize(y);
 
     // Add a bump to create an unsymmetric Source.
@@ -47,7 +47,7 @@ int main(){
 
     // Find the Signal's peak.
     vector<int> px;
-	px.push_back(distance(x[0].begin(),max_element(x[0].begin(),x[0].end())));
+    px.push_back(distance(x[0].begin(),max_element(x[0].begin(),x[0].end())));
 
     // Decon.
     auto Decon=WaterLevelDecon(x,px,y,py,delta,wl);
@@ -58,7 +58,7 @@ int main(){
 
 
     // Output.
-	ofstream fpout("data/WaterLevelDecon_out_structure");
+    ofstream fpout("data/WaterLevelDecon_out_structure");
     for (int i=0;i<NPTS_struct;++i)
         fpout << delta*(i-NPTS_struct/2) << " " << Structure[i] << '\n';
     fpout.close();

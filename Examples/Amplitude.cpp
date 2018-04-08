@@ -17,7 +17,7 @@ int main(){
     cout << endl;
 
 
-	//
+    //
 
     cout << "For vectors of integer:" << endl;
 
@@ -28,7 +28,7 @@ int main(){
     for (auto item:ansB.second) cout << item << endl;
     cout << endl;
 
-	//
+    //
 
     cout << "For test data set:" << endl;
 

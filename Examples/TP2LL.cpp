@@ -15,7 +15,7 @@ int main(){
     // Use function.
     auto res=TP2LL(t,p);
 
-	cout << res.first << " " << res.second << endl;
+    cout << res.first << " " << res.second << endl;
 
     return 0;
 }

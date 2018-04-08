@@ -6,8 +6,8 @@ using namespace std;
 
 int main(){
 
-	int NPTS=10,mode=0,Lowerbound=0,Upperbound=10;
-	double Inc=0.7,U;
+    int NPTS=10,mode=0,Lowerbound=0,Upperbound=10;
+    double Inc=0.7,U;
 
     // Use function mode 0.
     mode=0;
@@ -45,11 +45,11 @@ int main(){
 //     U=Upperbound;
 
 
-	for (auto &item: res) cout << item << '\n';
-	cout << "Lowerbound: " << Lowerbound << '\n';
-	cout << "UpperBound: " << U << '\n';
-	cout << "Increment : " << Inc << '\n';
-	cout << "NPTS      : " << NPTS << '\n';
+    for (auto &item: res) cout << item << '\n';
+    cout << "Lowerbound: " << Lowerbound << '\n';
+    cout << "UpperBound: " << U << '\n';
+    cout << "Increment : " << Inc << '\n';
+    cout << "NPTS      : " << NPTS << '\n';
 
     return 0;
 }

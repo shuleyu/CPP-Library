@@ -101,11 +101,11 @@ std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const std:
         double R=0;
 
         // Equivalently:
-        // 		int xBegin=tau>0?tau:0;
-        // 		int xEnd=m<(n+tau)?m:(n+tau);
+        //         int xBegin=tau>0?tau:0;
+        //         int xEnd=m<(n+tau)?m:(n+tau);
         //
-        // 		for (int i=xBegin;i<xEnd;++i)
-        // 			R+=(x[i]-avrx)*(y[i-tau]-avry)*polarity;
+        //         for (int i=xBegin;i<xEnd;++i)
+        //             R+=(x[i]-avrx)*(y[i-tau]-avry)*polarity;
 
         int yBegin=tau>0?0:-tau;
         int yEnd=(m-tau)>n?n:m-tau;

@@ -19,7 +19,7 @@ int main(int argc, char **argv){
     vector<double> v;
     for (auto &depth:z) {
 
-		// apply earth-flattening here.
+        // apply earth-flattening here.
         double x=RE/(RE-depth);
         v.push_back(DvsX(depth)*x);
         depth=RE*log(x);
@@ -32,12 +32,12 @@ int main(int argc, char **argv){
 
     // Use function, first half: from source to turning point.
     vector<double> X;
-	size_t D;
+    size_t D;
     auto ans1=LayerRayPath(z,v,rayp,SourceDepth,EndDepth,X,D);
 
     // second half: from turning point ot surface.
     vector<double> XX;
-	size_t DD;
+    size_t DD;
     auto ans2=LayerRayPath(z,v,rayp,0,EndDepth,XX,DD);
 
     // output.

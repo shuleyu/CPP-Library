@@ -7,10 +7,10 @@ using namespace std;
 
 int main(){
 
-	double dist=80,evdp=500;
-	string phase="S";
-	cout << BottomDepth(dist,evdp,phase) << endl;
+    double dist=80,evdp=500;
+    string phase="S";
+    cout << BottomDepth(dist,evdp,phase) << endl;
 
-	return 0;
+    return 0;
 }
 

@@ -25,7 +25,7 @@ extern "C"{
  * vector<vector<T1>> &p (in-place)
  *
  * Note: use order=2, passes=2 (forward and backward)
- * 		 if f1>f2 return error.
+ *       if f1>f2 return error.
  *       if f1<=0, will do a low pass filter of corner f2.
  *       if f2>=1.0/delta/2, will do a high pass filter of corner f1.
  *       if f1 and f2 are both outside of their range, do nothing.

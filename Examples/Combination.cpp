@@ -9,8 +9,8 @@ int main(){
     int n=10,k=7;
 
     // Use function.
-	cout << "C_" << n << "^" << k << endl;
-	cout << Combination(n,k) << endl;
+    cout << "C_" << n << "^" << k << endl;
+    cout << Combination(n,k) << endl;
 
     return 0;    
 }

@@ -12,7 +12,7 @@ int main(){
     vector<vector<double>> p(5,vector<double> ());
     double a,b,c,d,e;
 
-	ifstream fpin("data/SNR_in");
+    ifstream fpin("data/SNR_in");
 
     while (fpin >> a >> b >> c >> d >> e) {
         p[0].push_back(a);

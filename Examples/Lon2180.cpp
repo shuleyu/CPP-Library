@@ -10,8 +10,8 @@ int main(){
 
     // Use function.
     while (Lon<361.2){
-		cout << Lon << " " << Lon2180(Lon) << endl;
-		Lon+=dl;
+        cout << Lon << " " << Lon2180(Lon) << endl;
+        Lon+=dl;
     }
 
     return 0;    

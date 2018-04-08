@@ -14,7 +14,7 @@ int main(){
 
     // Use function.
     for (x=c1-1;x<c2+1;x=x+0.1)
-		cout << x << " " << RampFunction(x,c1,c2) << endl;
+        cout << x << " " << RampFunction(x,c1,c2) << endl;
 
     return 0;
 }

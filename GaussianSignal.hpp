@@ -34,7 +34,7 @@
 template<class T1, class T2>
 std::vector<double> GaussianSignal(const int &N, const T1 &dt, const T2 &sigma){
 
-	// Check parameters.
+    // Check parameters.
 
     if (dt<=0) {
         std::cerr <<  "Error in " << __func__ << ": sampling rate dt <= 0 ..." << std::endl;

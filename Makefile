@@ -1,11 +1,13 @@
 # Related directories.
-SACHOME  := /opt/sac-101.6
+SACHOME  := /opt/sac
+# SACHOME  := /opt/sac-101.6
 
 # Compile parameters & dirs.
 COMP     := c++ --std=c++14 -Wall -fPIC
 INCDIR   := -I. -I/opt/local/include -I$(SACHOME)/include
 LIBDIR   := -L. -L$(SACHOME)/lib
-LIBS     := -lASU_tools_cpp -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm
+LIBS     := -lASU_tools_cpp -lsac -lsacio -lgsl -lgslcblas -lfftw3 -lm
+# LIBS     := -lASU_tools_cpp -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm
 
 # function files
 SRCFILES := $(wildcard *.cpp)
@@ -33,11 +35,11 @@ libASU_tools_cpp.a: $(OBJS)
 
 %.o: %.cpp
 	@echo "Updating $@ ..."
-	@$(COMP) -MMD -MP -c $< -o $@ $(INCDIR)
+	@$(COMP) -MD -MP -c $< -o $@ $(INCDIR)
 
-$(EGDIR)/%.out: $(EGDIR)/%.cpp 
+%.out: %.cpp
 	@echo "Updating $@ ..."
-	@$(COMP) -MMD -MP $< -o $@ $(INCDIR) $(LIBDIR) $(LIBS)
+	@$(COMP) -MD -MP $< -o $@ $(INCDIR) $(LIBDIR) $(LIBS)
 
 # for code depends on ASU_tools.hpp
 ASU_tools.hpp: libASU_tools_cpp.a

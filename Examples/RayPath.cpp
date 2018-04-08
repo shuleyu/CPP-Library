@@ -35,7 +35,7 @@ int main(int argc, char **argv){
 // 
 //     // Use function.
 //     vector<double> degree1{-1e6},degree2{-1e6};
-// 	size_t radius1,radius2;
+//     size_t radius1,radius2;
 //     auto ans1=RayPath(r,v,rayp,StartDepth,EndDepth,degree1,radius1,89.999);
 //     auto ans2=RayPath(r,v,rayp,0,EndDepth,degree2,radius2,89.999);
 // 
@@ -72,7 +72,7 @@ int main(int argc, char **argv){
 
     // Use function.
     vector<double> degree1{-1e6},degree2{-1e6};
-	size_t radius1,radius2;
+    size_t radius1,radius2;
     auto ans1=RayPath(r,v,rayp,StartDepth,EndDepth,degree1,radius1,89.999);
     auto ans2=RayPath(r,v,rayp,0,EndDepth,degree2,radius2,89.999);
 

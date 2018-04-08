@@ -10,8 +10,8 @@ int main(){
 
     // Use function.
     while (Lon<361.2){
-		printf("%.12lf\t%.12lf\n",Lon,Lon2360(Lon));
-		Lon+=dl;
+        printf("%.12lf\t%.12lf\n",Lon,Lon2360(Lon));
+        Lon+=dl;
     }
 
     return 0;    

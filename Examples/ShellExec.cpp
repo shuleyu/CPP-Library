@@ -7,7 +7,7 @@ using namespace std;
 
 int main(){
 
-	cout << ShellExec("ls") << endl;
+    cout << ShellExec("ls") << endl;
 
-	return 0;
+    return 0;
 }

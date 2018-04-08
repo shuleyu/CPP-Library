@@ -15,12 +15,12 @@ int main(){
         y.push_back(b);
     }
 
-	auto res=PolyFit(x,y,1);
+    auto res=PolyFit(x,y,1);
 
-	for (auto &item:res)
-		cout << item << " ";
-	cout << endl;
-	
-	return 0;
+    for (auto &item:res)
+        cout << item << " ";
+    cout << endl;
+    
+    return 0;
 }
 

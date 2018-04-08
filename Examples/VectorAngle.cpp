@@ -7,7 +7,7 @@ using namespace std;
 
 int main(){
 
-	pair<double,double> p{23.23123,1.12321};
+    pair<double,double> p{23.23123,1.12321};
 
     for (double theta=0;theta<=370;theta+=10) {
 

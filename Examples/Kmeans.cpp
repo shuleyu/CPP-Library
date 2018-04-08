@@ -22,14 +22,14 @@ int main(){
     data.push_back({-3,-2});
     data.push_back({-1,-1});
 
-	auto res=Kmeans(data,3);
+    auto res=Kmeans(data,3);
 
-	for (size_t i=0;i<data.size();++i) {
+    for (size_t i=0;i<data.size();++i) {
         cout << "Catergory: " << res[i] << ": ";
         for (size_t j=0;j<data[j].size();++j) 
             cout << data[i][j] << " ";
         cout << endl;
     }
 
-	return 0;
+    return 0;
 }

@@ -40,11 +40,11 @@ int main(int argc, char **argv){
 //     cout << "Rayp      : " << (rayp1+rayp2)/2 << " rad/sec." << endl;
 //     cout << "SourceDist: " << mid << " deg." << endl;
     // ================================================================
-	//
-	for (double dist=43;dist<=67;dist+=1){
+    //
+    for (double dist=43;dist<=67;dist+=1){
         double rayp=FindRayPath(r,v,RE,3480.0,dist);
-		cout << "Rayp @ " << dist << " deg : " << rayp << " rad/sec." << endl;
-	}
+        cout << "Rayp @ " << dist << " deg : " << rayp << " rad/sec." << endl;
+    }
 
     return 0;
 }

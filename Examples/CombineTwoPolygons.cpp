@@ -10,35 +10,35 @@ using namespace std;
 
 int main(){
 
-	ifstream fpin("data/CombineTwoPolygons.txt");
+    ifstream fpin("data/CombineTwoPolygons.txt");
 
-	// Read in.
+    // Read in.
 
-	vector<vector<pair<double,double>>> Polygons;
+    vector<vector<pair<double,double>>> Polygons;
 
-	string tmpstr;
-	vector<pair<double,double>> CurP;
+    string tmpstr;
+    vector<pair<double,double>> CurP;
 
-	while(getline(fpin,tmpstr)){
+    while(getline(fpin,tmpstr)){
 
-		if (tmpstr[0]=='>'){
-			if (CurP.size()>0) Polygons.push_back(CurP);
-			CurP.clear();
-			continue;
-		}
+        if (tmpstr[0]=='>'){
+            if (CurP.size()>0) Polygons.push_back(CurP);
+            CurP.clear();
+            continue;
+        }
 
-		stringstream ssin(tmpstr);
-		pair<double,double> p;
-		ssin >> p.first >> p.second;
-		CurP.push_back(p);
+        stringstream ssin(tmpstr);
+        pair<double,double> p;
+        ssin >> p.first >> p.second;
+        CurP.push_back(p);
 
-	}
-	Polygons.push_back(CurP);
+    }
+    Polygons.push_back(CurP);
 
     // Use function.
-	auto res=CombineTwoPolygons(Polygons[0],Polygons[1]);
+    auto res=CombineTwoPolygons(Polygons[0],Polygons[1]);
 
-	if (res.first){
+    if (res.first){
         for (auto &item:res.second)
             cout << item.first << " " << item.second << endl;
     }

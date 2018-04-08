@@ -205,6 +205,7 @@ void PREM(const T &Depth,const int &iso, const int &ocean,
         vsv=0;
         vsh=0;
         qu =0;
+        qk =0;
         yita=0;
 
     }
@@ -249,21 +250,21 @@ void PREM(const T &Depth,const int &iso, const int &ocean,
 
 template<class T>
 double Dvs(const T &Depth){
-    double rho,vpv,vph,vsv,vsh,qu,qk,yita;
+    double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return vsv;
 }
 
 template<class T>
 double Dvp(const T &Depth){
-    double rho,vpv,vph,vsv,vsh,qu,qk,yita;
+    double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return vpv;
 }
 
 template<class T>
 double Drho(const T &Depth){
-    double rho,vpv,vph,vsv,vsh,qu,qk,yita;
+    double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return rho;
 }
@@ -335,7 +336,7 @@ void PREMSmoothed(const T &Depth, double &rho,double &vpv,double &vph,
 template<class T>
 double DvsS(const T &Depth,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
-    double rho,vpv,vph,vsv,vsh,qu,qk,yita;
+    double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670);
     return vsv;
 }
@@ -343,7 +344,7 @@ double DvsS(const T &Depth,const int &RemoveCrust, const int &Remove220,
 template<class T>
 double DvpS(const T &Depth,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
-    double rho,vpv,vph,vsv,vsh,qu,qk,yita;
+    double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670);
     return vpv;
 }
@@ -351,7 +352,7 @@ double DvpS(const T &Depth,const int &RemoveCrust, const int &Remove220,
 template<class T>
 double DrhoS(const T &Depth,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
-    double rho,vpv,vph,vsv,vsh,qu,qk,yita;
+    double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670);
     return rho;
 }
@@ -412,21 +413,21 @@ void PREMX(const T &Depth, double &rho,double &vpv,double &vph,
 
 template<class T>
 double DvsX(const T &Depth){
-    double rho,vpv,vph,vsv,vsh,qu,qk,yita;
+    double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return vsv;
 }
 
 template<class T>
 double DvpX(const T &Depth){
-    double rho,vpv,vph,vsv,vsh,qu,qk,yita;
+    double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return vpv;
 }
 
 template<class T>
 double DrhoX(const T &Depth){
-    double rho,vpv,vph,vsv,vsh,qu,qk,yita;
+    double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return rho;
 }

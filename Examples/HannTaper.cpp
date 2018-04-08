@@ -15,7 +15,7 @@ int main(){
 
     HannTaper(A,0.5);
 
-	ofstream fpout("data/HannTaper_out");
+    ofstream fpout("data/HannTaper_out");
     for (size_t i=0;i<A.size();++i) fpout << i << " " << A[i] << '\n';
     fpout.close();
 

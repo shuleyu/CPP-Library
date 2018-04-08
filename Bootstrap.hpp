@@ -36,7 +36,7 @@ std::pair<std::vector<double>,std::vector<double>> Bootstrap(const std::vector<s
                                                              std::vector<std::vector<double>> &RerollStack, const std::vector<T2> &w=std::vector<T2>()){
 
     // Check p size.
-	if (p.empty()) return {};
+    if (p.empty()) return {};
 
     size_t N=p[0].size();
     for (auto &item:p)

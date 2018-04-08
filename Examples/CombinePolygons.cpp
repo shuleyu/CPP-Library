@@ -10,40 +10,40 @@ using namespace std;
 
 int main(){
 
-	ifstream fpin("data/CombinePolygons.txt");
+    ifstream fpin("data/CombinePolygons.txt");
 
-	// Read in.
-	
-	vector<vector<pair<double,double>>> Polygons;
+    // Read in.
+    
+    vector<vector<pair<double,double>>> Polygons;
 
-	string tmpstr;
-	vector<pair<double,double>> CurP;
+    string tmpstr;
+    vector<pair<double,double>> CurP;
 
-	while(getline(fpin,tmpstr)){
+    while(getline(fpin,tmpstr)){
 
-		if (tmpstr[0]=='>'){
-			if (CurP.size()>0) Polygons.push_back(CurP);
-			CurP.clear();
-			continue;
-		}
+        if (tmpstr[0]=='>'){
+            if (CurP.size()>0) Polygons.push_back(CurP);
+            CurP.clear();
+            continue;
+        }
 
-		stringstream ssin(tmpstr);
-		pair<double,double> p;
-		ssin >> p.first >> p.second;
-		CurP.push_back(p);
+        stringstream ssin(tmpstr);
+        pair<double,double> p;
+        ssin >> p.first >> p.second;
+        CurP.push_back(p);
 
-	}
-	Polygons.push_back(CurP);
+    }
+    Polygons.push_back(CurP);
 
     // Use function.
-	auto Ans=CombinePolygons(Polygons);
+    auto Ans=CombinePolygons(Polygons);
 
-	for (auto item:Ans){
-		for (auto item2:item){
-			cout << item2.first << " " << item2.second << endl;
-		}
-		cout << ">" << endl;
-	}
+    for (auto item:Ans){
+        for (auto item2:item){
+            cout << item2.first << " " << item2.second << endl;
+        }
+        cout << ">" << endl;
+    }
     
     return 0;    
 }

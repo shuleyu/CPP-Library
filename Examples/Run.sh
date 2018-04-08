@@ -6,12 +6,21 @@ CodeName=$1
 SRCDIR=${PWD}
 CPPCODEDIR=${PWD}/..
 cd ${CPPCODEDIR}
-make examples
-[ $? -ne 0 ] && exit 1
+make examples -k
+# [ $? -ne 0 ] && exit 1
 
 cd ${SRCDIR}
 time ./${CodeName%cpp}out
 
 echo ""
+
+
+# Remove tabs
+# for file in `ls *cpp`
+# do
+#     sed 's/\t/    /g' ${file} > x
+#     mv x ${file}
+# done
+
 
 exit 0
