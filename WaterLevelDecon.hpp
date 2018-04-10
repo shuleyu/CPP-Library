@@ -5,10 +5,10 @@
 #include<iostream>
 #include<vector>
 #include<cmath>
+#include<complex>
 
 #include<fftw3.h>
 
-#include<ComplexDivide.hpp>
 #include<Convolve.hpp>
 
 /*********************************************************************
@@ -95,24 +95,18 @@ std::vector<std::vector<double>> WaterLevelDecon(const std::vector<std::vector<T
 
     // 4. Fill with water.
     double df=1.0/delta/NPTS;
-    std::vector<double> filled_real(NPTS/2+1,0),filled_imag(NPTS/2+1,0);
+    std::vector<std::complex<double>> Filled(NPTS/2+1,0);
     for (int i=0;i<NPTS/2+1;++i){
         double amp=sqrt(Out[i][0]*Out[i][0]+Out[i][1]*Out[i][1]);
         if (amp<WL) {
-            if (amp>0) {
-                filled_real[i]=Out[i][0]*(WL/amp);
-                filled_imag[i]=Out[i][1]*(WL/amp);
-            }
+            if (amp>0) Filled[i]={Out[i][0]*(WL/amp),Out[i][1]*(WL/amp)};
             else {
                 std::cerr <<  "Warning in " << __func__ << ": amplitude = 0 @ " << df*i << " Hz ..." << std::endl;
-                filled_real[i]=WL;
-                filled_imag[i]=0;
+                Filled[i]={WL,0};
             }
         }
-        else {
-            filled_real[i]=Out[i][0];
-            filled_imag[i]=Out[i][1];
-        }
+        else Filled[i]={Out[i][0],Out[i][1]};
+
     }
 
 
@@ -131,9 +125,10 @@ std::vector<std::vector<double>> WaterLevelDecon(const std::vector<std::vector<T
 
         // 3. Division.
         for (int j=0;j<NPTS/2+1;++j){
-            auto res=ComplexDivide(Out[j][0],Out[j][1],filled_real[j],filled_imag[j]);
-            Out[j][0]=res.first;
-            Out[j][1]=res.second;
+            std::complex<double> A={Out[j][0],Out[j][1]};
+            auto res=A/Filled[j];
+            Out[j][0]=res.real();
+            Out[j][1]=res.imag();
         }
 
         // 4. iFFT deconed traces.

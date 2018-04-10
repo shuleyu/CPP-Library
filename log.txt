@@ -4,6 +4,7 @@ Design SeisSignal.hpp
 
 // Not included from the C-Library. (Deprecated functions)
 binary_search.fun.c
+complex_divide.fun.c
 filenr.fun.c
 ellipcor_kennett.fun.c
 gmttrans.fun.c
