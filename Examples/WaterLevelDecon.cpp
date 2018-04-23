@@ -12,7 +12,7 @@ using namespace std;
 int main(){
 
     // Parameters.
-    double delta=0.025,sigma=1,wl=0.1,secondarrival=3,secondamp=0.3,ulvzarrival=10,ulvzamp=0.2;
+    double delta=0.025,wl=0.1,secondarrival=3,secondamp=0.3,ulvzarrival=10,ulvzamp=0.2;
 
     // Find length of traces.
     int NPTS_source=1+50/delta;
@@ -28,6 +28,7 @@ int main(){
 
 
     // Make source.
+//     double sigma=1;
 //     auto y=GaussianSignal(NPTS_source,delta,sigma);
     auto y=TriangleSignal(NPTS_source,10.0/(NPTS_source*delta));
     Normalize(y);

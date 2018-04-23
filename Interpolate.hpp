@@ -73,7 +73,10 @@ std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> 
 
     Wiginterp(X,Y,x.size(),XX,YY,xx.size(),IsEven);
 
-    for (size_t i=0;i<xx.size();++i) ans[i]=YY[i];
+    double Min=std::min(x[0],x.back()),Max=std::max(x[0],x.back());
+    for (size_t i=0;i<xx.size();++i)
+        if (xx[i]<Min || xx[i]>Max) ans[i]=0.0/0.0;
+        else ans[i]=YY[i];
 
     delete [] X;
     delete [] Y;

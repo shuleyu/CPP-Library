@@ -39,7 +39,7 @@
  *     Solid -> Air    (SA):
  *
  *      PSV(2): R_PP, R_PS, R_SP, R_SS
- *      SH (1): R_SS (R_SS=1)
+ *      SH (1): R_SS (R_SS=1) [Notice: the phase shift introduced by internal caustic surface is not considered.]
  *
  *     Liquid -> Solid (LS):
  *

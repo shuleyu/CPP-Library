@@ -1,20 +1,20 @@
 # Related directories.
-SACHOME  := /opt/sac
-# SACHOME  := /opt/sac-101.6
+SACHOME  := /opt/sac-101.6
+SACHOME2 := /opt/sac
 
 # Compile parameters & dirs.
 COMP     := c++ --std=c++14 -Wall -fPIC
-INCDIR   := -I. -I/opt/local/include -I$(SACHOME)/include
-LIBDIR   := -L. -L$(SACHOME)/lib
-LIBS     := -lASU_tools_cpp -lsac -lsacio -lgsl -lgslcblas -lfftw3 -lm
-# LIBS     := -lASU_tools_cpp -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm
+INCDIR   := -I. -I/opt/local/include -I$(SACHOME)/include -I$(SACHOME2)/include
+LIBDIR   := -L. -L$(SACHOME)/lib -L$(SACHOME2)/lib
+# LIBS     := -lASU_tools_cpp -lsac -lsacio -lgsl -lgslcblas -lfftw3 -lm
+LIBS     := -lASU_tools_cpp -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm
 
 # function files
 SRCFILES := $(wildcard *.cpp)
 DEPFILES := $(patsubst %.cpp, %.d, $(SRCFILES))
 OBJS     := $(patsubst %.cpp, %.o, $(SRCFILES))
 
-# example main files under $(EGDIR)
+# example program files under $(EGDIR)
 EGDIR    := ./Examples
 EGFILES  := $(wildcard $(EGDIR)/*.cpp)
 EGEXECS  := $(patsubst %.cpp, %.out, $(EGFILES))

@@ -63,21 +63,21 @@ int main(){
 
 
     // Other examples.
-//     double inc=10,rho1=2.3,vp1=3,vs1=2.8,rho2=3.5,vp2=3.5,vs2=6;
-//     auto ans=PlaneWaveCoefficients(rho1,vp1,vs1,rho2,vp2,vs2,inc,"PSV","SS");
-//     cout << "Vals   : ";
-//     for (auto &item:ans) cout << item << ", " ;
-//     cout << "\nABS    : ";
-//     for (auto &item:ans) cout << abs(item) << ", " ;
-//     cout << "\nPhases : ";
-//     for (auto &item:ans) cout << 180*arg(item)/M_PI << ", " ;
-//     cout << endl;
+    double inc=41.090,rho1=2.6,vp1=5.8,vs1=3.2,rho2=1.02,vp2=1.45,vs2=0.01;
+    auto ans=PlaneWaveCoefficients(rho1,vp1,vs1,rho2,vp2,vs2,inc,"PSV","SL");
+    cout << "Vals   : ";
+    for (auto &item:ans) cout << item << ", " ;
+    cout << "\nABS    : ";
+    for (auto &item:ans) cout << abs(item) << ", " ;
+    cout << "\nPhases : ";
+    for (auto &item:ans) cout << 180*arg(item)/M_PI << ", " ;
+    cout << endl;
 
-    for (double inc=0;inc<=1;inc+=0.01) {
-        double rho1=2.1,vs1=2.02,vp1=3.5,rho2=2.5,vs2=3.7,vp2=5.5;
-        auto ans=PlaneWaveCoefficients(rho1,vp1,vs1,rho2,vp2,vs2,inc,"PSV","SS");
-        cout << inc << " " <<  abs(ans[1]) << " " << arg(ans[1]) << '\n';
-    }
+//     for (double inc=0;inc<=1;inc+=0.01) {
+//         double rho1=2.1,vs1=2.02,vp1=3.5,rho2=2.5,vs2=3.7,vp2=5.5;
+//         auto ans=PlaneWaveCoefficients(rho1,vp1,vs1,rho2,vp2,vs2,inc,"PSV","SS");
+//         cout << inc << " " <<  abs(ans[1]) << " " << arg(ans[1]) << '\n';
+//     }
 
     return 0;
 }
