@@ -6,7 +6,7 @@
 #include<vector>
 #include<string>
 
-#include<ASU_tools.hpp>
+#include<ShellExec.hpp>
 
 /**************************************************
  * This C++ template use TauP toolkit to return the
@@ -41,7 +41,7 @@ std::vector<double> BottomLocation(const T1 &evtlon, const T2 &evtlat, const T3 
                         +" -sta "+std::to_string(stalat)+" "+std::to_string(stalon)+
                         +" -o stdout | grep -v '>' | sort -g -k2 |  head -n 1 | awk '{print $2,$3,$4}'";
 
-    std::string res=ShellExec(command);
+    std::string res=ShellExec(command.c_str());
     if (res.empty()) {
         std::cerr <<  "Warning in " << __func__ << ": No such phase for given parameters ..." << std::endl;
         return {};

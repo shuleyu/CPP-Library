@@ -1,13 +1,16 @@
+#ifndef ASU_SHELLEXEC
+#define ASU_SHELLEXEC
+
 #include<string>
 #include<array>
 #include<memory>
 
 /*************************************************
- * This C++ function returns the stdout from the
+ * This C++ template returns the stdout from the
  * execution of given shell command.
  *
  * input(s):
- * const string &cmd  ----  Input command.
+ * const T &cmd  ----  Input command. Most time T should be a C-string.
  *
  * return(s):
  * string ans  ----  stdout from the Shell command.
@@ -18,14 +21,18 @@
  * Key words: Shell, standard output.
 *************************************************/
 
-std::string ShellExec(const std::string &cmd) {
+template <class T>
+std::string ShellExec(const T &cmd) {
     std::array<char, 128> buffer;
-    std::string result;
-    std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
+    std::string ans;
+    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
     if (!pipe) throw std::runtime_error("popen() failed!");
     while (!feof(pipe.get())) {
         if (fgets(buffer.data(), 128, pipe.get()) != NULL)
-        result += buffer.data();
+        ans += buffer.data();
     }
-    return result;
+
+    return ans;
 }
+
+#endif

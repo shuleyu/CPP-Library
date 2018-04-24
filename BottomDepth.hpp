@@ -5,7 +5,7 @@
 #include<iostream>
 #include<string>
 
-#include<ASU_tools.hpp>
+#include<ShellExec.hpp>
 
 /*****************************************************
  * This C++ template use TauP toolkit to calculate the
@@ -35,7 +35,7 @@ double BottomDepth(const T1 &Dist,const T2 &EVDP,const std::string &Phase){
                         +" -evt 0 0 -sta 0 "+std::to_string(Dist)
                         +" -o stdout | grep -v '>' | sort -g -k2 |  head -n 1 | awk '{print $2}'";
 
-    std::string res=ShellExec(command);
+    std::string res=ShellExec(command.c_str());
 
     if (res.empty()) {
         std::cerr <<  "Warning in " << __func__ << ": No such phase for given parameters ..." << std::endl;

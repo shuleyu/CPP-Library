@@ -1,12 +1,15 @@
+#ifndef ASU_GRAYCODE
+#define ASU_GRAYCODE
+
 #include<iostream>
 #include<vector>
 
 /***************************************************
- * This C++ function returns gray code sequence for
+ * This C++ tempate returns gray code sequence for
  * certain number of bits.
  *
  * input(s):
- * const int &n  ----  Number of bits.
+ * const T &n  ----  Number of bits. T should be size_t
  *
  * return(s):
  * vector<vector<bool>> ans  ----  a 2D 0/1 array of gray code sequence.
@@ -17,7 +20,8 @@
  * Key words: gray code.
 ***************************************************/
 
-std::vector<std::vector<bool>> GrayCode(const int &n){
+template<class T>
+std::vector<std::vector<bool>> GrayCode(const T &n){
 
     // Check array size.
     if (n<=0) {
@@ -41,3 +45,5 @@ std::vector<std::vector<bool>> GrayCode(const int &n){
         return ans;
     }
 }
+
+#endif

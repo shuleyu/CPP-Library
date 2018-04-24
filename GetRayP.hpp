@@ -5,7 +5,7 @@
 #include<iostream>
 #include<string>
 
-#include<ASU_tools.hpp>
+#include<ShellExec.hpp>
 
 /*****************************************************
  * This C++ template use TauP toolkit to calculate the
@@ -39,7 +39,7 @@ double GetRayP(const T1 &Dist,const T2 &EVDP,const std::string &Phase){
                         + " -deg " + std::to_string(Dist) + " -ph " + Phase
                         + " --rayp | awk '{print $1}'";
 
-    std::string res=ShellExec(command);
+    std::string res=ShellExec(command.c_str());
 
     if (res.empty()) {
         std::cerr <<  "Warning in " << __func__ << ": No such rays for given parameters ..." << std::endl;

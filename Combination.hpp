@@ -1,11 +1,14 @@
+#ifndef ASU_COMBINATION
+#define ASU_COMBINATION
+
 #include<iostream>
 
 /**************************************************************
- * This C++ function returns the combination of input integers.
+ * This C++ template returns the combination of input integers.
  *
  * input(s):
- * int n  ----  Lower number.
- * int k  ----  Upper number.
+ * const T &n  ----  Lower number.
+ * const T &k  ----  Upper number. T should be non-negativee integer.
  *
  * return(s):
  * int ans  ---- C_n^k
@@ -16,7 +19,8 @@
  * Key words: combination
 **************************************************************/
 
-int Combination(const int &n, const int &k){
+template<class T>
+int Combination(const T &n, const T &k){
 
     if ( n < 0 || k < 0 || k > n ){
         std::cerr <<  "Error in " << __func__ << ": mathematic error ..." << std::endl;
@@ -29,3 +33,5 @@ int Combination(const int &n, const int &k){
 
     return ans;
 }
+
+#endif
