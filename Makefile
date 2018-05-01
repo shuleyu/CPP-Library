@@ -3,7 +3,7 @@ SACHOME  := /opt/sac-101.6
 SACHOME2 := /opt/sac
 
 # Compile parameters & dirs.
-COMP     := c++ --std=c++14 -Wall -fPIC
+COMP     := c++ -std=c++14 -Wall -fPIC
 INCDIR   := -I. -I/opt/local/include -I$(SACHOME)/include -I$(SACHOME2)/include
 LIBDIR   :=                          -L$(SACHOME)/lib     -L$(SACHOME2)/lib
 # LIBS     := -lsac -lsacio -lgsl -lgslcblas -lfftw3 -lm
