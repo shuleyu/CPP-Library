@@ -9,8 +9,6 @@
 
 #include<fftw3.h>
 
-#include<Convolve.hpp>
-
 /*********************************************************************
  * This C++ template function returns a 2D array that contains the
  * "peak-kept" position of water-level deconvolution results:

@@ -7,12 +7,14 @@
 #include<string>
 #include<vector>
 #include<algorithm>
+#include<cmath>
 
 class DigitalSignal{
     private:
         std::vector<double> Time;
     protected:
         std::vector<double> Amp;
+        std::size_t Peak=0;
     public:
         DigitalSignal () = default;
         DigitalSignal (const std::string &s) {
@@ -24,10 +26,27 @@ class DigitalSignal{
         virtual ~DigitalSignal () = default;
 
         virtual void clear() {Time.clear();Amp.clear();}
-        virtual double length() const {if (Time.size()<=1) return 0; else return Time.back()-Time[0];}
+        virtual double length() const {return et()-bt();}
         virtual double bt() const {if (Time.empty()) return 0; else return Time[0];}
+        virtual double et() const {if (Time.empty()) return 0; else return Time.back();}
+        virtual double PeakTime() const {return Time[Peak];}
+//         virtual void HannTaper(const double &w);
 
         std::size_t size() const {return Amp.size();}
+        std::size_t peak() const {return Peak;}
+
+        // Find the position of max|amp| around some time.
+        template<class T1, class T2=double>
+        void FindPeakAround(const T1 &t, const T2 &w=5){
+            double AbsMax=-1;
+            for (size_t i=0;i<Time.size();++i){
+                if (fabs(Time[i]-t)<=w && AbsMax<fabs(Amp[i])) {
+                    AbsMax=fabs(Amp[i]);
+                    Peak=i;
+                }
+            }
+            return;
+        }
 
     // non-member friends declearation.
     friend std::istream &operator>>(std::istream &, DigitalSignal &);
@@ -61,7 +80,7 @@ std::ostream &operator<<(std::ostream &os, const DigitalSignal &item){
 //     state.copyfmt(os);
 //
 //     os << std::fixed << std::scientific << std::setprecision();
-    for (size_t i=0;i<item.size();++i)
+    for (std::size_t i=0;i<item.size();++i)
         os << item.Time[i] << '\t' << item.Amp[i] << '\n';
 
 //     // restore print format.

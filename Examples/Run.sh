@@ -4,17 +4,13 @@
 CodeName=$1
 CodeName=${CodeName%.*}
 
-SRCDIR=${PWD}
 CPPCODEDIR=${PWD}/..
-cd ${CPPCODEDIR}
 make -k
 # [ $? -ne 0 ] && exit 1
 
-cd ${SRCDIR}
 time ./${CodeName}.out
 
 echo ""
-
 
 # Remove tabs
 # for file in `ls *cpp`
