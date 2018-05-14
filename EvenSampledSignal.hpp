@@ -1,8 +1,14 @@
 #ifndef ASU_EVENSAMPLEDSIGNAL
 #define ASU_EVENSAMPLEDSIGNAL
 
+#include<vector>
 #include<cmath>
 
+#include<Interpolate.hpp>
+#include<CreateGrid.hpp>
+#include<GaussianBlur.hpp>
+#include<Butterworth.hpp>
+#include<RemoveTrend.hpp>
 #include<WaterLevelDecon.hpp>
 #include<DigitalSignal.hpp>
 
@@ -11,26 +17,84 @@ class EvenSampledSignal : public DigitalSignal {
         double Dt=0,BeginTime=0,EndTime=0;
     public:
         EvenSampledSignal () = default;
+
+        // Construct signal from two-column file.
         EvenSampledSignal (const std::string &s) {
             std::ifstream fpin(s);
             fpin >> *this;
             fpin.close();
         }
 
+        // Construct signal from a common signal, interpolate to target sampling rate.
+        EvenSampledSignal (const DigitalSignal &item, const double &delta) {
+            // check DigitalSignal even sampling.
+            bool IsEven=true;
+            double dt;
+
+            for (size_t i=1;i<item.size();++i){
+                double dx=item.Time[i]-item.Time[i-1];
+                if (i==1) dt=dx;
+                else if (dx<=dt*0.99 || dt*1.01<=dx) {
+                    IsEven=false;
+                    break;
+                }
+            }
+
+            auto xx=CreateGrid(item.bt(),item.et(),delta,1);
+            // Interpolation.
+            this->Amp=Interpolate(item.Time,item.Amp,xx,IsEven);
+            this->Dt=delta;
+            this->BeginTime=xx[0];
+            this->EndTime=xx.back();
+        }
+
+        // Construct signal from another even-sampled signal, interpolate to target sampling rate.
+        EvenSampledSignal (const EvenSampledSignal &item, const double &delta) {
+
+            auto x=CreateGrid(item.bt(),item.et(),item.size(),0);
+            auto xx=CreateGrid(item.bt(),item.et(),delta,1);
+            // Interpolation.
+            this->Amp=Interpolate(x,item.Amp,xx,true);
+            this->Dt=delta;
+            this->BeginTime=xx[0];
+            this->EndTime=xx.back();
+        }
+
+        // Construct signal from a vector.
+        template<class T>
+        EvenSampledSignal (const std::vector<T> &item, const double &delta, const double &begintime=0) {
+            this->Amp.resize(item.size());
+            for (size_t i=0;i<this->size();++i) this->Amp[i]=item[i];
+            this->Dt=delta;
+            this->BeginTime=this->EndTime=begintime;
+            if (this->size()>1) this->EndTime=this->BeginTime+this->Dt*(this->size()-1);
+        }
+
+        // virtual functions.
         virtual ~EvenSampledSignal () = default;
 
+        // overrided and virtual functions.
         virtual void clear() override {Amp.clear();}
-        virtual double length() const override {return EndTime-BeginTime;}
-        virtual double bt() const override {return BeginTime;}
-        virtual double et() const override {return EndTime;}
-        virtual double PeakTime() const override {return BeginTime+Peak*Dt;}
-        virtual void FindPeakAround(const double &,const double & =5) override;
 
+        // overrided but final functions.
+        virtual double length() const override final {return EndTime-BeginTime;}
+        virtual double bt() const override final {return BeginTime;}
+        virtual double et() const override final {return EndTime;}
+        virtual double PeakTime() const override final {return BeginTime+Peak*Dt;}
+        virtual void FindPeakAround(const double &,const double & =5) override final;
+        virtual void HannTaper(const double &w=0.05) override final;
+        virtual std::pair<double,double> RemoveTrend() override final;
+        virtual void ShiftTime(const double &t) override final {
+            BeginTime+=t;
+            EndTime+=t;
+            return;
+        }
+
+        // Original final functions.
         double dt() const {return Dt;};
-        void WaterLevelDecon(const EvenSampledSignal &source, const double &);
-
-
-
+        void WaterLevelDecon(const EvenSampledSignal &, const double & =0.1);
+        void GaussianBlur(const double & =1);
+        void Butterworth(const double &, const double &);
 
     // non-member friends declearation.
     friend std::istream &operator>>(std::istream &, EvenSampledSignal &);
@@ -85,9 +149,8 @@ std::ostream &operator<<(std::ostream &os, const EvenSampledSignal &item){
 
 // Find the position of max|amp| around some time.
 void EvenSampledSignal::FindPeakAround(const double &t, const double &w){
-    std::size_t WB=std::max(0.0,(t-w-BeginTime)/Dt),WE=std::min(Amp.size()*1.0,ceil((t+w-BeginTime+Dt/2)/Dt));
-
-std::cout << "This is derived" << std::endl;
+    size_t n=this->size();
+    std::size_t WB=std::max(0.0,(t-w-BeginTime)/Dt),WE=std::min(n*1.0,ceil((t+w-BeginTime+Dt/2)/Dt));
 
     double AbsMax=-1;
     for (std::size_t i=WB;i<WE;++i){
@@ -99,9 +162,45 @@ std::cout << "This is derived" << std::endl;
     return;
 }
 
+// cos (-pi,pi) shaped taper at two ends.
+void EvenSampledSignal::HannTaper(const double &w){
+
+    size_t n=this->size();
+    if (w>0.5) throw std::runtime_error("Hanning window width too long.");
+    double WL=w*this->length();
+    for (size_t i=0;i<n;++i){
+        double dt=std::min(i,n-i-1)*this->Dt;
+        if (dt<WL) Amp[i]*=0.5-0.5*cos(dt/WL*M_PI);
+    }
+    return;
+}
+
+// remove drift and DC.
+std::pair<double,double> EvenSampledSignal::RemoveTrend(){
+    return ::RemoveTrend(this->Amp,this->Dt,this->BeginTime);
+}
+
+// gaussian blur.
+// changes: Amp(value change).
+void EvenSampledSignal::GaussianBlur(const double &sigma){
+    std::vector<std::vector<double>> In{this->Amp};
+    ::GaussianBlur(In,this->Dt,sigma);
+    this->Amp=In[0];
+    return;
+}
+
+// butterworth filter.
+// changes: Amp(value change).
+void EvenSampledSignal::Butterworth(const double &f1, const double &f2){
+    std::vector<std::vector<double>> In{this->Amp};
+    ::Butterworth(In,this->Dt,f1,f2);
+    this->Amp=In[0];
+    return;
+}
+
 // Changes:
 // Amp(signal length change),Peak(=Amp.size()/2),BeginTime(relative to PeakTime=0),EndTime(relative to PeakTime=0)
-void EvenSampledSignal::WaterLevelDecon(const EvenSampledSignal &source, const double &wl=0.1) {
+void EvenSampledSignal::WaterLevelDecon(const EvenSampledSignal &source, const double &wl) {
     if (fabs(this->Dt-source.Dt)>1e-5)
         throw std::runtime_error("Signal inputs of decon have different sampling rate.");
     std::vector<std::vector<double>> In{this->Amp};
@@ -109,11 +208,9 @@ void EvenSampledSignal::WaterLevelDecon(const EvenSampledSignal &source, const d
     auto ans=::WaterLevelDecon(In,P,source.Amp,source.Peak,this->Dt,wl);
 
     this->Amp=ans[0];
-    this->Peak=ans[0].size()/2;
+    this->Peak=this->size()/2;
     this->BeginTime=(this->Peak-1)*this->Dt*-1;
-    this->FindPeakAround(0);
-    this->BeginTime=(this->Peak-1)*this->Dt*-1;
-    this->EndTime=this->BeginTime+(ans[0].size()-1)*this->Dt;
+    this->EndTime=this->BeginTime+(this->size()-1)*this->Dt;
 
     return;
 }
