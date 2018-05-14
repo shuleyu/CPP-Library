@@ -30,23 +30,13 @@ class DigitalSignal{
         virtual double bt() const {if (Time.empty()) return 0; else return Time[0];}
         virtual double et() const {if (Time.empty()) return 0; else return Time.back();}
         virtual double PeakTime() const {return Time[Peak];}
+        virtual void FindPeakAround(const double &,const double & =5);
 //         virtual void HannTaper(const double &w);
 
         std::size_t size() const {return Amp.size();}
         std::size_t peak() const {return Peak;}
 
-        // Find the position of max|amp| around some time.
-        template<class T1, class T2=double>
-        void FindPeakAround(const T1 &t, const T2 &w=5){
-            double AbsMax=-1;
-            for (size_t i=0;i<Time.size();++i){
-                if (fabs(Time[i]-t)<=w && AbsMax<fabs(Amp[i])) {
-                    AbsMax=fabs(Amp[i]);
-                    Peak=i;
-                }
-            }
-            return;
-        }
+
 
     // non-member friends declearation.
     friend std::istream &operator>>(std::istream &, DigitalSignal &);
@@ -88,4 +78,16 @@ std::ostream &operator<<(std::ostream &os, const DigitalSignal &item){
     return os;
 }
 
+// Find the position of max|amp| around some time.
+void DigitalSignal::FindPeakAround(const double &t, const double &w){
+    double AbsMax=-1;
+std::cout << "This is base." << std::endl;
+    for (size_t i=0;i<Time.size();++i){
+        if (fabs(Time[i]-t)<=w && AbsMax<fabs(Amp[i])) {
+            AbsMax=fabs(Amp[i]);
+            Peak=i;
+        }
+    }
+    return;
+}
 #endif

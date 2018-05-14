@@ -24,24 +24,12 @@ class EvenSampledSignal : public DigitalSignal {
         virtual double bt() const override {return BeginTime;}
         virtual double et() const override {return EndTime;}
         virtual double PeakTime() const override {return BeginTime+Peak*Dt;}
+        virtual void FindPeakAround(const double &,const double & =5) override;
 
         double dt() const {return Dt;};
         void WaterLevelDecon(const EvenSampledSignal &source, const double &);
 
-        // Find the position of max|amp| around some time.
-        template<class T1, class T2=double>
-        void FindPeakAround(const T1 &t, const T2 &w=5){
-            std::size_t WB=std::max(0.0,(t-w-BeginTime)/Dt),WE=std::min(Amp.size()*1.0,ceil((t+w-BeginTime+Dt/2)/Dt));
 
-            double AbsMax=-1;
-            for (std::size_t i=WB;i<WE;++i){
-                if (AbsMax<fabs(Amp[i])) {
-                    AbsMax=fabs(Amp[i]);
-                    Peak=i;
-                }
-            }
-            return;
-        }
 
 
     // non-member friends declearation.
@@ -92,6 +80,23 @@ std::ostream &operator<<(std::ostream &os, const EvenSampledSignal &item){
 //     // restore print format.
 //     os.copyfmt(state);
     return os;
+}
+
+
+// Find the position of max|amp| around some time.
+void EvenSampledSignal::FindPeakAround(const double &t, const double &w){
+    std::size_t WB=std::max(0.0,(t-w-BeginTime)/Dt),WE=std::min(Amp.size()*1.0,ceil((t+w-BeginTime+Dt/2)/Dt));
+
+std::cout << "This is derived" << std::endl;
+
+    double AbsMax=-1;
+    for (std::size_t i=WB;i<WE;++i){
+        if (AbsMax<fabs(Amp[i])) {
+            AbsMax=fabs(Amp[i]);
+            Peak=i;
+        }
+    }
+    return;
 }
 
 // Changes:
