@@ -17,6 +17,7 @@ class DigitalSignal{
     protected:
         std::vector<double> Amp;
         std::size_t Peak=0;
+        std::string FileName="";
     public:
         DigitalSignal () = default;
 
@@ -25,6 +26,7 @@ class DigitalSignal{
             std::ifstream fpin(s);
             fpin >> *this;
             fpin.close();
+            FileName=s;
         }
 
         // virtual functions.
@@ -41,11 +43,21 @@ class DigitalSignal{
             for (std::size_t i=0;i<size();++i) Time[i]+=t;
             return;
         }
+        virtual void PrintInfo() const{
+            std::cout << "FileName: " << filename() << '\n';
+            std::cout << "Length: " << length() << '\n';
+            std::cout << "Signal size: " << size() << '\n';
+            std::cout << "BeginTime: " << bt() << '\n';
+            std::cout << "EndTime: " << et() << '\n';
+            std::cout << "PeakTime: " << PeakTime() << '\n';
+            return;
+        }
 
         // Original final functions.
         std::size_t size() const {return Amp.size();}
         std::size_t peak() const {return Peak;}
-        double NormalizeToGlobal() {return ::Normalize(this->Amp);};
+        std::string filename() const {return FileName;}
+        double NormalizeToGlobal() {return ::Normalize(Amp);};
         double NormalizeToPeak() {
             double x=Amp[Peak];
             for (std::size_t i=0;i<size();++i) Amp[i]/=x;

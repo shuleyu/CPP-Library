@@ -3,6 +3,8 @@
 
 #include<vector>
 #include<cmath>
+#include<string>
+#include<fstream>
 
 #include<Interpolate.hpp>
 #include<CreateGrid.hpp>
@@ -23,6 +25,7 @@ class EvenSampledSignal : public DigitalSignal {
             std::ifstream fpin(s);
             fpin >> *this;
             fpin.close();
+            this->FileName=s;
         }
 
         // Construct signal from a common signal, interpolate to target sampling rate.
@@ -46,6 +49,7 @@ class EvenSampledSignal : public DigitalSignal {
             this->Dt=delta;
             this->BeginTime=xx[0];
             this->EndTime=xx.back();
+            this->FileName=item.FileName;
         }
 
         // Construct signal from another even-sampled signal, interpolate to target sampling rate.
@@ -58,16 +62,18 @@ class EvenSampledSignal : public DigitalSignal {
             this->Dt=delta;
             this->BeginTime=xx[0];
             this->EndTime=xx.back();
+            this->FileName=item.FileName;
         }
 
         // Construct signal from a vector.
         template<class T>
-        EvenSampledSignal (const std::vector<T> &item, const double &delta, const double &begintime=0) {
+        EvenSampledSignal (const std::vector<T> &item, const double &delta, const double &begintime=0, const std::string &filename="") {
             this->Amp.resize(item.size());
             for (size_t i=0;i<this->size();++i) this->Amp[i]=item[i];
             this->Dt=delta;
             this->BeginTime=this->EndTime=begintime;
             if (this->size()>1) this->EndTime=this->BeginTime+this->Dt*(this->size()-1);
+            this->FileName=filename;
         }
 
         // virtual functions.
@@ -89,6 +95,11 @@ class EvenSampledSignal : public DigitalSignal {
             EndTime+=t;
             return;
         }
+        virtual void PrintInfo() const override final{
+            this->DigitalSignal::PrintInfo();
+            std::cout << "Sampling rate: " << dt() << '\n';
+            return;
+        }
 
         // Original final functions.
         double dt() const {return Dt;};
@@ -99,6 +110,7 @@ class EvenSampledSignal : public DigitalSignal {
     // non-member friends declearation.
     friend std::istream &operator>>(std::istream &, EvenSampledSignal &);
     friend std::ostream &operator<<(std::ostream &, const EvenSampledSignal &);
+    friend class SACSignals;
 };
 
 // Overload operator ">>" to read a signal from a two-columned input (stdin/file/etc.)

@@ -5,8 +5,8 @@ CodeName=$1
 CodeName=${CodeName%.*}
 
 CPPCODEDIR=${PWD}/..
-make -k
-# [ $? -ne 0 ] && exit 1
+make Code=${CodeName}
+[ $? -ne 0 ] && exit 1
 
 time ./${CodeName}.out
 

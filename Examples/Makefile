@@ -1,6 +1,7 @@
 # Related directories.
 SACHOME  := /opt/sac-101.6
 SACHOME2 := /opt/sac
+Code     := UniQUEcoDeName
 
 # Compile parameters & dirs.
 COMP     := c++ -std=c++14 -Wall -fPIC
@@ -13,6 +14,9 @@ LIBS     := -lsac -lsacio -lmlpack -larmadillo -lgsl -lgslcblas -lfftw3 -lm
 EGFILES  := $(wildcard *.cpp)
 EGDEPS   := $(patsubst %.cpp, %.d, $(EGFILES))
 EGEXECS  := $(patsubst %.cpp, %.out, $(EGFILES))
+ifneq ($(Code),UniQUEcoDeName)
+EGEXECS  := $(Code).out
+endif
 
 all: $(EGEXECS)
 	@echo > /dev/null
