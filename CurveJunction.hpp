@@ -75,8 +75,8 @@ std::pair<double,double> CurveJunction(const std::vector<T1> &x1, const std::vec
     while (err>tol && npts<1e6){
 
         auto NewX=CreateGrid(lower,upper,npts,0);
-        auto NewY1=Interpolate(x1,y1,NewX,false);
-        auto NewY2=Interpolate(x2,y2,NewX,false);
+        auto NewY1=Interpolate(x1,y1,NewX);
+        auto NewY2=Interpolate(x2,y2,NewX);
 
         // find junction point.
         int P;

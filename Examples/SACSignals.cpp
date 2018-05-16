@@ -10,7 +10,7 @@ int main(){
 
     SACSignals A("/home/shule/x");
     A.CheckDist();
-//     A.Interpolate(0.01);
+    A.Interpolate(0.01);
     A.PrintInfo();
 
 	return 0;

@@ -4,7 +4,6 @@
 CodeName=$1
 CodeName=${CodeName%.*}
 
-CPPCODEDIR=${PWD}/..
 make Code=${CodeName}
 [ $? -ne 0 ] && exit 1
 

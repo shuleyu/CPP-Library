@@ -31,21 +31,9 @@ class EvenSampledSignal : public DigitalSignal {
         // Construct signal from a common signal, interpolate to target sampling rate.
         EvenSampledSignal (const DigitalSignal &item, const double &delta) {
             // check DigitalSignal even sampling.
-            bool IsEven=true;
-            double dt;
-
-            for (size_t i=1;i<item.size();++i){
-                double dx=item.Time[i]-item.Time[i-1];
-                if (i==1) dt=dx;
-                else if (dx<=dt*0.99 || dt*1.01<=dx) {
-                    IsEven=false;
-                    break;
-                }
-            }
-
             auto xx=CreateGrid(item.bt(),item.et(),delta,1);
             // Interpolation.
-            this->Amp=Interpolate(item.Time,item.Amp,xx,IsEven);
+            this->Amp=Interpolate(item.Time,item.Amp,xx);
             this->Dt=delta;
             this->BeginTime=xx[0];
             this->EndTime=xx.back();
@@ -58,7 +46,7 @@ class EvenSampledSignal : public DigitalSignal {
             auto x=CreateGrid(item.bt(),item.et(),item.size(),0);
             auto xx=CreateGrid(item.bt(),item.et(),delta,1);
             // Interpolation.
-            this->Amp=Interpolate(x,item.Amp,xx,true);
+            this->Amp=Interpolate(x,item.Amp,xx);
             this->Dt=delta;
             this->BeginTime=xx[0];
             this->EndTime=xx.back();

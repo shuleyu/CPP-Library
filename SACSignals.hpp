@@ -13,6 +13,7 @@ extern "C"{
 #include<sac.h>
 }
 
+#include<Interpolate.hpp>
 #include<EvenSampledSignal.hpp>
 
 struct SACMetaData{
@@ -28,7 +29,8 @@ class SACSignals {
     private:
         std::vector<EvenSampledSignal> Data;
         std::vector<SACMetaData> MData;
-        std::string FileName;
+        std::string FileName="";
+        bool SameSamplingRate=false;
     public:
         SACSignals () = default;
         SACSignals (const std::string &s){
@@ -80,6 +82,7 @@ class SACSignals {
             EvenSampledSignal Tmp(Old_Data[i],delta);
             Data.push_back(Tmp);
         }
+        SameSamplingRate=true;
     }
 
     // non-member friends declearation.

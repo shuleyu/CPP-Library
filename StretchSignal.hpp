@@ -50,7 +50,7 @@ std::vector<double> StretchSignal(const std::vector<T1> &p, const T2 &r){
     std::vector<double> xx(N,0);
     for (int i=0;i<N;++i) xx[i]=i*dt;
 
-    ans=Interpolate(x,p,xx,true);
+    ans=Interpolate(x,p,xx);
 
     return ans;
 }
