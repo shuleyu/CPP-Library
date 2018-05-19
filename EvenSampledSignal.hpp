@@ -5,14 +5,21 @@
 #include<cmath>
 #include<string>
 #include<fstream>
+#include<algorithm>
 
+#include<HannTaper.hpp>
 #include<Interpolate.hpp>
 #include<CreateGrid.hpp>
+#include<CompareSignal.hpp>
 #include<GaussianBlur.hpp>
 #include<Butterworth.hpp>
 #include<RemoveTrend.hpp>
 #include<WaterLevelDecon.hpp>
+#include<StretchSignal.hpp>
 #include<DigitalSignal.hpp>
+#include<SimpsonRule.hpp>
+#include<TstarOperator.hpp>
+#include<Convolve.hpp>
 
 class EvenSampledSignal : public DigitalSignal {
 
@@ -23,6 +30,7 @@ public:
 
     // Constructor/Destructors.
     EvenSampledSignal () = default;
+    EvenSampledSignal (const EvenSampledSignal &) = default;
     EvenSampledSignal (const std::string &);
     EvenSampledSignal (const DigitalSignal &, const double &);
     EvenSampledSignal (const EvenSampledSignal &, const double &);
@@ -45,15 +53,21 @@ public:
 
     // Original (and final) functions.
     double dt() const {return Dt;}
+
+    double AbsIntegral() const;
     void Butterworth(const double &, const double &);
+    void Convolve(const EvenSampledSignal &);
     void GaussianBlur(const double & =1);
     void Interpolate(const double &);
+    EvenSampledSignal Stretch(const double & =1) const;
+    EvenSampledSignal Tstar(const double &, const double & =1e-3) const;
     void WaterLevelDecon(const EvenSampledSignal &, const double & =0.1);
 
     // non-member friends declearation.
     friend std::istream &operator>>(std::istream &, EvenSampledSignal &);
     friend std::ostream &operator<<(std::ostream &, const EvenSampledSignal &);
     friend class SACSignals;
+    friend SignalCompareResults CompareSignal(EvenSampledSignal , EvenSampledSignal, const double &, const double &, const double &);
 };
 
 // Constructors/Destructors definition.
@@ -157,12 +171,27 @@ std::pair<double,double> EvenSampledSignal::RemoveTrend(){
     return ::RemoveTrend(Amp,Dt,BeginTime);
 }
 
+// Take absolute amplitude then do the integral.
+double EvenSampledSignal::AbsIntegral() const {
+    auto f=[](const double &s){return (s>0?s:-s);};
+    return ::SimpsonRule(Amp.begin(),Amp.end(),dt(),f);
+}
+
 // butterworth filter.
 // changes: Amp(value change).
 void EvenSampledSignal::Butterworth(const double &f1, const double &f2){
     std::vector<std::vector<double>> In{Amp};
     ::Butterworth(In,Dt,f1,f2);
     Amp=In[0];
+}
+
+// Convolve with another signal S2, truncated relative to S2'peak position. (keep s1's size).
+// This is acausal convolution, trying to keep the original peak's position.
+void EvenSampledSignal::Convolve(const EvenSampledSignal &s2){
+    auto res=::Convolve(Amp,s2.Amp);
+    std::rotate(res.begin(),res.begin()+s2.peak(),res.end());
+    res.resize(size());
+    Amp=res;
 }
 
 // gaussian blur.
@@ -178,14 +207,66 @@ void EvenSampledSignal::Interpolate(const double &delta){
     *this=EvenSampledSignal (*this,delta);
 }
 
+// Stretch the signal horizontally and vertically.
+// Keep sampling rate the same, keep PeakTime() the same, which means updates:
+// BeginTime, EndTime, Peak,
+EvenSampledSignal EvenSampledSignal::Stretch(const double &h) const{
+
+    EvenSampledSignal ans(*this);
+    if (h==1) return ans;
+
+    // Stretch one side.
+    ans.Amp=std::vector<double> (Amp.begin(),Amp.begin()+peak()+1);
+    std::reverse(ans.Amp.begin(),ans.Amp.end());
+    ans.Amp=::StretchSignal(ans.Amp,h);
+    std::reverse(ans.Amp.begin(),ans.Amp.end());
+
+    // Stretch another side.
+    ans.Amp.pop_back();
+    auto S=::StretchSignal(std::vector<double> (Amp.begin()+peak(),Amp.end()),h);
+    ans.Amp.insert(ans.Amp.end(),S.begin(),S.end());
+
+    // Fix PeakTime() (by adjusting BeginTime)
+    double NewPeakTime=bt()+(PeakTime()-bt())*h;
+    ans.FindPeakAround(NewPeakTime,1);
+
+    ans.BeginTime=PeakTime()-ans.peak()*dt();
+    ans.EndTime=ans.BeginTime+(ans.size()-1)*dt();
+    return ans;
+}
+
+// Make a t-stared waveform.
+// Keep sampling rate the same, keep data length the same.
+// Notice: Peak amplitude and position could be changed.
+EvenSampledSignal EvenSampledSignal::Tstar(const double &ts, const double &tol) const{
+    EvenSampledSignal ans(*this);
+    if (ts<=0) return ans;
+
+    // Create a t* operator.
+    auto res=::TstarOperator(ts,dt(),tol);
+    EvenSampledSignal Ts(res.first,dt(),-dt()*res.second);
+    Ts.FindPeakAround(0,1);
+    ans.Convolve(Ts);
+    return ans;
+}
+
+// Notice: remove trend and do a taper (10% of length) both on source and signal before the decon.
 // Changes:
 // Amp(signal length change),Peak(=Amp.size()/2),BeginTime(relative to PeakTime=0),EndTime(relative to PeakTime=0)
 void EvenSampledSignal::WaterLevelDecon(const EvenSampledSignal &source, const double &wl) {
     if (fabs(Dt-source.Dt)>1e-5)
         throw std::runtime_error("Signal inputs of decon have different sampling rate.");
+
+    RemoveTrend();
+    HannTaper(0.1*length());
+
+    auto S=source.Amp;
+    ::RemoveTrend(S,Dt,source.bt());
+    ::HannTaper(S,0.1);
+
     std::vector<std::vector<double>> In{Amp};
     std::vector<std::size_t> P{Peak};
-    auto ans=::WaterLevelDecon(In,P,source.Amp,source.Peak,Dt,wl);
+    auto ans=::WaterLevelDecon(In,P,S,source.Peak,Dt,wl);
 
     Amp=ans[0];
     Peak=size()/2;
@@ -238,6 +319,15 @@ std::ostream &operator<<(std::ostream &os, const EvenSampledSignal &item){
 //     // restore print format.
 //     os.copyfmt(state);
     return os;
+}
+
+// Compare two signals around their peaks.
+// t1 t2 are time window relative to the peak (in seconds, e.g. t1=-5, t2=5)
+SignalCompareResults CompareSignal(EvenSampledSignal S1, EvenSampledSignal S2, const double &t1, const double &t2, const double &AmpLevel){
+    if (fabs(S1.dt()-S2.dt())>0.01*S1.dt()) throw std::runtime_error("Comparing two differently sampled signals.");
+    S1.NormalizeToPeak();
+    S2.NormalizeToPeak();
+    return ::CompareSignal(S1.Amp,S1.peak(),S2.Amp,S2.peak(),S1.dt(),t1,t2,AmpLevel);
 }
 
 #endif

@@ -37,36 +37,52 @@ int main(){
 
     //
     auto res=CompareSignal(p,P1,p,P1,delta,-3,3,0.25);
-    cout << ">V1 : " << res[0] << '\n';
-    cout << ">V2 : " << res[1] << '\n';
-    cout << ">V3 : " << res[2] << "\n\n";
+    cout << ">Amp_CCC     : " << res.Amp_CCC << '\n';
+    cout << ">Amp_Shift   : " << res.Amp_Shift << '\n';
+    cout << ">Amp_Diff    : " << res.Amp_Diff << '\n';
+    cout << ">Amp_WinDiff : " << res.Amp_WinDiff << '\n';
+    cout << ">Win_CCC     : " << res.Win_CCC << "\n";
+    cout << ">Win_Shift   : " << res.Win_Shift << "\n";
+    cout << ">Win_Diff    : " << res.Win_Diff << "\n\n";
 
     //
     res=CompareSignal(p,P1,pp,P2,delta,-3,3,0.25);
-    cout << ">V1 : " << res[0] << '\n';
-    cout << ">V2 : " << res[1] << '\n';
-    cout << ">V3 : " << res[2] << "\n\n";
+    cout << ">Amp_CCC     : " << res.Amp_CCC << '\n';
+    cout << ">Amp_Shift   : " << res.Amp_Shift << '\n';
+    cout << ">Amp_Diff    : " << res.Amp_Diff << '\n';
+    cout << ">Amp_WinDiff : " << res.Amp_WinDiff << '\n';
+    cout << ">Win_CCC     : " << res.Win_CCC << "\n";
+    cout << ">Win_Shift   : " << res.Win_Shift << "\n";
+    cout << ">Win_Diff    : " << res.Win_Diff << "\n\n";
 
     //
     res=CompareSignal(p,P1,ppp,P3,delta,-3,3,0.25);
-    cout << ">V1 : " << res[0] << '\n';
-    cout << ">V2 : " << res[1] << '\n';
-    cout << ">V3 : " << res[2] << "\n\n";
+    cout << ">Amp_CCC     : " << res.Amp_CCC << '\n';
+    cout << ">Amp_Shift   : " << res.Amp_Shift << '\n';
+    cout << ">Amp_Diff    : " << res.Amp_Diff << '\n';
+    cout << ">Amp_WinDiff : " << res.Amp_WinDiff << '\n';
+    cout << ">Win_CCC     : " << res.Win_CCC << "\n";
+    cout << ">Win_Shift   : " << res.Win_Shift << "\n";
+    cout << ">Win_Diff    : " << res.Win_Diff << "\n\n";
 
     //
     res=CompareSignal(p,P1,pppp,P4,delta,-3,3,0.25);
-    cout << ">V1 : " << res[0] << '\n';
-    cout << ">V2 : " << res[1] << '\n';
-    cout << ">V3 : " << res[2] << "\n\n";
+    cout << ">Amp_CCC     : " << res.Amp_CCC << '\n';
+    cout << ">Amp_Shift   : " << res.Amp_Shift << '\n';
+    cout << ">Amp_Diff    : " << res.Amp_Diff << '\n';
+    cout << ">Amp_WinDiff : " << res.Amp_WinDiff << '\n';
+    cout << ">Win_CCC     : " << res.Win_CCC << "\n";
+    cout << ">Win_Shift   : " << res.Win_Shift << "\n";
+    cout << ">Win_Diff    : " << res.Win_Diff << "\n\n";
 
-    for (size_t i=0;i<p.size();++i) cout << delta*i-delta*P1 << " " << p[i] << '\n';
-    cout << ">\n";
-    for (size_t i=0;i<pp.size();++i) cout << delta*i-delta*P2 << " " << pp[i] << '\n';
-    cout << ">\n";
-    for (size_t i=0;i<ppp.size();++i) cout << delta*i-delta*P3 << " " << ppp[i] << '\n';
-    cout << ">\n";
-    for (size_t i=0;i<pppp.size();++i) cout << delta*i-delta*P4 << " " << pppp[i] << '\n';
-    cout << ">\n";
+//     for (size_t i=0;i<p.size();++i) cout << delta*i-delta*P1 << " " << p[i] << '\n';
+//     cout << ">\n";
+//     for (size_t i=0;i<pp.size();++i) cout << delta*i-delta*P2 << " " << pp[i] << '\n';
+//     cout << ">\n";
+//     for (size_t i=0;i<ppp.size();++i) cout << delta*i-delta*P3 << " " << ppp[i] << '\n';
+//     cout << ">\n";
+//     for (size_t i=0;i<pppp.size();++i) cout << delta*i-delta*P4 << " " << pppp[i] << '\n';
+//     cout << ">\n";
 
     return 0;
 }

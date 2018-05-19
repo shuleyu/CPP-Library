@@ -2,22 +2,20 @@
 #include<fstream>
 
 #include<Normalize.hpp>
-#include<TstarOperation.hpp>
+#include<TstarOperator.hpp>
 
 using namespace std;
 
 int main(){
 
-    int n=8000;
     double delta=0.025,ts=0.9;
 
-    vector<double> ans=TstarOperation(ts,delta,n);
-
     // Use function.
-    Normalize(ans);
+    auto ans=TstarOperator(ts,delta);
 
     // output.
-    for (int i=0;i<n;++i) printf("%.12e\n",ans[i]);
+    for (size_t i=0;i<ans.first.size();++i)
+    printf("%.12e\t%.12e\n",delta*i-delta*ans.second,ans.first[i]);
 
     return 0;
 }

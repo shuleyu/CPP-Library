@@ -52,5 +52,5 @@ int main(){
     A.Interpolate(0.02);
     cout << A.dt() << endl;
 
-	return 0;
+    return 0;
 }

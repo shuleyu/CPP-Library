@@ -14,13 +14,12 @@
  * 1. Two measurements:
  *    A. Find the best fitting position using cross-correlation
  *       between the parts above input amplitude level (comparing portion).
- *    B. V1, Calculate average |s1-s2| between overlapping part of the comparing portion.
- *    C. V2, Calculate average |s1-s2| between overlapping part of original t1 ~ t2.
+ *    B. Amp_Diff, Calculate average |s1-s2| between overlapping part of the comparing portion.
+ *    C. Amp_WinDiff, Calculate average |s1-s2| between overlapping part of original t1 ~ t2.
  *
  * 2. One measurement:
- *    A. Find the best fitting position using cross-correlation
- *       between t1 ~ t2 (comparison portion)
- *    B. V3, Calculate average |s1-s2| between overlapping part of the comparing portion (original t1 ~ t2).
+ *    A. Find the best fitting position using cross-correlation between t1 ~ t2 (comparison portion)
+ *    B. Win_Diff, Calculate average |s1-s2| between overlapping part of the comparing portion (original t1 ~ t2).
  *
  * input(s):
  * const vector<T1> &s1        ----  Signal 1.
@@ -33,7 +32,7 @@
  * const T8         &AmpLevel  ----  CC compare part. (compare the part above this amplitude value)
  *
  * return(s):
- * vector<double> ans  ----  {V1,V2,V3} defined as above.
+ * SignalCompareResults ans  ----  Defined as above.
  *
  * Shule Yu
  * Jan 30 2018
@@ -44,8 +43,13 @@
  * Key words: compare signals
 ***************************************************************************/
 
+struct SignalCompareResults{
+    double Amp_CCC,Win_CCC,Amp_Diff,Amp_WinDiff,Win_Diff;
+    int Amp_Shift,Win_Shift;
+};
+
 template<class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
-std::vector<double> CompareSignal(const std::vector<T1> &s1, const T2 &p1, const std::vector<T3> &s2, const T4 &p2,
+SignalCompareResults CompareSignal(const std::vector<T1> &s1, const T2 &p1, const std::vector<T3> &s2, const T4 &p2,
                                   const T5 &delta, const T6 &t1, const T7 &t2,const T8 &AmpLevel) {
 
     // check input.
@@ -106,8 +110,11 @@ std::vector<double> CompareSignal(const std::vector<T1> &s1, const T2 &p1, const
     Normalize(C2);
 
     // Do cross-correlation finding the best fitting position.
+    SignalCompareResults ans;
     auto res=CrossCorrelation(C1,C2);
     int shift=res.first.first;
+    ans.Amp_CCC=res.first.second;
+    ans.Amp_Shift=res.first.first;
 
 
     // Find the overlapping part.
@@ -124,20 +131,20 @@ std::vector<double> CompareSignal(const std::vector<T1> &s1, const T2 &p1, const
     X+=X_B;
     Y+=Y_B;
 
-    // Calculate V1.
-    double V1=0;
-    for (int i=0;i<Len;++i) V1+=fabs(s1[X+i]-s2[Y+i]);
-    V1/=Len;
+    // Calculate Amp_Diff.
+    ans.Amp_Diff=0;
+    for (int i=0;i<Len;++i) ans.Amp_Diff+=fabs(s1[X+i]-s2[Y+i]);
+    ans.Amp_Diff/=Len;
 
 
     // Correct shift to originally align with peaks.
     shift-=((P1-X_B)-(P2-Y_B));
 
 
-    // Calculate V2.
-    double V2=0;
-    for (int i=W1;i<W2;++i) V2+=fabs(s1[P1+i]-s2[P2+i-shift]);
-    V2/=(W2-W1);
+    // Calculate Amp_WinDiff.
+    ans.Amp_WinDiff=0;
+    for (int i=W1;i<W2;++i) ans.Amp_WinDiff+=fabs(s1[P1+i]-s2[P2+i-shift]);
+    ans.Amp_WinDiff/=(W2-W1);
 
 
     // Calculate shift (by cross-correlation using t1 ~ t2).
@@ -147,6 +154,8 @@ std::vector<double> CompareSignal(const std::vector<T1> &s1, const T2 &p1, const
     C2=std::vector<double>(s2.begin()+Y_B,s2.begin()+Y_E);
     res=CrossCorrelation(C1,C2);
     shift=res.first.first;
+    ans.Win_CCC=res.first.second;
+    ans.Win_Shift=res.first.first;
 
     // Find the overlapping part.
     if(shift<0){
@@ -161,11 +170,11 @@ std::vector<double> CompareSignal(const std::vector<T1> &s1, const T2 &p1, const
     X+=X_B;
     Y+=Y_B;
 
-    double V3=0;
-    for (int i=0;i<Len;++i) V3+=fabs(s1[X+i]-s2[Y+i]);
-    V3/=Len;
+    ans.Win_Diff=0;
+    for (int i=0;i<Len;++i) ans.Win_Diff+=fabs(s1[X+i]-s2[Y+i]);
+    ans.Win_Diff/=Len;
 
-    return {V1,V2,V3};
+    return ans;
 }
 
 #endif

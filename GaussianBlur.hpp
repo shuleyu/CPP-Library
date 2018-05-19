@@ -62,7 +62,7 @@ void GaussianBlur(std::vector<std::vector<T1>> &p, const T2 &dt, const T3 &sigma
     // Convolve input signals with guassian function.
     // Truncate the smoothed signals into original size (keep the center part.)
     for (auto &item:p)
-        item=Convolve(item,Gaussian,true);
+        item=Convolve(item,Gaussian,true,true);
 
     return ;
 }

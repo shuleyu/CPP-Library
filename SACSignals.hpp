@@ -149,10 +149,11 @@ void SACSignals::NormalizeToGlobal(){
         double x=MaxOriginalAmp/Data[i].OriginalAmp();
         for (std::size_t j=0;j<Data[i].size();++j)
             Data[i].Amp[j]/=x;
-        Data[i].AmpScale=MaxOriginalAmp;
+        Data[i].AmpMultiplier=MaxOriginalAmp;
     }
 }
 
+// Notice this could flip the polarity of some of the signals.
 void SACSignals::NormalizeToPeak(){
     for (std::size_t i=0;i<size();++i)
         Data[i].NormalizeToPeak();
@@ -206,9 +207,14 @@ void SACSignals::WaterLevelDecon(const EvenSampledSignal &s, const double &wl){
 //         std::vector<std::size_t> In2;
 //         for (std::size_t i=0;i<size();++i) {
 //             In.push_back(Data[i].Amp);
+//             ::RemoveTrend(In.back(),dt(),Data[i].bt());
+//             ::HannTaper(In.back(),0.05);
 //             In2.push_back(Data[i].peak());
 //         }
-//         auto ans=::WaterLevelDecon(In,In2,s.Amp,s.peak(),dt(),wl);
+//         auto S=s.Amp;
+//         ::RemoveTrend(S,dt(),s.bt());
+//         ::HannTaper(S,0.05);
+//         auto ans=::WaterLevelDecon(In,In2,S,s.peak(),dt(),wl);
 //         for (std::size_t i=0;i<size();++i) {
 //             Data[i].Amp=ans[i];
 //             Data[i].Peak=ans[i].size()/2;

@@ -9,16 +9,20 @@
  * array.
  *
  * input(s):
- * vector<T1> &x    ----  Array x.
- * vector<T2> &y    ----  Array y.
- * const bool &Cut  ----  (Optional), default is false.
- *                        false, means return the full convlve
- *                               result. Return size = x.size()+y.size()-1
- *                        true, means only return the center
- *                              part. Return size = x.size().
- *                              Will remove y.size()/2 elements
- *                              in the begining, (y.size()-1)/2
- *                              elements at the end.
+ * vector<T1> &x          ----  Array x.
+ * vector<T2> &y          ----  Array y.
+ * const bool &Cut        ----  (Optional), default is false.
+ *                              false, means return the full convlve
+ *                                     result. Return size = x.size()+y.size()-1
+ *                              true , means only return the center
+ *                                     part. Return size = x.size().
+ *                                     Will remove y.size()/2 elements
+ *                                     in the begining, (y.size()-1)/2
+ *                                     elements at the end.
+ * const bool &Normalize  ----  (Optional), default is false.
+ *                              false, means no normalize.
+ *                              true,  the convlove result will be divided by the
+ *                                     summation of y over the overlapping points.
  *
  * return(s):
  * vector<double> ans  ----  Convolve result.
@@ -31,7 +35,8 @@
 ***********************************************************/
 
 template<class T1, class T2>
-std::vector<double> Convolve(const std::vector<T1> &x, const std::vector<T2> &y, const bool &Cut=false){
+std::vector<double> Convolve(const std::vector<T1> &x, const std::vector<T2> &y,
+                             const bool &Cut=false, const bool &Normalize=false){
 
     if (x.empty() || y.empty()){
         std::cerr <<  "Error in " << __func__ << ": input array size is zero ..." << std::endl;
@@ -50,7 +55,12 @@ std::vector<double> Convolve(const std::vector<T1> &x, const std::vector<T2> &y,
         ans.push_back(0);
         int Begin=std::max(i-n+1,0);
         int End=std::min(i+1,m);
-        for (int j=Begin;j<End;++j) ans.back()+=x[j]*y[i-j];
+        double W=0;
+        for (int j=Begin;j<End;++j) {
+            ans.back()+=x[j]*y[i-j];
+            W+=y[i-j];
+        }
+        if (Normalize && W!=0) ans.back()/=W;
     }
 
     return ans;

@@ -13,6 +13,7 @@ int main(){
     // Use function.
     auto C=Convolve(A,B);
     auto C2=Convolve(A,B,true);
+    auto C3=Convolve(A,B,true,true);
 
     cout << "A : ";
     for (auto &item:A) cout << item << " ";
@@ -26,8 +27,12 @@ int main(){
     for (auto &item:C) cout << item << " ";
     cout << "\n";
 
-    cout << "C': ";
+    cout << "C2: ";
     for (auto &item:C2) cout << item << " ";
+    cout << "\n";
+
+    cout << "C3: ";
+    for (auto &item:C3) cout << item << " ";
     cout << "\n";
 
     return 0;

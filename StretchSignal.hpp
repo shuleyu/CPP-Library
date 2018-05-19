@@ -18,7 +18,7 @@
  *                             e.g.
  *                             r = 1 means the original trace.
  *                             r = 0.5 gives a squeezed trace. (squeeze by half)
- *                             r = 2 gives stretched trace. (stretch by half)
+ *                             r = 2 gives stretched trace. (stretch to 2 times wide)
  * return(s):
  * vector<double> ans  ----  Stretched trace.
  *

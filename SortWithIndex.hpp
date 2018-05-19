@@ -1,6 +1,7 @@
 #ifndef ASU_SORTWITHINDEX
 #define ASU_SORTWITHINDEX
 
+#include<iterator>
 #include<vector>
 #include<algorithm>
 
@@ -27,8 +28,8 @@
  * Key words: sort, index
 *************************************************/
 
-template <class T1, class T2>
-std::vector<size_t> SortWithIndex(T1 Begin,T1 End,T2 cmp) {
+template <class T1, class T2=std::less<class std::iterator_traits<T1>::value_type> >
+std::vector<size_t> SortWithIndex(T1 Begin, T1 End, T2 cmp=T2()) {
 
     // Initialize original index locations.
     std::vector<size_t> idx;

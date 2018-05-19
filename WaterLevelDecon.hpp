@@ -17,6 +17,8 @@
  *
  * x and y will be padded (at both ends) with zeros to be the same length
  * [2*max(y.size(),x[0].size())] to prevent wrap around artifacts.
+ * Therefore signals need to be removed trend and tappered to avoid effects
+ * from the edges due to the padding.
  *
  * input(s):
  * const vector<vector<T1>> &x      ----  2-D array x (signals).

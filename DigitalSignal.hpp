@@ -19,7 +19,7 @@ protected:
     std::vector<double> Amp;
     std::size_t Peak=0;
     std::string FileName="";
-    double AmpScale=1.0;
+    double AmpMultiplier=1.0;
 
 public:
 
@@ -46,11 +46,13 @@ public:
     std::string filename() const {return FileName;}
     std::size_t peak() const {return Peak;}
     std::size_t size() const {return Amp.size();}
-    void NormalizeToSignal() {AmpScale*=::Normalize(Amp);}
-    double OriginalAmp() const {return AmpScale;}
+    void NormalizeToSignal() {AmpMultiplier*=::Normalize(Amp);}
+    double OriginalAmp() const {return AmpMultiplier;}
     void ShiftTimeRelativeToPeak() {ShiftTime(-PeakTime());}
 
     void NormalizeToPeak();
+    void Scale(const double &);
+    void ShiftDC(const double &);
 
     // non-member friends declearation.
     friend std::istream &operator>>(std::istream &, DigitalSignal &);
@@ -153,9 +155,19 @@ void DigitalSignal::ShiftTime(const double &t) {
 
 // Normalize Amp to the peak ampltude.
 void DigitalSignal::NormalizeToPeak() {
-    double x=fabs(Amp[Peak]);
+    double x=Amp[Peak];
     for (std::size_t i=0;i<size();++i) Amp[i]/=x;
-    AmpScale*=x;
+    AmpMultiplier*=x;
+}
+
+// Scaling the Amp without changing AmpMultiplier.
+void DigitalSignal::Scale(const double &s){
+    for (std::size_t i=0;i<size();++i) Amp[i]*=s;
+}
+
+// Add an DC to the signal. The meaning of AmpMultiplier becomes ambiguous.
+void DigitalSignal::ShiftDC(const double &s){
+    for (std::size_t i=0;i<size();++i) Amp[i]+=s;
 }
 
 // Non-member functions.

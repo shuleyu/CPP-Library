@@ -43,5 +43,5 @@ int main(){
     A.NormalizeToPeak();
     cout << A.OriginalAmp() << endl;
 
-	return 0;
+    return 0;
 }
