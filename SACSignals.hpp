@@ -7,6 +7,10 @@
 #include<string>
 #include<cstring>
 #include<fstream>
+#include<map>
+#include<cstdio>
+#include<fcntl.h>
+#include<unistd.h>
 
 extern "C"{
 #include<sacio.h>
@@ -21,10 +25,8 @@ extern "C"{
 struct SACMetaData{
     std::string stnm,netwk;
     double gcarc;
-    SACMetaData (const std::string &s, const std::string &n, const double &g) :
-        stnm(s.substr(0,s.find_last_not_of(" \n\r\t")+1)),
-        netwk(n.substr(0,n.find_last_not_of(" \n\r\t")+1)),
-        gcarc(g) {}
+    std::map<std::string,double> tt;
+    SACMetaData (const std::string &s, const std::string &n, const double &g, const std::map<std::string,double> &m) : stnm(s),netwk(n),gcarc(g),tt(m) {}
 };
 
 class SACSignals {
@@ -33,8 +35,6 @@ private:
     std::vector<EvenSampledSignal> Data;
     std::vector<SACMetaData> MData;
     std::string FileName="";
-    bool SameSamplingRate () const;
-    bool SameSize () const;
 
 public:
 
@@ -50,17 +50,25 @@ public:
     std::string filename() const {return FileName;}
 
     void Butterworth(const double &, const double &);
+    std::vector<double> bt() const;
     void CheckDist(const double & =-1, const double & =181);
+    void CheckPhase(const std::string &);
+    std::vector<double> Distance() const;
     void GaussianBlur(const double & =1);
     void HannTaper(const double & =10);
     void Interpolate(const double &);
+    EvenSampledSignal MakeStack() const;
     void NormalizeToGlobal();
     void NormalizeToPeak();
     void NormalizeToSignal();
     void PrintInfo() const;
     void PrintLessInfo() const;
-    void RemoveRecords(const std::vector<std::size_t> &);
+    void RemoveRecords(std::vector<std::size_t>);
     std::vector<std::pair<double,double>> RemoveTrend();
+    bool SameSamplingRate () const;
+    bool SameSize () const;
+    void SetBeginTime(const double &);
+    std::vector<double> TravelTime(const std::string &) const;
     void WaterLevelDecon(const EvenSampledSignal &, const double & =0.1);
     void WaterLevelDecon(SACSignals &, const double & =0.1);
 
@@ -88,29 +96,15 @@ SACSignals::SACSignals (const std::string &s){
 
 // Member function definitions.
 
-bool SACSignals::SameSamplingRate() const{
-    double t=0;
-    for (std::size_t i=0;i<size();++i) {
-        if (i==0) t=Data[i].dt();
-        else if (t!=Data[i].dt())
-            return false;
-    }
-    return true;
-}
-
-bool SACSignals::SameSize() const{
-    size_t n=0;
-    for (std::size_t i=0;i<size();++i) {
-        if (i==0) n=Data[i].size();
-        else if (n!=Data[i].size())
-            return false;
-    }
-    return true;
-}
-
 void SACSignals::Butterworth(const double &f1, const double &f2){
     for (std::size_t i=0;i<size();++i)
         Data[i].Butterworth(f1,f2);
+}
+
+std::vector<double> SACSignals::bt() const {
+    std::vector<double> ans;
+    for (size_t i=0;i<size();++i) ans.push_back(Data[i].bt());
+    return ans;
 }
 
 void SACSignals::CheckDist(const double &d1, const double &d2){
@@ -118,6 +112,20 @@ void SACSignals::CheckDist(const double &d1, const double &d2){
     for (size_t i=0;i<size();++i)
         if (MData[i].gcarc<d1 || MData[i].gcarc>d2) BadIndices.push_back(i);
     RemoveRecords(BadIndices);
+}
+
+void SACSignals::CheckPhase(const std::string &p){
+    std::vector<std::size_t> BadIndices;
+    for (size_t i=0;i<size();++i)
+        if (MData[i].tt.find(p)==MData[i].tt.end() || MData[i].tt[p]<0) BadIndices.push_back(i);
+    RemoveRecords(BadIndices);
+}
+
+std::vector<double> SACSignals::Distance() const{
+    std::vector<double> ans;
+    for (const auto &item:MData)
+        ans.push_back(item.gcarc);
+    return ans;
 }
 
 void SACSignals::GaussianBlur(const double &sigma){
@@ -137,6 +145,15 @@ void SACSignals::Interpolate(const double &delta) {
         EvenSampledSignal Tmp(Old_Data[i],delta);
         Data.push_back(Tmp);
     }
+}
+
+EvenSampledSignal SACSignals::MakeStack() const {
+    EvenSampledSignal ans;
+    if (size()<=0) return ans;
+    ans=Data[0];
+    ans.Peak=0;ans.FileName="";ans.AmpMultiplier=1.0;
+    for (size_t i=1;i<size();++i) ans+=Data[i];
+    return ans;
 }
 
 void SACSignals::NormalizeToGlobal(){
@@ -181,8 +198,9 @@ void SACSignals::PrintLessInfo() const {
     std::cout << "Current valid trace nubmer: " << size() << '\n';
 }
 
-void SACSignals::RemoveRecords(const std::vector<std::size_t> &badindices){
-    for (const auto &index:badindices){
+void SACSignals::RemoveRecords(std::vector<std::size_t> bi){
+    std::sort(bi.begin(),bi.end(),std::greater<std::size_t>());
+    for (const auto &index:bi){
         std::swap(MData[index],MData.back());
         MData.pop_back();
         std::swap(Data[index],Data.back());
@@ -197,35 +215,44 @@ std::vector<std::pair<double,double>> SACSignals::RemoveTrend(){
     return ans;
 }
 
+bool SACSignals::SameSamplingRate() const{
+    double t=0;
+    for (std::size_t i=0;i<size();++i) {
+        if (i==0) t=Data[i].dt();
+        else if (t!=Data[i].dt())
+            return false;
+    }
+    return true;
+}
+
+bool SACSignals::SameSize() const{
+    size_t n=0;
+    for (std::size_t i=0;i<size();++i) {
+        if (i==0) n=Data[i].size();
+        else if (n!=Data[i].size())
+            return false;
+    }
+    return true;
+}
+
+void SACSignals::SetBeginTime(const double &t){
+    auto A=bt();
+    for (auto &item:A) item=-item+t;
+    ShiftTime(A);
+}
+
+std::vector<double> SACSignals::TravelTime(const std::string &s) const{
+    std::vector<double> ans;
+    for (const auto &item:MData) {
+        if (item.tt.find(s)==item.tt.end()) ans.push_back(-1);
+        else ans.push_back(item.tt.at(s));
+    }
+    return ans;
+}
+
 void SACSignals::WaterLevelDecon(const EvenSampledSignal &s, const double &wl){
-//     if (SameSamplingRate() && SameSize()) { // Bulk mode.
-// std::cout << "Bulk mode"  << std::endl;
-//         if (fabs(dt()-s.dt())>1e-5)
-//             throw std::runtime_error("Signal inputs of decon have different sampling rate.");
-//
-//         std::vector<std::vector<double>> In;
-//         std::vector<std::size_t> In2;
-//         for (std::size_t i=0;i<size();++i) {
-//             In.push_back(Data[i].Amp);
-//             ::RemoveTrend(In.back(),dt(),Data[i].bt());
-//             ::HannTaper(In.back(),0.05);
-//             In2.push_back(Data[i].peak());
-//         }
-//         auto S=s.Amp;
-//         ::RemoveTrend(S,dt(),s.bt());
-//         ::HannTaper(S,0.05);
-//         auto ans=::WaterLevelDecon(In,In2,S,s.peak(),dt(),wl);
-//         for (std::size_t i=0;i<size();++i) {
-//             Data[i].Amp=ans[i];
-//             Data[i].Peak=ans[i].size()/2;
-//             Data[i].BeginTime=(Data[i].Peak-1)*dt()*-1;
-//             Data[i].EndTime=Data[i].BeginTime+(Data[i].size()-1)*dt();
-//         }
-//     }
-//     else {
-        for (std::size_t i=0;i<size();++i)
-            Data[i].WaterLevelDecon(s,wl);
-//     }
+    for (std::size_t i=0;i<size();++i)
+        Data[i].WaterLevelDecon(s,wl);
 }
 
 void SACSignals::WaterLevelDecon(SACSignals &D, const double &wl){
@@ -272,25 +299,59 @@ std::istream &operator>>(std::istream &is, SACSignals &item){
 
     item.clear();
     std::string filename;
-    char file[300],stnm[20],netwk[20],st[6]="kstnm",kt[7]="knetwk",gc[6]="gcarc";
+    char file[300],stnm1[20],netwk1[20],p[20];
+    char st[6]="kstnm",kt[7]="knetwk",gc[6]="gcarc";
+    char tname[][3]={"t0","t1","t2","t3","t4","t5","t6","t7","t8","t9"};
+    char pname[][4]={"kt0","kt1","kt2","kt3","kt4","kt5","kt6","kt7","kt8","kt9"};
+    std::string stnm,netwk;
+    std::map<std::string,double> M;
     int rawnpts,maxl=MAXL,nerr;
-    float rawbeg,rawdel,rawdata[MAXL],gcarc;
+    float rawbeg,rawdel,rawdata[MAXL],gcarc,t;
     std::vector<double> D;
 
     while (is >> filename){
         strcpy(file,filename.c_str());
         rsac1(file,rawdata,&rawnpts,&rawbeg,&rawdel,&maxl,&nerr,strlen(file));
-        if (nerr!=0) continue;
-        getkhv(st,stnm,&nerr,5,20);
-        getkhv(kt,netwk,&nerr,6,20);
-        getfhv(gc,&gcarc,&nerr,5);
-        item.MData.push_back(SACMetaData(std::string(stnm),std::string(netwk),gcarc));
+        if (nerr!=0) continue; // ignore unevenly sampled records.
 
         D.resize(rawnpts);
         for (int i=0;i<rawnpts;++i) D[i]=rawdata[i];
 
         EvenSampledSignal Tmp(D,rawdel,rawbeg,filename);
         item.Data.push_back(Tmp);
+
+        // deal with headers, we only pull these headers:
+        // network code, station code, gcarc, traveltimes.
+        M.clear();
+
+// hide warning output.
+const int stdoutfd(dup(fileno(stdout)));
+int newstdout = open("/dev/null", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+dup2(newstdout, fileno(stdout));
+close(newstdout);
+
+        getkhv(st,stnm1,&nerr,5,20);
+        std::string tmpstr(stnm1);
+        stnm=tmpstr.substr(0,tmpstr.find_last_not_of(" \n\r\t")+1);
+
+        getkhv(kt,netwk1,&nerr,6,20);
+        tmpstr=std::string(stnm1);
+        netwk=tmpstr.substr(0,tmpstr.find_last_not_of(" \n\r\t")+1);
+
+        for (size_t i=0;i<10;++i) {
+            getfhv(tname[i],&t,&nerr,2);
+            getkhv(pname[i],p,&nerr,3,20);
+            std::string tmpstr(p);
+            M[tmpstr.substr(0,tmpstr.find_last_not_of(" \n\r\t")+1)]=t;
+        }
+        getfhv(gc,&gcarc,&nerr,5);
+
+// hide SAC warning output.
+fflush(stdout);
+dup2(stdoutfd, fileno(stdout));
+close(stdoutfd);
+
+        item.MData.push_back(SACMetaData(stnm,netwk1,gcarc,M));
     }
 
     return is;

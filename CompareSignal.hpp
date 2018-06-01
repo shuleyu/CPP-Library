@@ -46,6 +46,7 @@
 struct SignalCompareResults{
     double Amp_CCC,Win_CCC,Amp_Diff,Amp_WinDiff,Win_Diff;
     int Amp_Shift,Win_Shift;
+    SignalCompareResults () =default;
 };
 
 template<class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
@@ -114,7 +115,6 @@ SignalCompareResults CompareSignal(const std::vector<T1> &s1, const T2 &p1, cons
     auto res=CrossCorrelation(C1,C2);
     int shift=res.first.first;
     ans.Amp_CCC=res.first.second;
-    ans.Amp_Shift=res.first.first;
 
 
     // Find the overlapping part.
@@ -139,6 +139,7 @@ SignalCompareResults CompareSignal(const std::vector<T1> &s1, const T2 &p1, cons
 
     // Correct shift to originally align with peaks.
     shift-=((P1-X_B)-(P2-Y_B));
+    ans.Amp_Shift=shift;
 
 
     // Calculate Amp_WinDiff.

@@ -76,13 +76,6 @@ std::vector<double> CreateGrid(const T1 &lowerbound, const T2 &upperbound, const
     if (mode==0){
 
         int N=Para;
-
-        // check number of points.
-        if (N<=1) {
-            std::cerr <<  "Error in " << __func__ << ": target array size <=1 ..." << std::endl;
-            return {};
-        }
-
         double Inc=1.0*(upperbound-lowerbound)/(N-1);
 
         std::vector<double> ans(N,lowerbound);

@@ -8,7 +8,6 @@ using namespace std;
 
 int main(){
 
-    int n=8001;
     double delta=0.025,ts=0.9;
 
     auto y=TstarOperator(ts,delta);

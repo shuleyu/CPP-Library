@@ -69,9 +69,9 @@ double SNR(const std::vector<T> &p,const int &nloc,const int &nlen,const int &sl
 
             res=Envelope(p);
 
-            // integrate the envelope using Simpson's rule. (ignore h/3 term).
-            Slevel=SimpsonRule(std::vector<double> (res.begin()+sloc,res.begin()+sloc+slen));
-            Nlevel=SimpsonRule(std::vector<double> (res.begin()+nloc,res.begin()+nloc+nlen));
+            // integrate the envelope using Simpson's rule.
+            Slevel=SimpsonRule(res.begin()+sloc,res.begin()+sloc+slen,0.1);
+            Nlevel=SimpsonRule(res.begin()+nloc,res.begin()+nloc+nlen,0.1);
 
             // average with respect to their length.
             return Slevel/Nlevel*(1.0*nlen/slen);

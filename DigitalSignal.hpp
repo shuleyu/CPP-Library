@@ -25,6 +25,7 @@ public:
 
     // Constructor/Destructors.
     DigitalSignal () = default;
+    DigitalSignal (const DigitalSignal &) = default;
     DigitalSignal (const std::string &);
     virtual ~DigitalSignal () = default; // Base class destructor need to be virtual.
 
@@ -41,6 +42,14 @@ public:
     virtual void PrintInfo() const;
     virtual std::pair<double,double> RemoveTrend();
     virtual void ShiftTime(const double &);
+    virtual void ZeroOutHannTaper(const double &, const double &);
+
+    // member operators declearation.
+    virtual DigitalSignal &operator+=(const double &);
+    virtual DigitalSignal &operator*=(const double &);
+    virtual DigitalSignal &operator-=(const double &);
+    virtual DigitalSignal &operator/=(const double &);
+
 
     // Original (and final) functions.
     std::string filename() const {return FileName;}
@@ -49,15 +58,18 @@ public:
     void NormalizeToSignal() {AmpMultiplier*=::Normalize(Amp);}
     double OriginalAmp() const {return AmpMultiplier;}
     void ShiftTimeRelativeToPeak() {ShiftTime(-PeakTime());}
-
     void NormalizeToPeak();
-    void Scale(const double &);
-    void ShiftDC(const double &);
 
-    // non-member friends declearation.
+    // non-member friends/operators declearation.
+    friend class EvenSampledSignal;
     friend std::istream &operator>>(std::istream &, DigitalSignal &);
     friend std::ostream &operator<<(std::ostream &, const DigitalSignal &);
-    friend class EvenSampledSignal;
+    friend DigitalSignal operator+(const DigitalSignal &,const double &);
+    friend DigitalSignal operator+(const double &,const DigitalSignal &);
+    friend DigitalSignal operator*(const DigitalSignal &,const double &);
+    friend DigitalSignal operator*(const double &,const DigitalSignal &);
+    friend DigitalSignal operator-(const DigitalSignal &,const double &);
+    friend DigitalSignal operator/(const DigitalSignal &,const double &);
 };
 
 // Constructors/Destructors definition.
@@ -69,7 +81,7 @@ DigitalSignal::DigitalSignal (const std::string &s) {
 }
 
 
-// Member function definitions.
+// Member function/operators definitions.
 
 // Cut the data within a window. If cut failed, don't cut and return false.
 bool DigitalSignal::CheckAndCutToWindow(const double &t, const double &t1, const double &t2){
@@ -153,21 +165,40 @@ void DigitalSignal::ShiftTime(const double &t) {
         Time[i]+=t;
 }
 
+// taper window half-length is wl, zero half-length is zl.
+void DigitalSignal::ZeroOutHannTaper(const double &wl, const double &zl){
+    if ((wl+zl)*2>length()) throw std::runtime_error("ZeroOutHanning window too wide.");
+    for (size_t i=0;i<size();++i){
+        double dt=std::min(Time[i]-Time[0],Time.back()-Time[i]);
+        if (dt<zl) Amp[i]=0;
+        else if (dt<zl+wl) Amp[i]*=0.5-0.5*cos((dt-zl)/wl*M_PI);
+    }
+}
+
+// virtual member operators definition.
+DigitalSignal &DigitalSignal::operator+=(const double &s){
+    for (size_t i=0;i<size();++i) Amp[i]+=s;
+    return *this;
+}
+DigitalSignal &DigitalSignal::operator*=(const double &s){
+    for (size_t i=0;i<size();++i) Amp[i]*=s;
+    return *this;
+}
+DigitalSignal &DigitalSignal::operator-=(const double &s){
+    *this+=(-s);
+    return *this;
+}
+DigitalSignal &DigitalSignal::operator/=(const double &s){
+    if (s==0) throw std::runtime_error("Dividing amplitude with zero.");
+    *this*=(1.0/s);
+    return *this;
+}
+
 // Normalize Amp to the peak ampltude.
 void DigitalSignal::NormalizeToPeak() {
     double x=Amp[Peak];
     for (std::size_t i=0;i<size();++i) Amp[i]/=x;
     AmpMultiplier*=x;
-}
-
-// Scaling the Amp without changing AmpMultiplier.
-void DigitalSignal::Scale(const double &s){
-    for (std::size_t i=0;i<size();++i) Amp[i]*=s;
-}
-
-// Add an DC to the signal. The meaning of AmpMultiplier becomes ambiguous.
-void DigitalSignal::ShiftDC(const double &s){
-    for (std::size_t i=0;i<size();++i) Amp[i]+=s;
 }
 
 // Non-member functions.
@@ -204,6 +235,36 @@ std::ostream &operator<<(std::ostream &os, const DigitalSignal &item){
 //     // restore print format.
 //     os.copyfmt(state);
     return os;
+}
+
+// Overload operator "+,-" to ShiftDC.
+// Not changing AmpMultiplier.
+DigitalSignal operator+(const DigitalSignal &item,const double &s){
+    DigitalSignal ans(item);
+    ans+=s;
+    return ans;
+}
+DigitalSignal operator+(const double &s,const DigitalSignal &item){
+    return item+s;
+}
+DigitalSignal operator-(const DigitalSignal &item,const double &s){
+    return item+(-s);
+}
+
+// Overload operator "*,/" to Scale.
+// Not changing AmpMultiplier.
+DigitalSignal operator*(const DigitalSignal &item,const double &s){
+    DigitalSignal ans(item);
+    ans*=s;
+    return ans;
+}
+DigitalSignal operator*(const double &s,const DigitalSignal &item){
+    return item*s;
+}
+DigitalSignal operator/(const DigitalSignal &item,const double &s){
+    DigitalSignal ans(item);
+    ans/=s;
+    return ans;
 }
 
 #endif
