@@ -266,7 +266,7 @@ double EvenSampledSignal::AbsIntegral() const {
 
 // butterworth filter.
 // changes: Amp(value change).
-void EvenSampledSignal::Butterworth(const double &f1, const double &f2, const int &order, const int &passes);
+void EvenSampledSignal::Butterworth(const double &f1, const double &f2, const int &order, const int &passes){
     ::Butterworth(Amp,Dt,f1,f2,order,passes);
 }
 
@@ -355,9 +355,7 @@ void EvenSampledSignal::WaterLevelDecon(const EvenSampledSignal &source, const d
     ::HannTaper(S,0.1);
     ::RemoveTrend(S,Dt,source.bt());
 
-    auto ans=::WaterLevelDecon(Amp,Peak,S,source.Peak,Dt,wl);
-
-    Amp=ans[0];
+    Amp=::WaterLevelDecon(Amp,Peak,S,source.Peak,Dt,wl);
     Peak=size()/2;
     BeginTime=(Peak-1)*Dt*-1;
     EndTime=BeginTime+(size()-1)*Dt;

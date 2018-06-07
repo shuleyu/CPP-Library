@@ -40,7 +40,7 @@ public:
 
     // Constructor/Destructors.
     SACSignals () = default;
-    SACSignals (const std::string &);
+    SACSignals (const std::string &infile);
     ~SACSignals () = default;
 
     // Member function declarations.
@@ -49,15 +49,15 @@ public:
     std::size_t size() const {return Data.size();}
     std::string filename() const {return FileName;}
 
-    void Butterworth(const double &f1, const double &f2, const int &order, const int &passes);
+    void Butterworth(const double &f1, const double &f2, const int &order=2, const int &passes=2);
     std::vector<double> bt() const;
-    void CheckDist(const double & =-1, const double & =181);
-    void CheckPhase(const std::string &);
+    void CheckDist(const double &d1=-1, const double &d2=181);
+    void CheckPhase(const std::string &phase);
     std::vector<double> Distance() const;
     std::vector<std::string> File() const;
-    void GaussianBlur(const double & =1);
-    void HannTaper(const double & =10);
-    void Interpolate(const double &);
+    void GaussianBlur(const double &sigma=1);
+    void HannTaper(const double &wl=10);
+    void Interpolate(const double &delta);
     EvenSampledSignal MakeNeatStack() const;
     std::vector<std::string> NetworkName() const;
     void NormalizeToGlobal();
@@ -65,36 +65,36 @@ public:
     void NormalizeToSignal();
     void PrintInfo() const;
     void PrintLessInfo() const;
-    void RemoveRecords(std::vector<std::size_t>);
+    void RemoveRecords(std::vector<std::size_t> bi);
     std::vector<std::pair<double,double>> RemoveTrend();
     bool SameSamplingRate () const;
     bool SameSize () const;
-    void SetBeginTime(const double &);
+    void SetBeginTime(const double &t);
     std::vector<std::string> StationName() const;
-    std::vector<double> TravelTime(const std::string &) const;
-    void WaterLevelDecon(const EvenSampledSignal &, const double & =0.1);
-    void WaterLevelDecon(SACSignals &, const double & =0.1);
+    std::vector<double> TravelTime(const std::string &phase) const;
+    void WaterLevelDecon(const EvenSampledSignal &s, const double &wl=0.1);
+    void WaterLevelDecon(SACSignals &D, const double &wl=0.1);
     std::pair<std::vector<std::pair<int,double>>,EvenSampledSignal> XCorrStack(const std::vector<double> &T, const double &t1, const double &t2, const int loopN) const;
 
     // Member function template declarations.
-    template<class T> void CheckAndCutToWindow(const std::vector<T> &, const double &, const double &);
-    template<class T> void FindPeakAround(const std::vector<T> &, const double & =5);
-    template<class T> void ShiftTime(const std::vector<T> &);
+    template<class T> void CheckAndCutToWindow(const std::vector<T> &t, const double &t1, const double &t2);
+    template<class T> void FindPeakAround(const std::vector<T> &t, const double &wl=5);
+    template<class T> void ShiftTime(const std::vector<T> &t);
 
     // friends (non-member) declarations.
-    friend std::istream &operator>>(std::istream &, SACSignals &);
-    friend void DumpWaveforms(const SACSignals &, const std::string &);
+    friend std::istream &operator>>(std::istream &is, SACSignals &item);
+    friend void DumpWaveforms(const SACSignals &item, const std::string &dir);
     friend class EvenSampledSignal;
     friend class SACMetaData;
 };
 
 
 // Constructors/Destructors definition.
-SACSignals::SACSignals (const std::string &s){
-    std::ifstream fpin(s);
+SACSignals::SACSignals (const std::string &infile){
+    std::ifstream fpin(infile);
     fpin >> *this;
     fpin.close();
-    FileName=s;
+    FileName=infile;
 }
 
 
@@ -118,10 +118,10 @@ void SACSignals::CheckDist(const double &d1, const double &d2){
     RemoveRecords(BadIndices);
 }
 
-void SACSignals::CheckPhase(const std::string &p){
+void SACSignals::CheckPhase(const std::string &phase){
     std::vector<std::size_t> BadIndices;
     for (size_t i=0;i<size();++i)
-        if (MData[i].tt.find(p)==MData[i].tt.end() || MData[i].tt[p]<0) BadIndices.push_back(i);
+        if (MData[i].tt.find(phase)==MData[i].tt.end() || MData[i].tt[phase]<0) BadIndices.push_back(i);
     RemoveRecords(BadIndices);
 }
 
@@ -266,11 +266,11 @@ std::vector<std::string> SACSignals::StationName() const{
     return ans;
 }
 
-std::vector<double> SACSignals::TravelTime(const std::string &s) const{
+std::vector<double> SACSignals::TravelTime(const std::string &phase) const{
     std::vector<double> ans;
     for (const auto &item:MData) {
-        if (item.tt.find(s)==item.tt.end()) ans.push_back(-1);
-        else ans.push_back(item.tt.at(s));
+        if (item.tt.find(phase)==item.tt.end()) ans.push_back(-1);
+        else ans.push_back(item.tt.at(phase));
     }
     return ans;
 }
