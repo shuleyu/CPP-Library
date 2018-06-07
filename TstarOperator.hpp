@@ -7,7 +7,9 @@
 #include<cmath>
 #include<algorithm>
 
+extern "C"{
 #include<fftw3.h>
+}
 
 #include<Normalize.hpp>
 

@@ -19,12 +19,12 @@
  * of the amplitude at the peak.
  *
  * inputs(s):
- * vector<vector<T1>> &p      ----  Input 2D array pointer.
- * const T2           &dt     ----  Sampling rate (in sec.)
- * const T3           &sigma  ----  Gaussian function parameter (in sec.)
+ * vector<vector<T>> &p      ----  Input 2D array pointer.
+ * const double      &dt     ----  Sampling rate (in sec.)
+ * const double      &sigma  ----  Gaussian function parameter (in sec.)
  *
  * return(s):
- * vector<vector<T1>> &p (in-place)
+ * vector<T> &p (in-place)
  *
  * Shule Yu
  * Jan 01 2018
@@ -32,19 +32,11 @@
  * Key words: gaussian, blur, low pass filter.
 ***********************************************************/
 
-template<class T1, class T2, class T3>
-void GaussianBlur(std::vector<std::vector<T1>> &p, const T2 &dt, const T3 &sigma){
+template<class T>
+void GaussianBlur(std::vector<T> &p, const double &dt, const double &sigma){
 
     // Check p size.
     if (p.empty()) return;
-
-    size_t N=p[0].size();
-    if (N==0) return;
-    for (auto &item:p)
-        if (item.size()!=N) {
-            std::cerr <<  "Error in " << __func__ << ": input 2D array size error ..." << std::endl;
-            return;
-        }
 
     // Check parameters.
     if (sigma<=0) {
@@ -57,14 +49,13 @@ void GaussianBlur(std::vector<std::vector<T1>> &p, const T2 &dt, const T3 &sigma
     int GaussianN=1+(int)(GaussianLength/dt);
 
     // Set up the gaussian signal.
-    std::vector<double> Gaussian=GaussianSignal(GaussianN,dt,sigma);
+    auto Gaussian=GaussianSignal(GaussianN,dt,sigma);
 
     // Convolve input signals with guassian function.
     // Truncate the smoothed signals into original size (keep the center part.)
-    for (auto &item:p)
-        item=Convolve(item,Gaussian,true,true);
+    p=Convolve(p,Gaussian,true,true);
 
-    return ;
+    return;
 }
 
 #endif

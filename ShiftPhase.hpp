@@ -5,7 +5,9 @@
 #include<vector>
 #include<cmath>
 
+extern "C"{
 #include<fftw3.h>
+}
 
 /*********************************************************************
  * This C++ template runs fft on input real signal, then shift each

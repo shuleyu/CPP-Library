@@ -17,17 +17,12 @@ int main(){
         A.push_back(amp);
     fpin.close();
 
-//     Normalize(A);
-
     // Use function.
-    vector<vector<double>> B;
-    B.push_back(A);
-    GaussianBlur(B,dt,sigma);
-//     Normalize(B[0]);
+    GaussianBlur(A,dt,sigma);
 
     ofstream fpout("data/GaussianBlur_out");
-    for (size_t i=0;i<B[0].size();++i)
-        fpout << B[0][i] << '\n';
+    for (const auto &item:A)
+        fpout << item << '\n';
     fpout.close();
 
     return 0;

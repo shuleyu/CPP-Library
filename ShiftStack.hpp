@@ -2,7 +2,9 @@
 #define ASU_SHIFTSTACK
 
 #include<iostream>
+#include<iterator>
 #include<vector>
+#include<numeric>
 
 #include<AvrStd.hpp>
 
@@ -29,38 +31,38 @@
 *********************************************************/
 
 template <class T1, class T2=double>
-std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<std::vector<T1>> &p, const std::vector<int> &s=std::vector<int>(), const std::vector<T2> &w=std::vector<T2>()){
+std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<std::pair<T1,T1>> &P, 
+                                                              const std::vector<int> &s=std::vector<int>(),
+                                                              const std::vector<T2> &w=std::vector<T2>()){
+    int m=P.size();
 
-    // Check p.
-    if (p.empty()) return {};
+    // Check VPBegin size.
+    if (m==0) return {};
 
-    size_t N=p[0].size();
-    for (auto item:p)
-        if (item.size()!=N) {
+    // Check each trace length.
+    int n=std::distance(P[0].first,P[0].second);
+    for (const auto &item:P) { 
+        if (std::distance(item.first,item.second)!=n) {
             std::cerr <<  "Error in " << __func__ << ": input 2D array size error ..." << std::endl;
             return {};
         }
+    }
 
     // Check weight & shift length.
-    if (!w.empty() && w.size()!=p.size()) {
+    if (!w.empty() && w.size()!=P.size()) {
         std::cerr <<  "Error in " << __func__ << ": input weight size error ..." << std::endl;
         return {};
     }
 
-    if (!s.empty() && s.size()!=p.size()) {
+    if (!s.empty() && s.size()!=P.size()) {
         std::cerr <<  "Error in " << __func__ << ": input shift size error ..." << std::endl;
         return {};
     }
 
     // Check sum weight.
+    auto f=[](const T2 &sum, const T2 &w1){return sum+fabs(w1);};
+    if (!w.empty() && std::accumulate(w.begin(),w.end(),0.0,f)==0) return {};
 
-    int m=p.size(),n=p[0].size();
-    if (!w.empty()){
-        double SumWeight=0;
-        for (int i=0;i<m;++i)
-            SumWeight+=(w[i]>0?w[i]:-w[i]);
-        if (SumWeight==0) return {};
-    }
 
     // Calculate shift stack and std.
 
@@ -72,7 +74,7 @@ std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<
 
             int Shift=(s.empty()?0:s[j]%n);
             int X=i-Shift;
-            Tmp[j]=((X<0 || X>n)?0:p[j][X]);
+            Tmp[j]=((X<0 || X>n)?0:*std::next(P[j].first,X));
         }
 
         auto res=AvrStd(Tmp,w);
@@ -82,6 +84,16 @@ std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<
     }
 
     return {Stack,STD};
+}
+
+template <class T1, class T2=double>
+std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<std::vector<T1>> &p, const std::vector<int> &s=std::vector<int>(), const std::vector<T2> &w=std::vector<T2>()){
+
+    // Call ShiftStack.
+    typedef typename std::vector<T1>::const_iterator DataIt;
+    std::vector<std::pair<DataIt,DataIt>> Tmp;
+    for (const auto &item:p) Tmp.push_back({item.begin(),item.end()});
+    return ShiftStack(Tmp,s,w);
 }
 
 #endif

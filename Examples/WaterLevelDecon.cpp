@@ -46,20 +46,18 @@ int main(){
 //     int py=distance(y.begin(),max_element(y.begin(),y.end()));
 //
 //     // Make signal.
-//     vector<vector<double>> x(1,vector<double> ());
-//     x[0]=Convolve(Structure,y);
-//     Normalize(x[0]);
+//     auto x=Convolve(Structure,y);
+//     Normalize(x);
 //
 //     // Find the Signal's peak.
-//     vector<int> px;
-//     px.push_back(distance(x[0].begin(),max_element(x[0].begin(),x[0].end())));
+//     size_t px=distance(x.begin(),max_element(x.begin(),x.end()));
 //
 //     // Decon.
 //     auto Decon=WaterLevelDecon(x,px,y,py,delta,wl);
 //
 //     // Smooth and normalze.
 //     GaussianBlur(Decon,delta,0.1);
-//     Normalize(Decon[0]);
+//     Normalize(Decon);
 //
 //
 //     // Output.
@@ -87,14 +85,14 @@ int main(){
     // Example 2.
     ifstream fpin;
     int pSource=0,pScS=0;
-    double x,y,MinVal;
+    double x,y,MaxVal;
     vector<double> ScS,Source;
 
-    fpin.open("/home/shule/PROJ/t041.CA_D/Stretch/200608250044/SMER.StretchedTaperSource");
-    MinVal=numeric_limits<double>::max();
+    fpin.open("/home/shule/PROJ/t041.CA_D/Stretch/200608250044/S.modifiedsource");
+    MaxVal=numeric_limits<double>::min();
     while (fpin >> x >> y) {
-        if (MinVal>fabs(x)) {
-            MinVal=fabs(x);
+        if (MaxVal<fabs(y)) {
+            MaxVal=fabs(y);
             pSource=Source.size();
         }
         Source.push_back(y);
@@ -102,10 +100,10 @@ int main(){
     fpin.close();
 
     fpin.open("/home/shule/PROJ/t041.CA_D/ESF/200608250044_ScS/1/SMER.waveform");
-    MinVal=numeric_limits<double>::max();
+    MaxVal=numeric_limits<double>::min();
     while (fpin >> x >> y) {
-        if (MinVal>fabs(x)) {
-            MinVal=fabs(x);
+        if (MaxVal<fabs(y)) {
+            MaxVal=fabs(y);
             pScS=ScS.size();
         }
         if (fabs(x)<200) ScS.push_back(y);
@@ -116,29 +114,27 @@ int main(){
     pSource=FindPeak(Source,pSource,-200,600);
     pScS=FindPeak(ScS,pScS,-200,600);
 
-    auto Decon=WaterLevelDecon(vector<vector<double>> {ScS},vector<int> (pScS),Source,pSource,0.025,0.1);
+
+    auto Decon=WaterLevelDecon(ScS,pScS,Source,pSource,0.025,0.1);
     GaussianBlur(Decon,0.025,1.27398);
     Butterworth(Decon,0.025,0.03,1);
-    Normalize(Decon[0]);
+    Normalize(Decon);
 
 
     ofstream fpout;
     fpout.open("data/WaterLevelDecon_out_source");
-    for (size_t i=0;i<Source.size();++i){
+    for (size_t i=0;i<Source.size();++i)
         fpout << -30+i*0.025 << " " << Source[i] << '\n';
-    }
     fpout.close();
 
     fpout.open("data/WaterLevelDecon_out_signal");
-    for (size_t i=0;i<ScS.size();++i){
+    for (size_t i=0;i<ScS.size();++i)
         fpout << -200+i*0.025 << " " << ScS[i] << '\n';
-    }
     fpout.close();
 
     fpout.open("data/WaterLevelDecon_out_decon");
-    for (size_t i=0;i<Decon[0].size();++i){
-        fpout << i*0.025 << " " << Decon[0][i] << '\n';
-    }
+    for (size_t i=0;i<Decon.size();++i)
+        fpout << i*0.025 << " " << Decon[i] << '\n';
     fpout.close();
 
     return 0;

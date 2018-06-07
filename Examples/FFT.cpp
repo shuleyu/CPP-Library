@@ -4,6 +4,7 @@
 #include<FFT.hpp>
 #include<GaussianSignal.hpp>
 #include<Normalize.hpp>
+#include<CreateGrid.hpp>
 
 using namespace std;
 
@@ -18,14 +19,12 @@ int main(){
     int n=2*(int)ceil(gwidth/2/delta);
 
     vector<double> gauss=GaussianSignal(n,delta,sigma);
-
     Normalize(gauss);
 
     // Use function.
-    vector<double> freq;
-    vector<vector<double>> x,amp,phase;
-    x.push_back(gauss);
-    FFT(x,delta,freq,amp,phase);
+    auto ans=FFT(gauss,delta);
+    auto freq=CreateGrid(0,1/delta/2,ans.first.size(),0);
+
 
     // Output.
     ofstream fpout("data/FFT_in");
@@ -33,8 +32,8 @@ int main(){
     fpout.close();
 
     fpout.open("data/FFT_freq_amp_phase");
-    for (size_t i=0;i<freq.size();++i)
-        fpout << freq[i] << " " << amp[0][i] << " " << phase[0][i] << '\n';
+    for (size_t i=0;i<ans.first.size();++i)
+        fpout << freq[i] << " " << ans.first[i] << " " << ans.second[i] << '\n';
     fpout.close();
 
     return 0;

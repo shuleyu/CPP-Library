@@ -49,7 +49,7 @@ public:
     std::size_t size() const {return Data.size();}
     std::string filename() const {return FileName;}
 
-    void Butterworth(const double &, const double &);
+    void Butterworth(const double &f1, const double &f2, const int &order, const int &passes);
     std::vector<double> bt() const;
     void CheckDist(const double & =-1, const double & =181);
     void CheckPhase(const std::string &);
@@ -100,9 +100,9 @@ SACSignals::SACSignals (const std::string &s){
 
 // Member function definitions.
 
-void SACSignals::Butterworth(const double &f1, const double &f2){
+void SACSignals::Butterworth(const double &f1, const double &f2, const int &order, const int &passes){
     for (std::size_t i=0;i<size();++i)
-        Data[i].Butterworth(f1,f2);
+        Data[i].Butterworth(f1,f2,order,passes);
 }
 
 std::vector<double> SACSignals::bt() const {

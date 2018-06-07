@@ -23,9 +23,7 @@ int main(){
     auto ppp=StretchSignal(p,0.9);
 
     auto pppp=StretchSignal(p,0.9);
-    vector<vector<double>> A{pppp};
-    Butterworth(A,delta,0.03,0.3);
-    pppp=A[0];
+    Butterworth(pppp,delta,0.03,0.3);
     Normalize(pppp);
 
     int P1=distance(p.begin(),max_element(p.begin(),p.end()));

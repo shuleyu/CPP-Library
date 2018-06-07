@@ -2,6 +2,7 @@
 #define ASU_AMPLITUDE
 
 #include<iostream>
+#include<iterator>
 #include<vector>
 
 /*************************************************

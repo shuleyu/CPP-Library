@@ -67,7 +67,7 @@ public:
     double dt() const {return Dt;}
 
     double AbsIntegral() const;
-    void Butterworth(const double &f1, const double &f2);
+    void Butterworth(const double &f1, const double &f2, const int &order=2, const int &passes=2);
     void Convolve(const EvenSampledSignal &item);
     void GaussianBlur(const double &sigma=1);
     void Interpolate(const double &delta);
@@ -266,10 +266,8 @@ double EvenSampledSignal::AbsIntegral() const {
 
 // butterworth filter.
 // changes: Amp(value change).
-void EvenSampledSignal::Butterworth(const double &f1, const double &f2){
-    std::vector<std::vector<double>> In{Amp};
-    ::Butterworth(In,Dt,f1,f2);
-    Amp=In[0];
+void EvenSampledSignal::Butterworth(const double &f1, const double &f2, const int &order, const int &passes);
+    ::Butterworth(Amp,Dt,f1,f2,order,passes);
 }
 
 // Convolve with another signal S2, truncated relative to S2'peak position. (keep s1's size).
@@ -284,9 +282,7 @@ void EvenSampledSignal::Convolve(const EvenSampledSignal &item){
 // gaussian blur.
 // changes: Amp(value change).
 void EvenSampledSignal::GaussianBlur(const double &sigma){
-    std::vector<std::vector<double>> In{Amp};
-    ::GaussianBlur(In,Dt,sigma);
-    Amp=In[0];
+    ::GaussianBlur(Amp,Dt,sigma);
 }
 
 // Interpolate to certain sampling rate.
@@ -359,9 +355,7 @@ void EvenSampledSignal::WaterLevelDecon(const EvenSampledSignal &source, const d
     ::HannTaper(S,0.1);
     ::RemoveTrend(S,Dt,source.bt());
 
-    std::vector<std::vector<double>> In{Amp};
-    std::vector<std::size_t> P{Peak};
-    auto ans=::WaterLevelDecon(In,P,S,source.Peak,Dt,wl);
+    auto ans=::WaterLevelDecon(Amp,Peak,S,source.Peak,Dt,wl);
 
     Amp=ans[0];
     Peak=size()/2;
