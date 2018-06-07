@@ -26,72 +26,78 @@ public:
     // Constructor/Destructors.
     DigitalSignal () = default;
     DigitalSignal (const DigitalSignal &) = default;
-    DigitalSignal (const std::string &);
+    DigitalSignal (const std::string &infile);
     virtual ~DigitalSignal () = default; // Base class destructor need to be virtual.
 
     // Virtual function declarations.
     virtual double bt() const {if (Time.empty()) return 0; else return Time[0];}
-    virtual void clear() {Amp.clear();Time.clear();}
+    virtual void clear() {*this=DigitalSignal ();}
     virtual double et() const {if (Time.empty()) return 0; else return Time.back();}
+    virtual double pt() const {return Time[Peak];}
     virtual double length() const {return et()-bt();}
-    virtual double PeakTime() const {return Time[Peak];}
 
-    virtual bool CheckAndCutToWindow(const double &t, const double &t1, const double &t2);
-    virtual void FindPeakAround(const double &,const double & =5);
-    virtual void HannTaper(const double &);
+    virtual bool CheckAndCutToWindow(const double &t1, const double &t2);
+    virtual void FindPeakAround(const double &t,const double &w=5);
+    virtual void HannTaper(const double &wl);
+    virtual std::size_t LocateTime(const double &t) const;
     virtual void PrintInfo() const;
     virtual std::pair<double,double> RemoveTrend();
-    virtual void ShiftTime(const double &);
-    virtual void ZeroOutHannTaper(const double &, const double &);
+    virtual void ShiftTime(const double &t);
+    virtual void ZeroOutHannTaper(const double &wl, const double &zl);
 
     // member operators declearation.
-    virtual DigitalSignal &operator+=(const double &);
-    virtual DigitalSignal &operator*=(const double &);
-    virtual DigitalSignal &operator-=(const double &);
-    virtual DigitalSignal &operator/=(const double &);
+    virtual DigitalSignal &operator+=(const double &a);
+    virtual DigitalSignal &operator*=(const double &a);
+    virtual DigitalSignal &operator-=(const double &a);
+    virtual DigitalSignal &operator/=(const double &a);
 
 
     // Original (and final) functions.
     std::string filename() const {return FileName;}
     std::size_t peak() const {return Peak;}
     std::size_t size() const {return Amp.size();}
+    bool CheckWindow(const double &t1, const double &t2) const {
+        if (t1>=t2) throw std::runtime_error("Window length <=0.");
+        if (t1<bt() || t2>et()) return false;
+        else return true;
+    }
     void NormalizeToSignal() {AmpMultiplier*=::Normalize(Amp);}
     double OriginalAmp() const {return AmpMultiplier;}
-    void ShiftTimeRelativeToPeak() {ShiftTime(-PeakTime());}
+    void SetBeginTime(const double &t) {ShiftTime(-bt()+t);}
+    void ShiftTimeRelativeToPeak() {ShiftTime(-pt());}
     void NormalizeToPeak();
 
     // non-member friends/operators declearation.
     friend class EvenSampledSignal;
-    friend std::istream &operator>>(std::istream &, DigitalSignal &);
-    friend std::ostream &operator<<(std::ostream &, const DigitalSignal &);
-    friend DigitalSignal operator+(const DigitalSignal &,const double &);
-    friend DigitalSignal operator+(const double &,const DigitalSignal &);
-    friend DigitalSignal operator*(const DigitalSignal &,const double &);
-    friend DigitalSignal operator*(const double &,const DigitalSignal &);
-    friend DigitalSignal operator-(const DigitalSignal &,const double &);
-    friend DigitalSignal operator/(const DigitalSignal &,const double &);
+    friend std::istream &operator>>(std::istream &is, DigitalSignal &item);
+    friend std::ostream &operator<<(std::ostream &os, const DigitalSignal &item);
+    friend DigitalSignal operator+(const DigitalSignal &item,const double &a);
+    friend DigitalSignal operator+(const double &a,const DigitalSignal &item);
+    friend DigitalSignal operator-(const DigitalSignal &item,const double &a);
+    friend DigitalSignal operator*(const DigitalSignal &item,const double &a);
+    friend DigitalSignal operator*(const double &a,const DigitalSignal &item);
+    friend DigitalSignal operator/(const DigitalSignal &item,const double &a);
 };
 
 // Constructors/Destructors definition.
-DigitalSignal::DigitalSignal (const std::string &s) {
-    std::ifstream fpin(s);
+DigitalSignal::DigitalSignal (const std::string &infile) {
+    std::ifstream fpin(infile);
     fpin >> *this;
     fpin.close();
-    FileName=s;
+    FileName=infile;
 }
 
 
 // Member function/operators definitions.
 
 // Cut the data within a window. If cut failed, don't cut and return false.
-bool DigitalSignal::CheckAndCutToWindow(const double &t, const double &t1, const double &t2){
-    // Check window position.
-    if (t1>=t2) throw std::runtime_error("Cut window length <=0.");
-    if (t+t1<bt() || t+t2>et()) return false;
+bool DigitalSignal::CheckAndCutToWindow(const double &t1, const double &t2){
+
+    if (!CheckWindow(t1,t2)) return false;
 
     // Cut.
-    std::size_t d1=distance(Time.begin(),std::lower_bound(Time.begin(),Time.end(),t+t1));
-    std::size_t d2=distance(Time.begin(),std::upper_bound(Time.begin(),Time.end(),t+t2));
+    std::size_t d1=distance(Time.begin(),std::lower_bound(Time.begin(),Time.end(),t1));
+    std::size_t d2=distance(Time.begin(),std::upper_bound(Time.begin(),Time.end(),t2));
 
     std::vector<double> NewTime(Time.begin()+d1,Time.begin()+d2),NewAmp(Amp.begin()+d1,Amp.begin()+d2);
     std::swap(NewTime,Time);
@@ -105,7 +111,7 @@ bool DigitalSignal::CheckAndCutToWindow(const double &t, const double &t1, const
 // Find the position of max|amp| around some time.
 void DigitalSignal::FindPeakAround(const double &t, const double &w){
     double AbsMax=-1;
-    for (size_t i=0;i<size();++i){
+    for (std::size_t i=0;i<size();++i){
         if (fabs(Time[i]-t)<=w && AbsMax<fabs(Amp[i])) {
             AbsMax=fabs(Amp[i]);
             Peak=i;
@@ -117,10 +123,18 @@ void DigitalSignal::FindPeakAround(const double &t, const double &w){
 void DigitalSignal::HannTaper(const double &wl){
 
     if (wl*2>length()) throw std::runtime_error("Hanning window too wide.");
-    for (size_t i=0;i<size();++i){
+    for (std::size_t i=0;i<size();++i){
         double dt=std::min(Time[i]-Time[0],Time.back()-Time[i]);
         if (dt<wl) Amp[i]*=0.5-0.5*cos(dt/wl*M_PI);
     }
+}
+
+std::size_t DigitalSignal::LocateTime(const double &t) const {
+    if (t<bt() || t>et()) return -1;
+    auto it=std::lower_bound(Time.begin(),Time.end(),t);
+    if (it==Time.begin()) return 0;
+    if (fabs(*std::prev(it)-t)<fabs(*it-t)) return distance(Time.begin(),std::prev(it));
+    else return distance(Time.begin(),it);
 }
 
 // Print metadata.
@@ -130,17 +144,17 @@ void DigitalSignal::PrintInfo() const{
     std::cout << "Signal size: " << size() << '\n';
     std::cout << "BeginTime: " << bt() << '\n';
     std::cout << "EndTime: " << et() << '\n';
-    std::cout << "PeakTime: " << PeakTime() << '\n';
+    std::cout << "PeakTime: " << pt() << '\n';
 }
 
 // remove drift and DC.
 std::pair<double,double> DigitalSignal::RemoveTrend(){
 
-    size_t n=size();
+    std::size_t n=size();
     if (n<=1) return {0,0};
 
     double sumx=0,sumx2=0,sumy=0,sumxy=0,avx;
-    for (size_t i=0;i<n;++i){
+    for (std::size_t i=0;i<n;++i){
         sumx+=Time[i];
         sumx2+=Time[i]*Time[i];
         sumy+=Amp[i];
@@ -153,7 +167,7 @@ std::pair<double,double> DigitalSignal::RemoveTrend(){
     double intercept=sumy/n-slope*avx;
 
     // remove the trend and average for input data points.
-    for (size_t i=0;i<n;++i)
+    for (std::size_t i=0;i<n;++i)
         Amp[i]-=(intercept+Time[i]*slope);
 
     return {slope,intercept};
@@ -168,7 +182,7 @@ void DigitalSignal::ShiftTime(const double &t) {
 // taper window half-length is wl, zero half-length is zl.
 void DigitalSignal::ZeroOutHannTaper(const double &wl, const double &zl){
     if ((wl+zl)*2>length()) throw std::runtime_error("ZeroOutHanning window too wide.");
-    for (size_t i=0;i<size();++i){
+    for (std::size_t i=0;i<size();++i){
         double dt=std::min(Time[i]-Time[0],Time.back()-Time[i]);
         if (dt<zl) Amp[i]=0;
         else if (dt<zl+wl) Amp[i]*=0.5-0.5*cos((dt-zl)/wl*M_PI);
@@ -176,21 +190,21 @@ void DigitalSignal::ZeroOutHannTaper(const double &wl, const double &zl){
 }
 
 // virtual member operators definition.
-DigitalSignal &DigitalSignal::operator+=(const double &s){
-    for (size_t i=0;i<size();++i) Amp[i]+=s;
+DigitalSignal &DigitalSignal::operator+=(const double &a){
+    for (std::size_t i=0;i<size();++i) Amp[i]+=a;
     return *this;
 }
-DigitalSignal &DigitalSignal::operator*=(const double &s){
-    for (size_t i=0;i<size();++i) Amp[i]*=s;
+DigitalSignal &DigitalSignal::operator*=(const double &a){
+    for (std::size_t i=0;i<size();++i) Amp[i]*=a;
     return *this;
 }
-DigitalSignal &DigitalSignal::operator-=(const double &s){
-    *this+=(-s);
+DigitalSignal &DigitalSignal::operator-=(const double &a){
+    *this+=(-a);
     return *this;
 }
-DigitalSignal &DigitalSignal::operator/=(const double &s){
-    if (s==0) throw std::runtime_error("Dividing amplitude with zero.");
-    *this*=(1.0/s);
+DigitalSignal &DigitalSignal::operator/=(const double &a){
+    if (a==0) throw std::runtime_error("Dividing amplitude with zero.");
+    *this*=(1.0/a);
     return *this;
 }
 
@@ -239,31 +253,31 @@ std::ostream &operator<<(std::ostream &os, const DigitalSignal &item){
 
 // Overload operator "+,-" to ShiftDC.
 // Not changing AmpMultiplier.
-DigitalSignal operator+(const DigitalSignal &item,const double &s){
+DigitalSignal operator+(const DigitalSignal &item,const double &a){
     DigitalSignal ans(item);
-    ans+=s;
+    ans+=a;
     return ans;
 }
-DigitalSignal operator+(const double &s,const DigitalSignal &item){
-    return item+s;
+DigitalSignal operator+(const double &a,const DigitalSignal &item){
+    return item+a;
 }
-DigitalSignal operator-(const DigitalSignal &item,const double &s){
-    return item+(-s);
+DigitalSignal operator-(const DigitalSignal &item,const double &a){
+    return item+(-a);
 }
 
 // Overload operator "*,/" to Scale.
 // Not changing AmpMultiplier.
-DigitalSignal operator*(const DigitalSignal &item,const double &s){
+DigitalSignal operator*(const DigitalSignal &item,const double &a){
     DigitalSignal ans(item);
-    ans*=s;
+    ans*=a;
     return ans;
 }
-DigitalSignal operator*(const double &s,const DigitalSignal &item){
-    return item*s;
+DigitalSignal operator*(const double &a,const DigitalSignal &item){
+    return item*a;
 }
-DigitalSignal operator/(const DigitalSignal &item,const double &s){
+DigitalSignal operator/(const DigitalSignal &item,const double &a){
     DigitalSignal ans(item);
-    ans/=s;
+    ans/=a;
     return ans;
 }
 

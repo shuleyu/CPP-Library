@@ -11,16 +11,20 @@ int main(){
 //     EvenSampledSignal A("data/Signal.txt");
 //     EvenSampledSignal A("data/ShiftPhase_in");
     vector<double> a(10,1);
-    EvenSampledSignal A(a,0.04);
-    cout << (A-=2);
+    EvenSampledSignal A(a,0.04,1);
+    cout << A << endl << endl;
+    A.SetBeginTime(0);
+    cout << A << endl;
+//     cout << A.et() << endl;
+//     cout << A.LocateTime(1.36) << endl;
 
 
 //     A.clear();
 //     cout << A.dt() << endl;
 //     cout << A.et() << endl;
 //     cout << A.length() << endl;
-//     cout << A.PeakTime() << endl;
-//     A.CheckAndCutToWindow(10,-5,5);
+//     cout << A.pt() << endl;
+//     A.CheckAndCutToWindow(5,15);
 //     A.FindPeakAround(25,2);
 //     A.HannTaper(3);
 //     cout << A ;
@@ -44,9 +48,9 @@ int main(){
 //     A.NormalizeToSignal();
 //     cout << A.OriginalAmp() << endl;
 // 
-//     cout << A.PeakTime() << endl;
+//     cout << A.pt() << endl;
 //     A.ShiftTimeRelativeToPeak();
-//     cout << A.PeakTime() << endl;
+//     cout << A.pt() << endl;
 // 
 //     cout << A.OriginalAmp() << endl;
 //     A.NormalizeToPeak();

@@ -21,25 +21,34 @@ int main(){
 //     B.Interpolate(A.dt());
 
 
-    A.PrintLessInfo();
+//     A.PrintLessInfo();
 
 //     A.RemoveRecords(vector<size_t> {1});
 //     auto res=A.RemoveTrend();
 //     cout << "RemoveTrend first trace result: " << res[0].first << " " << res[0].second << endl;
 
-    A.NormalizeToSignal();
-//     A.FindPeakAround(vector<double> (A.size(),10));
-//     A.NormalizeToPeak();
+    A.CheckPhase("S");
+//     cout << A.size() << endl;
 
-    A.Interpolate(0.02);
+    A.Interpolate(0.025);
     A.Butterworth(0.033,0.3);
 
-
-    A.CheckPhase("S");
-
     A.CheckAndCutToWindow(A.TravelTime("S"),-100,100);
-    A.SetBeginTime(-100);
+//     cout << A.size() << endl;
 
+    A.SetBeginTime(-100);
+    A.FindPeakAround(vector<double> (A.size(),0),20);
+    A.NormalizeToPeak();
+
+    auto ans=A.XCorrStack(vector<double> (A.size(),0),-5,15,5);
+    auto st=A.StationName();
+//     auto ESW=ans.second;
+//     cout << ESW << endl;
+//     cout << ESW.pt() << endl;
+    for (size_t i=0;i<A.size();++i)
+        cout << st[i] << " " << ans.first[i].first*A.dt() << " " << ans.first[i].second << endl;
+
+//     A.NormalizeToSignal();
 //     A.PrintInfo();
 //     A.WaterLevelDecon(A);
 //     A.WaterLevelDecon(B);
@@ -47,8 +56,8 @@ int main(){
 
 //     DumpWaveforms(A,"/home/shule/xx");
 
-    auto S=A.MakeStack();
-    cout << S << endl;
+//     auto S=A.MakeNeatStack();
+//     cout << S << endl;
 
     return 0;
 }

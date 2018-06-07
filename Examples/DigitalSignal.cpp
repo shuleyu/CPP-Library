@@ -15,8 +15,8 @@ int main(){
 //     cout << A.bt() << endl;
 //     cout << A.et() << endl;
 //     cout << A.length() << endl;
-//     cout << A.PeakTime() << endl;
-//     A.CheckAndCutToWindow(10,-5,5);
+//     cout << A.pt() << endl;
+    A.CheckAndCutToWindow(5,15);
 //     A.FindPeakAround(10,2);
 //     A.HannTaper(3);
 // 
@@ -36,15 +36,15 @@ int main(){
 //     A.NormalizeToSignal();
 //     cout << A.OriginalAmp() << endl;
 // 
-//     cout << A.PeakTime() << endl;
+//     cout << A.pt() << endl;
 //     A.ShiftTimeRelativeToPeak();
-//     cout << A.PeakTime() << endl;
+//     cout << A.pt() << endl;
 // 
 //     cout << A.OriginalAmp() << endl;
 //     A.NormalizeToPeak();
 //     cout << A.OriginalAmp() << endl;
 
 //     A+=3;
-    cout << (A/=2) << endl;
+//     cout << (A/=2) << endl;
     return 0;
 }

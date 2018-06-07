@@ -56,7 +56,7 @@ namespace jlkqweokajsdlf{
 }
 
 template <class T1, class T2, class T3=jlkqweokajsdlf::NoChanges<class std::iterator_traits<T1>::value_type>>
-double SimpsonRule(T1 Begin, T1 End, T2 h, T3 oper=T3()) {
+double SimpsonRule(const T1 Begin, const T1 End, T2 h, T3 oper=T3()) {
 
     size_t n=std::distance(Begin,End);
     if (n<=1) return 0;

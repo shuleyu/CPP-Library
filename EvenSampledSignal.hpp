@@ -21,10 +21,12 @@
 #include<TstarOperator.hpp>
 #include<Convolve.hpp>
 #include<SNR.hpp>
+#include<CrossCorrelation.hpp>
 
 class EvenSampledSignal : public DigitalSignal {
 
 protected:
+
     double Dt=0,BeginTime=0,EndTime=0;
 
 public:
@@ -32,69 +34,72 @@ public:
     // Constructor/Destructors.
     EvenSampledSignal () = default;
     EvenSampledSignal (const EvenSampledSignal &) = default;
-    EvenSampledSignal (const std::string &);
-    EvenSampledSignal (const DigitalSignal &, const double &);
-    EvenSampledSignal (const EvenSampledSignal &, const double &);
-    template<class T> EvenSampledSignal (const std::vector<T> &, const double &, const double & =0, const std::string & ="");
+    EvenSampledSignal (const std::string &infile);
+    EvenSampledSignal (const DigitalSignal &item, const double &delta);
+    EvenSampledSignal (const EvenSampledSignal &item, const double &delta);
+    EvenSampledSignal (const EvenSampledSignal &item, const double &t1, const double &t2);
+    template<class T> EvenSampledSignal (const std::vector<T> &item, const double &delta, const double &begintime=0, const std::string &infile="");
     virtual ~EvenSampledSignal () = default; // Base class destructor need to be virtual. (this derived class could be a base for another derived class.)
 
     // Virtual (override) function declarations.
     virtual double bt() const override {return BeginTime;}
-    virtual void clear() override {Amp.clear();}
+    virtual void clear() override {*this=EvenSampledSignal ();}
     virtual double length() const override {return EndTime-BeginTime;}
     virtual double et() const override {return EndTime;}
-    virtual double PeakTime() const override {return BeginTime+Peak*Dt;}
+    virtual double pt() const override {return BeginTime+Peak*Dt;}
     virtual void ShiftTime(const double &t) override {BeginTime+=t;EndTime+=t;}
 
-    virtual bool CheckAndCutToWindow(const double &, const double &, const double &) override;
-    virtual void FindPeakAround(const double &, const double & =5) override;
-    virtual void HannTaper(const double &) override;
+    virtual bool CheckAndCutToWindow(const double &t1, const double &t2) override;
+    virtual void FindPeakAround(const double &t, const double &w=5) override;
+    virtual void HannTaper(const double &wl) override;
+    virtual std::size_t LocateTime(const double &t) const override;
     virtual void PrintInfo() const override;
     virtual std::pair<double,double> RemoveTrend() override;
-    virtual void ZeroOutHannTaper(const double &, const double &);
+    virtual void ZeroOutHannTaper(const double &wl, const double &zl);
 
     // member operators declearation.
-    virtual EvenSampledSignal &operator+=(const double &);
-    virtual EvenSampledSignal &operator*=(const double &);
-    virtual EvenSampledSignal &operator-=(const double &);
-    virtual EvenSampledSignal &operator/=(const double &);
+    virtual EvenSampledSignal &operator+=(const double &a);
+    virtual EvenSampledSignal &operator*=(const double &a);
+    virtual EvenSampledSignal &operator-=(const double &a);
+    virtual EvenSampledSignal &operator/=(const double &a);
 
     // Original (and final) functions.
     double dt() const {return Dt;}
 
     double AbsIntegral() const;
-    void Butterworth(const double &, const double &);
-    void Convolve(const EvenSampledSignal &);
-    void GaussianBlur(const double & =1);
-    void Interpolate(const double &);
-    double SNR(const double &, const double &, const double &, const double &);
-    EvenSampledSignal Stretch(const double & =1) const;
-    EvenSampledSignal Tstar(const double &, const double & =1e-3) const;
-    void WaterLevelDecon(const EvenSampledSignal &, const double & =0.1);
+    void Butterworth(const double &f1, const double &f2);
+    void Convolve(const EvenSampledSignal &item);
+    void GaussianBlur(const double &sigma=1);
+    void Interpolate(const double &delta);
+    double SNR(const double &nt1, const double &nt2, const double &st1, const double &st2);
+    EvenSampledSignal Stretch(const double &h=1) const;
+    EvenSampledSignal Tstar(const double &ts, const double &tol=1e-3) const;
+    void WaterLevelDecon(const EvenSampledSignal &source, const double &wl=0.1);
 
     // member original operators declearation.
-    EvenSampledSignal &operator+=(const EvenSampledSignal &);
+    EvenSampledSignal &operator+=(const EvenSampledSignal &item);
 
     // non-member friends declearation.
     friend class SACSignals;
-    friend SignalCompareResults CompareSignal(EvenSampledSignal , EvenSampledSignal, const double &, const double &, const double &);
-    friend std::istream &operator>>(std::istream &, EvenSampledSignal &);
-    friend std::ostream &operator<<(std::ostream &, const EvenSampledSignal &);
-    friend EvenSampledSignal operator+(const EvenSampledSignal &,const double &);
-    friend EvenSampledSignal operator+(const double &,const EvenSampledSignal &);
-    friend EvenSampledSignal operator+(const EvenSampledSignal &,const EvenSampledSignal &);
-    friend EvenSampledSignal operator-(const EvenSampledSignal &,const double &);
-    friend EvenSampledSignal operator*(const EvenSampledSignal &,const double &);
-    friend EvenSampledSignal operator*(const double &,const EvenSampledSignal &);
-    friend EvenSampledSignal operator/(const EvenSampledSignal &,const double &);
+    friend SignalCompareResults CompareSignal(EvenSampledSignal S1, EvenSampledSignal S2, const double &t1, const double &t2, const double &AmpLevel);
+    friend std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2, const EvenSampledSignal &S2, const double &h1, const double &h2);
+    friend std::istream &operator>>(std::istream &is, EvenSampledSignal &item);
+    friend std::ostream &operator<<(std::ostream &os, const EvenSampledSignal &item);
+    friend EvenSampledSignal operator+(const EvenSampledSignal &item, const double &a);
+    friend EvenSampledSignal operator+(const double &a, const EvenSampledSignal &item);
+    friend EvenSampledSignal operator+(const EvenSampledSignal &s1, const EvenSampledSignal &s2);
+    friend EvenSampledSignal operator-(const EvenSampledSignal &item, const double &a);
+    friend EvenSampledSignal operator*(const EvenSampledSignal &item, const double &a);
+    friend EvenSampledSignal operator*(const double &a, const EvenSampledSignal &item);
+    friend EvenSampledSignal operator/(const EvenSampledSignal &item, const double &a);
 };
 
 // Constructors/Destructors definition.
-EvenSampledSignal::EvenSampledSignal (const std::string &s) {
-    std::ifstream fpin(s);
+EvenSampledSignal::EvenSampledSignal (const std::string &infile) {
+    std::ifstream fpin(infile);
     fpin >> *this;
     fpin.close();
-    FileName=s;
+    FileName=infile;
 }
 
 EvenSampledSignal::EvenSampledSignal (const DigitalSignal &item, const double &delta) {
@@ -102,10 +107,14 @@ EvenSampledSignal::EvenSampledSignal (const DigitalSignal &item, const double &d
     // Interpolation.
     auto xx=::CreateGrid(item.bt(),item.et(),delta,1);
     Amp=::Interpolate(item.Time,item.Amp,xx);
+
     Dt=delta;
     BeginTime=item.bt();
     EndTime=item.et();
+
+    FindPeakAround(item.pt(),0.5);
     FileName=item.FileName;
+    AmpMultiplier=item.AmpMultiplier;
 }
 
 EvenSampledSignal::EvenSampledSignal (const EvenSampledSignal &item, const double &delta) {
@@ -121,29 +130,49 @@ EvenSampledSignal::EvenSampledSignal (const EvenSampledSignal &item, const doubl
     Dt=delta;
     BeginTime=item.bt();
     EndTime=item.et();
+
+    FindPeakAround(item.pt(),0.5);
     FileName=item.FileName;
+    AmpMultiplier=item.AmpMultiplier;
+}
+
+EvenSampledSignal::EvenSampledSignal (const EvenSampledSignal &item, const double &t1, const double &t2) {
+    *this=EvenSampledSignal();
+
+    if (item.CheckWindow(t1,t2)){
+
+        size_t L1=item.LocateTime(t1),L2=item.LocateTime(t2);
+        Amp=std::vector<double> (item.Amp.begin()+L1,item.Amp.begin()+L2+1);
+
+        Dt=item.dt();
+        BeginTime=item.bt()+L1*item.dt();
+        EndTime=item.bt()+L2*item.dt();
+
+        FindPeakAround(item.pt(),0.5);
+        FileName=item.FileName;
+        AmpMultiplier=item.AmpMultiplier;
+    }
 }
 
 template<class T>
-EvenSampledSignal::EvenSampledSignal (const std::vector<T> &item, const double &delta, const double &begintime, const std::string &filename) {
+EvenSampledSignal::EvenSampledSignal (const std::vector<T> &item, const double &delta, const double &begintime, const std::string &infile) {
     Amp.resize(item.size());
     for (size_t i=0;i<size();++i) Amp[i]=item[i];
     Dt=delta;
     BeginTime=EndTime=begintime;
     if (size()>1) EndTime=BeginTime+Dt*(size()-1);
-    FileName=filename;
+    FileName=infile;
 }
 
 // Member function definitions.
 
 // Cut the data within a window. If cut failed, don't cut and return false.
-bool EvenSampledSignal::CheckAndCutToWindow(const double &t, const double &t1, const double &t2){
-    // Check window position.
-    if (t1>=t2) throw std::runtime_error("Cut window length <=0.");
-    if (t+t1<bt() || t+t2>et()) return false;
+bool EvenSampledSignal::CheckAndCutToWindow(const double &t1, const double &t2){
+
+    if (!CheckWindow(t1,t2)) return false;
 
     // Cut.
-    std::size_t d1=ceil((t+t1-bt())/dt()),d2=1+floor((t+t2-bt())/dt());
+    std::size_t d1=ceil((t1-bt())/dt()),d2=1+floor((t2-bt())/dt());
 
     EndTime=BeginTime+(d2-1)*dt();
     BeginTime+=d1*dt();
@@ -179,6 +208,16 @@ void EvenSampledSignal::HannTaper(const double &wl){
     }
 }
 
+std::size_t EvenSampledSignal::LocateTime(const double &t) const{
+    if (t<bt() && bt()-t<dt()/2) return 0;
+    if (t>et() && t-et()<dt()/2) return size()-1;
+    if (t<bt() || t>et()) return -1;
+    std::size_t ans=(t-bt())/dt();
+    if (ans+1==size()) return ans;
+    if (fabs(t-(bt()+ans*dt()))<fabs(t-(bt()+(ans+1)*dt()))) return ans;
+    else return ans+1;
+}
+
 // Print some info.
 void EvenSampledSignal::PrintInfo() const {
     DigitalSignal::PrintInfo();
@@ -201,21 +240,21 @@ void EvenSampledSignal::ZeroOutHannTaper(const double &wl, const double &zl){
 }
 
 // virtual member operators definition.
-EvenSampledSignal &EvenSampledSignal::operator+=(const double &s){
-    for (size_t i=0;i<size();++i) Amp[i]+=s;
+EvenSampledSignal &EvenSampledSignal::operator+=(const double &a){
+    for (size_t i=0;i<size();++i) Amp[i]+=a;
     return *this;
 }
-EvenSampledSignal &EvenSampledSignal::operator*=(const double &s){
-    for (size_t i=0;i<size();++i) Amp[i]*=s;
+EvenSampledSignal &EvenSampledSignal::operator*=(const double &a){
+    for (size_t i=0;i<size();++i) Amp[i]*=a;
     return *this;
 }
-EvenSampledSignal &EvenSampledSignal::operator-=(const double &s){
-    *this+=(-s);
+EvenSampledSignal &EvenSampledSignal::operator-=(const double &a){
+    *this+=(-a);
     return *this;
 }
-EvenSampledSignal &EvenSampledSignal::operator/=(const double &s){
-    if (s==0) throw std::runtime_error("Dividing amplitude with zero.");
-    *this*=(1.0/s);
+EvenSampledSignal &EvenSampledSignal::operator/=(const double &a){
+    if (a==0) throw std::runtime_error("Dividing amplitude with zero.");
+    *this*=(1.0/a);
     return *this;
 }
 
@@ -235,9 +274,9 @@ void EvenSampledSignal::Butterworth(const double &f1, const double &f2){
 
 // Convolve with another signal S2, truncated relative to S2'peak position. (keep s1's size).
 // This is acausal convolution, trying to keep the original peak's position.
-void EvenSampledSignal::Convolve(const EvenSampledSignal &s2){
-    auto res=::Convolve(Amp,s2.Amp);
-    std::rotate(res.begin(),res.begin()+s2.peak(),res.end());
+void EvenSampledSignal::Convolve(const EvenSampledSignal &item){
+    auto res=::Convolve(Amp,item.Amp);
+    std::rotate(res.begin(),res.begin()+item.peak(),res.end());
     res.resize(size());
     Amp=res;
 }
@@ -256,20 +295,20 @@ void EvenSampledSignal::Interpolate(const double &delta){
 }
 
 // Measure SNR.
-double EvenSampledSignal::SNR(const double &n1, const double &n2, const double &s1, const double &s2){
-    int NB=ceil((n1-bt())/dt()),NL=ceil((n2-n1)/dt());
-    int SB=ceil((s1-bt())/dt()),SL=ceil((s2-s1)/dt());
+double EvenSampledSignal::SNR(const double &nt1, const double &nt2, const double &st1, const double &st2){
+    int NB=ceil((nt1-bt())/dt()),NL=ceil((nt2-nt1)/dt());
+    int SB=ceil((st1-bt())/dt()),SL=ceil((st2-st1)/dt());
     return ::SNR(Amp,NB,NL,SB,SL);
 }
 
 // Stretch the signal horizontally and vertically.
-// Keep sampling rate the same, keep PeakTime() the same, which means updates:
+// Keep sampling rate the same, keep peak time the same, which means updates:
 // BeginTime, EndTime, Peak,
 EvenSampledSignal EvenSampledSignal::Stretch(const double &h) const{
 
     EvenSampledSignal ans(*this);
     if (h==1) return ans;
-    double OldPeakTime=PeakTime();
+    double OldPeakTime=pt();
 
     // Stretch one side.
     ans.Amp=std::vector<double> (Amp.begin(),Amp.begin()+peak()+1);
@@ -283,10 +322,10 @@ EvenSampledSignal EvenSampledSignal::Stretch(const double &h) const{
     auto S=::StretchSignal(std::vector<double> (Amp.begin()+peak(),Amp.end()),h);
     ans.Amp.insert(ans.Amp.end(),S.begin(),S.end());
 
-    // Fix PeakTime() (by adjusting BeginTime)
+    // Fix peak time (by adjusting BeginTime)
     ans.BeginTime=OldPeakTime-ans.peak()*dt();
     ans.EndTime=ans.BeginTime+(ans.size()-1)*dt();
-    ans.FindPeakAround(PeakTime(),1);
+    ans.FindPeakAround(pt(),1);
 
     return ans;
 }
@@ -308,7 +347,7 @@ EvenSampledSignal EvenSampledSignal::Tstar(const double &ts, const double &tol) 
 
 // Notice: remove trend and do a taper (10% of length) both on source and signal before the decon.
 // Changes:
-// Amp(signal length change),Peak(=Amp.size()/2),BeginTime(relative to PeakTime=0),EndTime(relative to PeakTime=0)
+// Amp(signal length change),Peak(=Amp.size()/2),BeginTime(relative to peak time),EndTime(relative to peak time)
 void EvenSampledSignal::WaterLevelDecon(const EvenSampledSignal &source, const double &wl) {
     if (fabs(Dt-source.Dt)>1e-5)
         throw std::runtime_error("Signal inputs of decon have different sampling rate.");
@@ -351,6 +390,15 @@ SignalCompareResults CompareSignal(EvenSampledSignal S1, EvenSampledSignal S2, c
     S1.NormalizeToPeak();
     S2.NormalizeToPeak();
     return ::CompareSignal(S1.Amp,S1.peak(),S2.Amp,S2.peak(),S1.dt(),t1,t2,AmpLevel);
+}
+
+std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2, const EvenSampledSignal &S2, const double &h1, const double &h2){
+    // Check window position.
+    if (!S1.CheckWindow(t1,t2)) throw std::runtime_error("CrossCorrelation window on signal 1 is not proper.");
+    if (!S2.CheckWindow(h1,h2)) throw std::runtime_error("CrossCorrelation window on signal 2 is not proper.");
+
+    return ::CrossCorrelation(S1.Amp.begin()+S1.LocateTime(t1),S1.Amp.begin()+S1.LocateTime(t2)+1,S2.Amp.begin()+S2.LocateTime(h1),S2.Amp.begin()+S2.LocateTime(h2)+1);
+
 }
 
 // Overload operator ">>" to read a signal from a two-columned input (stdin/file/etc.)
@@ -400,36 +448,36 @@ std::ostream &operator<<(std::ostream &os, const EvenSampledSignal &item){
 
 // Overload operator "+,-" to ShiftDC.
 // Not changing AmpMultiplier.
-EvenSampledSignal operator+(const EvenSampledSignal &item,const double &s){
+EvenSampledSignal operator+(const EvenSampledSignal &item,const double &a){
     EvenSampledSignal ans(item);
-    ans+=s;
+    ans+=a;
     return ans;
 }
-EvenSampledSignal operator+(const double &s,const EvenSampledSignal &item){
-    return item+s;
+EvenSampledSignal operator+(const double &a,const EvenSampledSignal &item){
+    return item+a;
 }
 EvenSampledSignal operator+(const EvenSampledSignal &s1,const EvenSampledSignal &s2){
     EvenSampledSignal ans(s1);
     ans+=s2;
     return ans;
 }
-EvenSampledSignal operator-(const EvenSampledSignal &item,const double &s){
-    return item+(-s);
+EvenSampledSignal operator-(const EvenSampledSignal &item,const double &a){
+    return item+(-a);
 }
 
 // Overload operator "*,/" to Scale.
 // Not changing AmpMultiplier.
-EvenSampledSignal operator*(const EvenSampledSignal &item,const double &s){
+EvenSampledSignal operator*(const EvenSampledSignal &item,const double &a){
     EvenSampledSignal ans(item);
-    ans*=s;
+    ans*=a;
     return ans;
 }
-EvenSampledSignal operator*(const double &s,const EvenSampledSignal &item){
-    return item*s;
+EvenSampledSignal operator*(const double &a,const EvenSampledSignal &item){
+    return item*a;
 }
-EvenSampledSignal operator/(const EvenSampledSignal &item,const double &s){
+EvenSampledSignal operator/(const EvenSampledSignal &item,const double &a){
     EvenSampledSignal ans(item);
-    ans/=s;
+    ans/=a;
     return ans;
 }
 
