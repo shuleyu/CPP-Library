@@ -78,8 +78,8 @@ double SNR(const std::vector<T> &p,const int &nloc,const int &nlen,const int &sl
 
         case 1:
 
-            Slevel=Amplitude(std::vector<T> (p.begin()+sloc,p.begin()+sloc+slen)).first;
-            Nlevel=Amplitude(std::vector<T> (p.begin()+nloc,p.begin()+nloc+nlen)).first;
+            Slevel=Amplitude(p.begin()+sloc,p.begin()+sloc+slen).first;
+            Nlevel=Amplitude(p.begin()+nloc,p.begin()+nloc+nlen).first;
 
             return Slevel/Nlevel;
 
@@ -87,8 +87,8 @@ double SNR(const std::vector<T> &p,const int &nloc,const int &nlen,const int &sl
 
             res=Envelope(p);
 
-            Slevel=Amplitude(std::vector<T> (p.begin()+sloc,p.begin()+sloc+slen)).first;
-//             Nlevel=Amplitude(std::vector<double> (res.begin()+nloc,res.begin()+nloc+nlen)).first;
+            Slevel=Amplitude(p.begin()+sloc,p.begin()+sloc+slen).first;
+//             Nlevel=Amplitude(res.begin()+nloc,res.begin()+nloc+nlen).first;
             Nlevel=std::accumulate(res.begin()+nloc,res.begin()+nloc+nlen,0.0)/nlen;
 
             return Slevel/Nlevel;

@@ -71,7 +71,7 @@ T Normalize(std::vector<T> &p, std::pair<int,int> W={0,std::numeric_limits<int>:
     }
 
     // Find AMP.
-    T AMP=Amplitude(std::vector<T>(p.begin()+W.first,p.begin()+W.first+W.second)).first;
+    T AMP=Amplitude(p.begin()+W.first,p.begin()+W.first+W.second).first;
     if (AMP==0.0){
         std::cerr <<  "Warning in " << __func__ << ": input array is zeros ..." << std::endl;
         return 0;

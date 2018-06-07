@@ -15,7 +15,7 @@
  *
  * input(s):
  * const vector<T1> &x       ----  Time of original signal.
- * const vector<T2> &y       ----  Amplitude of original signal.
+ * const vector<T2> &y       ----  Amplitudes of original signal.
  * const vector<T3> &xx      ----  Time of interpolated signal.
  *
  * return(s):
