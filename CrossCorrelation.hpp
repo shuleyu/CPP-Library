@@ -32,13 +32,13 @@
  * input(s):
  * const vector<T1> &x              ----  Signal x.
  * const vector<T2> &y              ----  Signal y.
+ * const bool       &Dump           ----  (Optional) Choose whether to return x*y[tau], default is false.
  * const int        &Flip           ----  (Optional) Flag for compare mode, default is 0.
- *                                        0     : ccc will have the larget absolute value.
- *                                        1, -1 : ccc will have the larget value.
+ *                                        0     : ccc will have the largest absolute value.
+ *                                        1, -1 : ccc will have the largest value.
  *                                        1     : signal y will not be flipped.
  *                                        -1    : signal y is flipped before calculation.
  * const pair<int,int> &ShiftLimit  ----  (Optional) Two parameters control the range of shift, default is no limitations.
- * const bool       &Dump           ----  (Optional) Choose whether to return x*y[tau], default is false.
  *
  *
  * alternatively, inputs(s):
@@ -46,13 +46,13 @@
  * const vector<T1>::iterator XEnd    ----  Signal x end.
  * const vector<T2>::iterator YBegin  ----  Signal y begin.
  * const vector<T2>::iterator YEnd    ----  Signal y end.
+ * const bool       &Dump             ----  (Optional) Choose whether to return x*y[tau], default is false.
  * const int        &Flip             ----  (Optional) Flag for compare mode, default is 0.
- *                                          0     : ccc will have the larget absolute value.
- *                                          1, -1 : ccc will have the larget value.
+ *                                          0     : ccc will have the largest absolute value.
+ *                                          1, -1 : ccc will have the largest value.
  *                                          1     : signal y will not be flipped.
  *                                          -1    : signal y is flipped before calculation.
  * const pair<int,int> &ShiftLimit    ----  (Optional) Two parameters control the range of shift, default is no limitations.
- * const bool       &Dump             ----  (Optional) Choose whether to return x*y[tau], default is false.
  *
  *
  * return(s):
@@ -70,7 +70,7 @@
 **************************************************************************/
 
 template<class T1, class T2>
-std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const T1 XBegin, const T1 XEnd, T2 YBegin, T2 YEnd,const int &Flip=0,const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()},const bool &Dump=false){
+std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const T1 XBegin, const T1 XEnd, T2 YBegin, T2 YEnd, const bool &Dump=false, const int &Flip=0, const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}){
 
     // Check signal length.
     int m=std::distance(XBegin,XEnd),n=std::distance(YBegin,YEnd);
@@ -143,8 +143,8 @@ std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const T1 X
 }
 
 template<class T1, class T2>
-std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const std::vector<T1> &x, const std::vector<T2> &y,const bool &Dump=false,const int &Flip=0,const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}){
-    return CrossCorrelation(x.begin(),x.end(),y.begin(),y.end(),Flip,ShiftLimit,Dump);
+std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const std::vector<T1> &x, const std::vector<T2> &y, const bool &Dump=false, const int &Flip=0, const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}){
+    return CrossCorrelation(x.begin(),x.end(),y.begin(),y.end(),Dump,Flip,ShiftLimit);
 }
 
 

@@ -10,11 +10,13 @@ int main(){
 
 //     EvenSampledSignal A("data/Signal.txt");
 //     EvenSampledSignal A("data/ShiftPhase_in");
-    vector<double> a(10,1);
-    EvenSampledSignal A(a,0.04,1);
-    cout << A << endl << endl;
-    A.SetBeginTime(0);
-    cout << A << endl;
+    vector<double> a(10,1),b(10,2);
+    EvenSampledSignal A(a,0.04,1),B(b,0.04,1);
+    auto res=StackSignals({A,B},{0.5,0.8});
+    cout << res.first;
+//     cout << A << endl << endl;
+//     A.SetBeginTime(0);
+//     cout << A << endl;
 //     cout << A.et() << endl;
 //     cout << A.LocateTime(1.36) << endl;
 

@@ -7,6 +7,7 @@
 #include<fstream>
 #include<algorithm>
 
+#include<AvrStd.hpp>
 #include<HannTaper.hpp>
 #include<Interpolate.hpp>
 #include<CreateGrid.hpp>
@@ -82,7 +83,8 @@ public:
     // non-member friends declearation.
     friend class SACSignals;
     friend SignalCompareResults CompareSignal(EvenSampledSignal S1, EvenSampledSignal S2, const double &t1, const double &t2, const double &AmpLevel);
-    friend std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2, const EvenSampledSignal &S2, const double &h1, const double &h2);
+    friend std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2, const EvenSampledSignal &S2, const double &h1, const double &h2, const bool &Dump=false, const int &Flip=0, const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()});
+    friend std::pair<EvenSampledSignal,EvenSampledSignal> StackSignals (const std::vector<EvenSampledSignal> &Signals, const std::vector<double> &Weights={});
     friend std::istream &operator>>(std::istream &is, EvenSampledSignal &item);
     friend std::ostream &operator<<(std::ostream &os, const EvenSampledSignal &item);
     friend EvenSampledSignal operator+(const EvenSampledSignal &item, const double &a);
@@ -384,13 +386,45 @@ SignalCompareResults CompareSignal(EvenSampledSignal S1, EvenSampledSignal S2, c
     return ::CompareSignal(S1.Amp,S1.peak(),S2.Amp,S2.peak(),S1.dt(),t1,t2,AmpLevel);
 }
 
-std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2, const EvenSampledSignal &S2, const double &h1, const double &h2){
+std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2, const EvenSampledSignal &S2, const double &h1, const double &h2, const bool &Dump, const int &Flip, const std::pair<int,int> &ShiftLimit){
     // Check window position.
     if (!S1.CheckWindow(t1,t2)) throw std::runtime_error("CrossCorrelation window on signal 1 is not proper.");
     if (!S2.CheckWindow(h1,h2)) throw std::runtime_error("CrossCorrelation window on signal 2 is not proper.");
 
-    return ::CrossCorrelation(S1.Amp.begin()+S1.LocateTime(t1),S1.Amp.begin()+S1.LocateTime(t2)+1,S2.Amp.begin()+S2.LocateTime(h1),S2.Amp.begin()+S2.LocateTime(h2)+1);
+    return ::CrossCorrelation(S1.Amp.begin()+S1.LocateTime(t1),S1.Amp.begin()+S1.LocateTime(t2)+1,S2.Amp.begin()+S2.LocateTime(h1),S2.Amp.begin()+S2.LocateTime(h2)+1,Dump,Flip,ShiftLimit);
 
+}
+
+std::pair<EvenSampledSignal,EvenSampledSignal> StackSignals(const std::vector<EvenSampledSignal> &Signals, const std::vector<double> &Weights) {
+
+    // Check size.
+    std::size_t m=Signals.size();
+    if (m==0) return {};
+    if (!Weights.empty() && Weights.size()!=m)
+        throw std::runtime_error("Input signals nubmer is different from weight number.");
+
+    std::size_t n=Signals[0].size();
+    double delta=Signals[0].dt(),begintime=Signals[0].bt();
+    for (const auto &item:Signals) {
+        if (item.size()!=n)
+            throw std::runtime_error("Input signals have different lengths.");
+        if (item.dt()!=delta)
+            throw std::runtime_error("Input signals have different sampling rates.");
+        if (item.bt()!=begintime)
+            throw std::runtime_error("Input signals have different begin times.");
+    }
+
+    // Make stack.
+    std::vector<double> V(m,0),W=Weights,S(n,0),STD(n,0);
+    
+    for (std::size_t i=0;i<n;++i) {
+        for (std::size_t j=0;j<m;++j)
+            V[j]=Signals[j].Amp[i];
+        auto res=AvrStd(V,W);
+        S[i]=res.first;
+        STD[i]=res.second;
+    }
+    return {EvenSampledSignal(S,Signals[0].dt(),Signals[0].bt()),EvenSampledSignal(STD,Signals[0].dt(),Signals[0].bt())};
 }
 
 // Overload operator ">>" to read a signal from a two-columned input (stdin/file/etc.)
