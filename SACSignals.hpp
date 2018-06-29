@@ -206,6 +206,9 @@ void SACSignals::PrintInfo() const {
         std::cout << "Network: |" << MData[i].netwk << "|\n";
         std::cout << "StationName: |" << MData[i].stnm << "|\n";
         std::cout << "Gcarc: |" << MData[i].gcarc << "|\n";
+        std::cout << "TravelTimes: " << '\n';
+        for (const auto &item:MData[i].tt)
+            std::cout << "    " << item.first << "  -  " << item.second << " sec.\n";
         Data[i].PrintInfo();
         std::cout << "------ \n";
     }
@@ -427,17 +430,18 @@ close(newstdout);
 
         getkhv(st,stnm1,&nerr,5,20);
         std::string tmpstr(stnm1);
-        stnm=tmpstr.substr(0,tmpstr.find_last_not_of(" \n\r\t")+1);
+        stnm=tmpstr.substr(0,tmpstr.find_first_of(" \n\r\t"));
 
         getkhv(kt,netwk1,&nerr,6,20);
-        tmpstr=std::string(stnm1);
-        netwk=tmpstr.substr(0,tmpstr.find_last_not_of(" \n\r\t")+1);
+        tmpstr=std::string(netwk1);
+        netwk=tmpstr.substr(0,tmpstr.find_first_of(" \n\r\t"));
 
         for (size_t i=0;i<10;++i) {
             getfhv(tname[i],&t,&nerr,2);
             getkhv(pname[i],p,&nerr,3,20);
             std::string tmpstr(p);
-            M[tmpstr.substr(0,tmpstr.find_last_not_of(" \n\r\t")+1)]=t;
+            tmpstr=tmpstr.substr(0,tmpstr.find_first_of(" \n\r\t"));
+            if (tmpstr!="-12345") M[tmpstr]=t;
         }
         getfhv(gc,&gcarc,&nerr,5);
 
@@ -446,7 +450,7 @@ fflush(stdout);
 dup2(stdoutfd, fileno(stdout));
 close(stdoutfd);
 
-        item.MData.push_back(SACMetaData(stnm,netwk1,gcarc,M));
+        item.MData.push_back(SACMetaData(stnm,netwk,gcarc,M));
     }
 
     return is;
