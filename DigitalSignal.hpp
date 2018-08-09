@@ -49,23 +49,6 @@ public:    // inherit mode is "private"   --> "private".
     virtual double PeakTime() const {return (GetTime().empty()?0.0/0.0:GetTime()[GetPeak()]);}
     virtual double SignalDuration() const {return EndTime()-BeginTime();}
 
-    virtual DigitalSignal &operator+=(const double &a){
-        for (std::size_t i=0;i<Size();++i) amp[i]+=a;
-        return *this;
-    }
-    virtual DigitalSignal &operator*=(const double &a){
-        for (std::size_t i=0;i<Size();++i) amp[i]*=a;
-        if (a!=0) amp_multiplier/=a;
-        else amp_multiplier=1.0/0.0;
-        return *this;
-    }
-    virtual DigitalSignal &operator-=(const double &a){*this+=(-a);return *this;}
-    virtual DigitalSignal &operator/=(const double &a){
-        if (a==0) throw std::runtime_error("Dividing amplitudes with zero.");
-        *this*=(1.0/a);
-        return *this;
-    }
-
     virtual bool CheckAndCutToWindow(const double &t1, const double &t2);          // t1, t2 in sec.
     virtual void FindPeakAround(const double &t,const double &w=5);                // t, w   in sec.
     virtual void HannTaper(const double &wl);                                      // wl is  in sec.
@@ -84,7 +67,7 @@ public:    // inherit mode is "private"   --> "private".
     // Therefore in drived class, care is needed not to define these function again.
     // Also, because they are not virtual with final flag,
     // you need to guarantee they behaves well for all derived classes.
-    // Because they are intended unchangeable, only protected and public memebers can appear here.
+    // Because they are intended unchangeable, only protected and public memebers can appear here(?)
 
     const std::vector<double> &GetAmp() const {return amp;}
     double GetAmpMultiplier() const {return amp_multiplier;}
@@ -104,11 +87,28 @@ public:    // inherit mode is "private"   --> "private".
     }
     double MaxVal() const {return *std::max_element(GetAmp().begin(),GetAmp().end());}
     double MinVal() const {return *std::min_element(GetAmp().begin(),GetAmp().end());}
-    void NormalizeToPeak() {*this/=GetAmp()[GetPeak()];}
+    void NormalizeToPeak() {*this/=fabs(GetAmp()[GetPeak()]);}
     void NormalizeToSignal() {*this/=MaxAmp();}
     void SetBeginTime(const double &t) {ShiftTime(-BeginTime()+t);}
     void ShiftTimeReferenceToPeak() {ShiftTime(-PeakTime());}
     std::size_t Size() const {return GetAmp().size();}
+
+    DigitalSignal &operator+=(const double &a){
+        for (std::size_t i=0;i<Size();++i) amp[i]+=a;
+        return *this;
+    }
+    DigitalSignal &operator*=(const double &a){
+        for (std::size_t i=0;i<Size();++i) amp[i]*=a;
+        if (a!=0) amp_multiplier/=a;
+        else amp_multiplier=1.0/0.0;
+        return *this;
+    }
+    DigitalSignal &operator-=(const double &a){*this+=(-a);return *this;}
+    DigitalSignal &operator/=(const double &a){
+        if (a==0) throw std::runtime_error("Dividing amplitudes with zero.");
+        *this*=(1.0/a);
+        return *this;
+    }
 
 
     // declaration of non-member class/function/operators as friend.
