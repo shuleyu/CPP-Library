@@ -2,11 +2,6 @@
 #include<fstream>
 #include<vector>
 
-extern "C"{
-#include<sac.h>
-#include<sacio.h>
-}
-
 #include<GaussianSignal.hpp>
 #include<Normalize.hpp>
 #include<ShiftPhase.hpp>
@@ -17,7 +12,7 @@ int main(){
 
     double delta,sigma,gwidth,shift;
 
-    shift=-90;
+    shift=-112.41;
     delta=0.025;
     sigma=2;
     gwidth=50;
@@ -43,5 +38,3 @@ int main(){
 
     return 0;
 }
-// Visualize data.
-// See phase_shift_matlab.m

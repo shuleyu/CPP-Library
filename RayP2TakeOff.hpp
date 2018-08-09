@@ -35,6 +35,11 @@ double RayP2TakeOff(const T1 &rayp, const T2 &depth,const char &cmp){
         return -1;
     }
 
+    if (rayp<0) {
+        std::cerr <<  "Warning in " << __func__ << ":  input ray parameter is negative ..." << std::endl;
+        return -1;
+    }
+
     return asin(V*rayp*180/M_PI/(6371.0-depth))*180/M_PI;
 }
 

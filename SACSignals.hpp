@@ -17,8 +17,9 @@ extern "C"{
 #include<sac.h>
 }
 
+#include<SortWithIndex.hpp>
+#include<ReorderUseIndex.hpp>
 #include<WaterLevelDecon.hpp>
-
 #include<Interpolate.hpp>
 #include<EvenSampledSignal.hpp>
 
@@ -34,7 +35,7 @@ class SACSignals {
 private:
     std::vector<EvenSampledSignal> Data;
     std::vector<SACMetaData> MData;
-    std::string FileName="";
+    std::string FileName="",SortedBy="None";
 
 public:
 
@@ -56,13 +57,19 @@ public:
     std::vector<double> Distance() const;
     std::vector<std::string> File() const;
     void GaussianBlur(const double &sigma=1);
+    std::vector<std::pair<std::vector<double>,std::vector<double>>> GetTimeAndWaveforms() const;
+    std::vector<std::vector<double>> GetWaveforms() const;
+    std::vector<std::vector<double>> GetWaveforms(const std::vector<std::size_t> &bi) const;
+    std::vector<std::vector<double>> GetWaveforms(const std::string &Stnm) const;
     void HannTaper(const double &wl=10);
+    void Integrate();
     void Interpolate(const double &delta);
     EvenSampledSignal MakeNeatStack() const;
     std::vector<std::string> NetworkName() const;
     void NormalizeToGlobal();
     void NormalizeToPeak();
     void NormalizeToSignal();
+    std::vector<double> PeakTime() const;
     void PrintInfo() const;
     void PrintLessInfo() const;
     void RemoveRecords(std::vector<std::size_t> bi);
@@ -70,6 +77,8 @@ public:
     bool SameSamplingRate () const;
     bool SameSize () const;
     void SetBeginTime(const double &t);
+    void SortByGcarc();
+    void SortByStnm();
     std::vector<std::string> StationName() const;
     std::vector<double> TravelTime(const std::string &phase) const;
     void WaterLevelDecon(const EvenSampledSignal &s, const double &wl=0.1);
@@ -83,7 +92,7 @@ public:
 
     // friends (non-member) declarations.
     friend std::istream &operator>>(std::istream &is, SACSignals &item);
-    friend void DumpWaveforms(const SACSignals &item, const std::string &dir);
+    friend void DumpWaveforms(const SACSignals &item, const std::string &dir="./");
     friend class EvenSampledSignal;
     friend class SACMetaData;
 };
@@ -95,6 +104,7 @@ SACSignals::SACSignals (const std::string &infile){
     fpin >> *this;
     fpin.close();
     FileName=infile;
+    SortedBy="None";
 }
 
 
@@ -144,9 +154,49 @@ void SACSignals::GaussianBlur(const double &sigma){
         Data[i].GaussianBlur(sigma);
 }
 
+std::vector<double> SACSignals::PeakTime() const{
+    std::vector<double> ans;
+    for (size_t i=0;i<size();++i)
+        ans.push_back(Data[i].pt());
+    return ans;
+}
+
+std::vector<std::pair<std::vector<double>,std::vector<double>>> SACSignals::GetTimeAndWaveforms() const {
+    std::vector<std::pair<std::vector<double>,std::vector<double>>> ans;
+    for (size_t i=0;i<size();++i) ans.push_back({Data[i].Time(),Data[i].Amp});
+    return ans;
+}
+
+std::vector<std::vector<double>> SACSignals::GetWaveforms() const {
+    std::vector<std::vector<double>> ans;
+    for (size_t i=0;i<size();++i) ans.push_back(Data[i].Amp);
+    return ans;
+}
+
+std::vector<std::vector<double>> SACSignals::GetWaveforms(const std::vector<std::size_t> &bi) const {
+    std::vector<std::vector<double>> ans;
+    for (const auto &index:bi) {
+        if (index>=size()) continue;
+        ans.push_back(Data[index].Amp);
+    }
+    return ans;
+}
+
+std::vector<std::vector<double>> SACSignals::GetWaveforms(const std::string &Stnm) const {
+    std::vector<std::vector<double>> ans;
+    for (size_t i=0;i<size();++i)
+        if (MData[i].stnm==Stnm) ans.push_back(Data[i].Amp);
+    return ans;
+}
+
 void SACSignals::HannTaper(const double &wl) {
     for (std::size_t i=0;i<size();++i)
         Data[i].HannTaper(wl);
+}
+
+void SACSignals::Integrate() {
+    for (std::size_t i=0;i<size();++i)
+        Data[i].Integrate();
 }
 
 void SACSignals::Interpolate(const double &delta) {
@@ -178,10 +228,10 @@ void SACSignals::NormalizeToGlobal(){
     double MaxOriginalAmp=-1;
     for (std::size_t i=0;i<size();++i)
         for (std::size_t j=0;j<Data[i].size();++j)
-            MaxOriginalAmp=std::max(MaxOriginalAmp,Data[i].OriginalAmp()*fabs(Data[i].Amp[j]));
+            MaxOriginalAmp=std::max(MaxOriginalAmp,Data[i].GetAmpMultiplier()*fabs(Data[i].Amp[j]));
 
     for (std::size_t i=0;i<size();++i){
-        double x=MaxOriginalAmp/Data[i].OriginalAmp();
+        double x=MaxOriginalAmp/Data[i].GetAmpMultiplier();
         for (std::size_t j=0;j<Data[i].size();++j)
             Data[i].Amp[j]/=x;
         Data[i].AmpMultiplier=MaxOriginalAmp;
@@ -227,6 +277,7 @@ void SACSignals::RemoveRecords(std::vector<std::size_t> bi){
         std::swap(Data[index],Data.back());
         Data.pop_back();
     }
+    SortedBy="None";
 }
 
 std::vector<std::pair<double,double>> SACSignals::RemoveTrend(){
@@ -260,6 +311,28 @@ void SACSignals::SetBeginTime(const double &t){
     auto A=bt();
     for (auto &item:A) item=-item+t;
     ShiftTime(A);
+}
+
+void SACSignals::SortByGcarc() {
+    if (SortedBy=="Gcarc") return;
+    std::vector<double> A;
+    for (std::size_t i=0;i<size();++i) A.push_back(MData[i].gcarc);
+    auto res=SortWithIndex(A.begin(),A.end());
+    ReorderUseIndex(Data.begin(),Data.end(),res);
+    ReorderUseIndex(MData.begin(),MData.end(),res);
+    SortedBy="Gcarc";
+    return;
+}
+
+void SACSignals::SortByStnm() {
+    if (SortedBy=="Stnm") return;
+    std::vector<std::string> A;
+    for (std::size_t i=0;i<size();++i) A.push_back(MData[i].stnm);
+    auto res=SortWithIndex(A.begin(),A.end());
+    ReorderUseIndex(Data.begin(),Data.end(),res);
+    ReorderUseIndex(MData.begin(),MData.end(),res);
+    SortedBy="Stnm";
+    return;
 }
 
 std::vector<std::string> SACSignals::StationName() const{
@@ -307,7 +380,7 @@ std::pair<std::vector<std::pair<int,double>>,EvenSampledSignal> SACSignals::XCor
     // prepare output.
     ans.resize(size(),{-1,0});
 
-    // Get the good records which has waveform avaliable within its XCorrStack window.
+    // Find the good records which has waveform avaliable within its XCorrStack window.
     std::vector<size_t> GoodIndex;
     for (size_t i=0;i<size();++i)
         if (Data[i].CheckWindow(T[i]+t1,T[i]+t2))
@@ -459,7 +532,9 @@ close(stdoutfd);
 void DumpWaveforms(const SACSignals &item,const std::string &dir){
     std::string c=(dir.back()=='/'?"":"/");
     for (size_t i=0;i<item.size();++i){
-        std::ofstream fpout(dir+c+item.MData[i].stnm+".Num"+std::to_string(i)+".waveform");
+        auto s=item.Data[i].filename();
+        s=s.substr(s.find_last_of('/')+1);
+        std::ofstream fpout(dir+c+s+".txt");
         fpout << item.Data[i];
         fpout.close();
     }

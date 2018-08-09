@@ -10,7 +10,7 @@
  * execution of given shell command.
  *
  * input(s):
- * const T &cmd  ----  Input command. Most time T should be a C-string.
+ * const T &cmd  ----  Input command. Most time T should be a string.
  *
  * return(s):
  * string ans  ----  stdout from the Shell command.
@@ -21,18 +21,22 @@
  * Key words: Shell, standard output.
 *************************************************/
 
-template <class T>
-std::string ShellExec(const T &cmd) {
+std::string ShellExec(const std::string &cmd) {
     std::array<char, 128> buffer;
     std::string ans;
-    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+    std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
     if (!pipe) throw std::runtime_error("popen() failed!");
     while (!feof(pipe.get())) {
         if (fgets(buffer.data(), 128, pipe.get()) != NULL)
         ans += buffer.data();
     }
 
-    return ans;
+    // If all characters are white spaces, return "".
+    for (const char &c:ans)
+        if (!std::isspace(c))
+            return ans;
+
+    return "";
 }
 
 #endif

@@ -1,6 +1,7 @@
 #include<iostream>
 #include<cmath>
 
+#include<ReorderUseIndex.hpp>
 #include<SortWithIndex.hpp>
 
 using namespace std;
@@ -27,12 +28,11 @@ int main(){
     auto res=SortWithIndex(A.begin(),A.end(),f);
 
     // sort B.
-    auto C=B;
-    for (size_t i=0;i<B.size();++i) C[i]=B[res[i]];
+    ReorderUseIndex(B.begin(),B.end(),res);
 
     // print after sort.
     for (size_t i=0;i<A.size();++i)
-        cout << A[i] << " " << C[i] << " Original Index: "  << res[i] << "\n";
+        cout << A[i] << " " << B[i] << " Original Index: "  << res[i] << "\n";
     cout << endl;
 
     return 0;

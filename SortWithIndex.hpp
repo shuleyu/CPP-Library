@@ -5,6 +5,8 @@
 #include<vector>
 #include<algorithm>
 
+#include<ReorderUseIndex.hpp>
+
 /*************************************************
  * This C++ template takes the same input as sort
  * in the standard library. Returns the index of
@@ -43,7 +45,7 @@ std::vector<size_t> SortWithIndex(T1 Begin, T1 End, T2 cmp=T2()) {
     sort(idx.begin(),idx.end(),cmp2);
 
     // Actually sort the input array.
-    sort(Begin,End,cmp);
+    ReorderUseIndex(Begin,End,idx);
 
     return idx;
 }

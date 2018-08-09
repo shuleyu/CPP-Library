@@ -39,10 +39,11 @@ double GetRayP(const T1 &Dist,const T2 &EVDP,const std::string &Phase){
                         + " -deg " + std::to_string(Dist) + " -ph " + Phase
                         + " --rayp | awk '{print $1}'";
 
-    std::string res=ShellExec(command.c_str());
+    std::string res=ShellExec(command);
 
     if (res.empty()) {
-        std::cerr <<  "Warning in " << __func__ << ": No such rays for given parameters ..." << std::endl;
+        std::cerr <<  "Warning in " << __func__ << ": No such rays for the following parameters: " << "Deg: " << Dist << ". Depth: " << EVDP << ". Phase: " << Phase << ". " << std::endl;
+
         return -1;
     }
 

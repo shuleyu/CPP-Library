@@ -45,7 +45,7 @@
  * Shule Yu
  * Jan 21 2018
  *
- * Key words: Simpson rule, integral
+ * Key words: Simpson rule, integrate, integral
  * Reference: https://en.wikipedia.org/wiki/Simpson%27s_rule#Composite_Simpson's_rule
 *******************************************************************************************/
 

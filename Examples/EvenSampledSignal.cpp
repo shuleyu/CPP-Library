@@ -51,7 +51,7 @@ int main(){
 //     cout << A.OriginalAmp() << endl;
 // 
 //     cout << A.pt() << endl;
-//     A.ShiftTimeRelativeToPeak();
+//     A.ShiftTimeReferenceToPeak();
 //     cout << A.pt() << endl;
 // 
 //     cout << A.OriginalAmp() << endl;

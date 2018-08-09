@@ -5,6 +5,7 @@
 #include<cmath>
 #include<string>
 #include<fstream>
+#include<numeric>
 #include<algorithm>
 
 #include<AvrStd.hpp>
@@ -26,29 +27,50 @@
 
 class EvenSampledSignal : public DigitalSignal {
 
+    /* Not inherited (private) member of DigitalSignal.
+
+//     std::vector<double> time;
+
+    */
+
 protected:
 
-    double Dt=0,BeginTime=0,EndTime=0;
+    double delta=0,begin_time=0;
+
+/*     protected members inherited from DigitalSignal.
+
+//     std::vector<double> amp;
+//     std::size_t peak;
+//     std::string filename;
+//     double amp_multiplier;
+                                              */
 
 public:
 
     // Constructor/Destructors.
-    EvenSampledSignal () = default;
-    EvenSampledSignal (const EvenSampledSignal &) = default;
-    EvenSampledSignal (const std::string &infile);
-    EvenSampledSignal (const DigitalSignal &item, const double &delta);
-    EvenSampledSignal (const EvenSampledSignal &item, const double &delta);
+    EvenSampledSignal ();
+    EvenSampledSignal (const std::string &infile);                          // File is even sampled.
+    EvenSampledSignal (const std::string &infile, const double &dt);     // File is un-even sampled.
+    EvenSampledSignal (const DigitalSignal &item, const double &dt);
+    EvenSampledSignal (const EvenSampledSignal &item) = default;
+    EvenSampledSignal (const EvenSampledSignal &item, const double &dt);
     EvenSampledSignal (const EvenSampledSignal &item, const double &t1, const double &t2);
-    template<class T> EvenSampledSignal (const std::vector<T> &item, const double &delta, const double &begintime=0, const std::string &infile="");
-    virtual ~EvenSampledSignal () = default; // Base class destructor need to be virtual. (this derived class could be a base for another derived class.)
+    template<class T> EvenSampledSignal (const std::vector<T> &item, const double &dt,
+                                         const double &begintime=0, const std::string &infile="");
+    virtual ~EvenSampledSignal () = default;
 
-    // Virtual (override) function declarations.
-    virtual double bt() const override {return BeginTime;}
-    virtual void clear() override {*this=EvenSampledSignal ();}
-    virtual double length() const override {return EndTime-BeginTime;}
-    virtual double et() const override {return EndTime;}
-    virtual double pt() const override {return BeginTime+Peak*Dt;}
-    virtual void ShiftTime(const double &t) override {BeginTime+=t;EndTime+=t;}
+    // Virtual (need to be overritten) functions/operators declarations.
+    //
+    // based on the materials I read:
+    // override keyword means this function comes from a base class.
+    // virtual keyword means this function could be override 
+    // 
+    double BeginTime() const override final {return begin_time;}
+    virtual void Clear() override {*this=EvenSampledSignal ();}
+    virtual double SignalDuration() const override {return (Size()<=1?0:Delta()*(Size()-1));}
+    virtual double et() const override {return (Size()<=1?begin_time:begin_time+SignalDuration();}
+    virtual double pt() const override {return begin_time+Peak*Delta();}
+    virtual void ShiftTime(const double &t) override {begin_time+=t;EndTime+=t;}
 
     virtual bool CheckAndCutToWindow(const double &t1, const double &t2) override;
     virtual void FindPeakAround(const double &t, const double &w=5) override;
@@ -58,29 +80,30 @@ public:
     virtual std::pair<double,double> RemoveTrend() override;
     virtual void ZeroOutHannTaper(const double &wl, const double &zl);
 
-    // member operators declearation.
     virtual EvenSampledSignal &operator+=(const double &a);
     virtual EvenSampledSignal &operator*=(const double &a);
     virtual EvenSampledSignal &operator-=(const double &a);
     virtual EvenSampledSignal &operator/=(const double &a);
 
     // Original (and final) functions.
-    double dt() const {return Dt;}
+    double Delta() const {return delta;}
 
     double AbsIntegral() const;
     void Butterworth(const double &f1, const double &f2, const int &order=2, const int &passes=2);
     void Convolve(const EvenSampledSignal &item);
     void GaussianBlur(const double &sigma=1);
-    void Interpolate(const double &delta);
+    void Integrate();
+    void Interpolate(const double &dt);
     double SNR(const double &nt1, const double &nt2, const double &st1, const double &st2);
     EvenSampledSignal Stretch(const double &h=1) const;
+    std::vector<double> GetTime() const;
     EvenSampledSignal Tstar(const double &ts, const double &tol=1e-3) const;
     void WaterLevelDecon(const EvenSampledSignal &source, const double &wl=0.1);
-
-    // member original operators declearation.
     EvenSampledSignal &operator+=(const EvenSampledSignal &item);
 
-    // non-member friends declearation.
+
+    // declaration of non-member class/function/operators, who need access to
+    // the private/protected parts of this class, therefore they need to be friend.
     friend class SACSignals;
     friend SignalCompareResults CompareSignal(EvenSampledSignal S1, EvenSampledSignal S2, const double &t1, const double &t2, const double &AmpLevel);
     friend std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2, const EvenSampledSignal &S2, const double &h1, const double &h2, const bool &Dump=false, const int &Flip=0, const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()});
@@ -94,9 +117,15 @@ public:
     friend EvenSampledSignal operator*(const EvenSampledSignal &item, const double &a);
     friend EvenSampledSignal operator*(const double &a, const EvenSampledSignal &item);
     friend EvenSampledSignal operator/(const EvenSampledSignal &item, const double &a);
-};
+
+}; // End of class declaration.
 
 // Constructors/Destructors definition.
+EvenSampledSignal::EvenSampledSignal () {
+    delta=0;
+    begin_time=0;
+}
+
 EvenSampledSignal::EvenSampledSignal (const std::string &infile) {
     std::ifstream fpin(infile);
     fpin >> *this;
@@ -104,14 +133,14 @@ EvenSampledSignal::EvenSampledSignal (const std::string &infile) {
     FileName=infile;
 }
 
-EvenSampledSignal::EvenSampledSignal (const DigitalSignal &item, const double &delta) {
+EvenSampledSignal::EvenSampledSignal (const DigitalSignal &item, const double &dt) {
 
     // Interpolation.
-    auto xx=::CreateGrid(item.bt(),item.et(),delta,1);
-    Amp=::Interpolate(item.Time,item.Amp,xx);
+    auto xx=::CreateGrid(item.BeginTime(),item.et(),dt,1);
+    Amp=::Interpolate(item.GetTime(),item.GetAmp(),xx);
 
-    Dt=delta;
-    BeginTime=item.bt();
+    delta=dt;
+    begin_time=item.BeginTime();
     EndTime=item.et();
 
     FindPeakAround(item.pt(),0.5);
@@ -119,18 +148,18 @@ EvenSampledSignal::EvenSampledSignal (const DigitalSignal &item, const double &d
     AmpMultiplier=item.AmpMultiplier;
 }
 
-EvenSampledSignal::EvenSampledSignal (const EvenSampledSignal &item, const double &delta) {
+EvenSampledSignal::EvenSampledSignal (const EvenSampledSignal &item, const double &dt) {
 
-    // If sampling rate is not the same, interpolate to delta.
-    if (item.dt()<=delta*0.99 || delta*1.01<=item.dt()){
-        auto x=::CreateGrid(item.bt(),item.et(),item.size(),0);
-        auto xx=::CreateGrid(item.bt(),item.et(),delta,1);
+    // If sampling rate is not the same, interpolate to dt.
+    if (item.Delta()<=dt*0.99 || dt*1.01<=item.Delta()){
+        auto x=::CreateGrid(item.BeginTime(),item.et(),item.size(),0);
+        auto xx=::CreateGrid(item.BeginTime(),item.et(),dt,1);
         Amp=::Interpolate(x,item.Amp,xx);
     }
     else Amp=item.Amp;
 
-    Dt=delta;
-    BeginTime=item.bt();
+    delta=dt;
+    begin_time=item.BeginTime();
     EndTime=item.et();
 
     FindPeakAround(item.pt(),0.5);
@@ -146,9 +175,9 @@ EvenSampledSignal::EvenSampledSignal (const EvenSampledSignal &item, const doubl
         size_t L1=item.LocateTime(t1),L2=item.LocateTime(t2);
         Amp=std::vector<double> (item.Amp.begin()+L1,item.Amp.begin()+L2+1);
 
-        Dt=item.dt();
-        BeginTime=item.bt()+L1*item.dt();
-        EndTime=item.bt()+L2*item.dt();
+        Dt=item.Delta();
+        begin_time=item.BeginTime()+L1*item.Delta();
+        EndTime=item.BeginTime()+L2*item.Delta();
 
         FindPeakAround(item.pt(),0.5);
         FileName=item.FileName;
@@ -157,12 +186,12 @@ EvenSampledSignal::EvenSampledSignal (const EvenSampledSignal &item, const doubl
 }
 
 template<class T>
-EvenSampledSignal::EvenSampledSignal (const std::vector<T> &item, const double &delta, const double &begintime, const std::string &infile) {
+EvenSampledSignal::EvenSampledSignal (const std::vector<T> &item, const double &dt, const double &begintime, const std::string &infile) {
     Amp.resize(item.size());
     for (size_t i=0;i<size();++i) Amp[i]=item[i];
-    Dt=delta;
-    BeginTime=EndTime=begintime;
-    if (size()>1) EndTime=BeginTime+Dt*(size()-1);
+    delta=dt;
+    begin_time=EndTime=begintime;
+    if (size()>1) EndTime=begin_time+Dt*(size()-1);
     FileName=infile;
 }
 
@@ -174,10 +203,10 @@ bool EvenSampledSignal::CheckAndCutToWindow(const double &t1, const double &t2){
     if (!CheckWindow(t1,t2)) return false;
 
     // Cut.
-    std::size_t d1=ceil((t1-bt())/dt()),d2=1+floor((t2-bt())/dt());
+    std::size_t d1=ceil((t1-BeginTime())/Delta()),d2=1+floor((t2-BeginTime())/Delta());
 
-    EndTime=BeginTime+(d2-1)*dt();
-    BeginTime+=d1*dt();
+    EndTime=begin_time+(d2-1)*Delta();
+    begin_time+=d1*Delta();
 
     std::vector<double> NewAmp(Amp.begin()+d1,Amp.begin()+d2);
     std::swap(NewAmp,Amp);
@@ -188,9 +217,9 @@ bool EvenSampledSignal::CheckAndCutToWindow(const double &t1, const double &t2){
     return true;
 }
 
-// Find the position of max|amp| around some time.
+// Find the position of max|amp| around given time.
 void EvenSampledSignal::FindPeakAround(const double &t, const double &w){
-    std::size_t WB=std::max(0.0,(t-w-BeginTime)/Dt),WE=std::min(size(),(size_t)ceil((t+w-BeginTime+Dt/2)/Dt));
+    std::size_t WB=std::max(0.0,(t-w-begin_time)/Dt),WE=std::min(size(),(size_t)ceil((t+w-begin_time+Dt/2)/Dt));
 
     double AbsMax=-1;
     for (std::size_t i=WB;i<WE;++i){
@@ -205,39 +234,39 @@ void EvenSampledSignal::FindPeakAround(const double &t, const double &w){
 void EvenSampledSignal::HannTaper(const double &wl){
     if (wl*2>length()) throw std::runtime_error("Hanning window too wide.");
     for (size_t i=0;i<size();++i){
-        double dt=std::min(i,size()-i-1)*Dt;
-        if (dt<wl) Amp[i]*=0.5-0.5*cos(dt/wl*M_PI);
+        double len=std::min(i,size()-i-1)*Dt;
+        if (len<wl) Amp[i]*=0.5-0.5*cos(len/wl*M_PI);
     }
 }
 
 std::size_t EvenSampledSignal::LocateTime(const double &t) const{
-    if (t<bt() && bt()-t<dt()/2) return 0;
-    if (t>et() && t-et()<dt()/2) return size()-1;
-    if (t<bt() || t>et()) return -1;
-    std::size_t ans=(t-bt())/dt();
+    if (t<BeginTime() && BeginTime()-t<Delta()/2) return 0;
+    if (t>et() && t-et()<Delta()/2) return size()-1;
+    if (t<BeginTime() || t>et()) return -1;
+    std::size_t ans=(t-BeginTime())/Delta();
     if (ans+1==size()) return ans;
-    if (fabs(t-(bt()+ans*dt()))<fabs(t-(bt()+(ans+1)*dt()))) return ans;
+    if (fabs(t-(BeginTime()+ans*Delta()))<fabs(t-(BeginTime()+(ans+1)*Delta()))) return ans;
     else return ans+1;
 }
 
 // Print some info.
 void EvenSampledSignal::PrintInfo() const {
     DigitalSignal::PrintInfo();
-    std::cout << "Sampling rate: " << dt() << '\n';
+    std::cout << "Sampling rate: " << Delta() << '\n';
 }
 
 // remove drift and DC.
 std::pair<double,double> EvenSampledSignal::RemoveTrend(){
-    return ::RemoveTrend(Amp,Dt,BeginTime);
+    return ::RemoveTrend(Amp,Dt,begin_time);
 }
 
 // taper window half-length is wl, zero half-length is zl.
 void EvenSampledSignal::ZeroOutHannTaper(const double &wl, const double &zl){
     if ((wl+zl)*2>length()) throw std::runtime_error("ZeroOutHanning window too wide.");
     for (size_t i=0;i<size();++i){
-        double dt=std::min(i,size()-i-1)*Dt;
-        if (dt<zl) Amp[i]=0;
-        else if (dt<zl+wl) Amp[i]*=0.5-0.5*cos((dt-zl)/wl*M_PI);
+        double len=std::min(i,size()-i-1)*Dt;
+        if (len<zl) Amp[i]=0;
+        else if (len<zl+wl) Amp[i]*=0.5-0.5*cos((len-zl)/wl*M_PI);
     }
 }
 
@@ -263,7 +292,7 @@ EvenSampledSignal &EvenSampledSignal::operator/=(const double &a){
 // Take absolute amplitude then do the integral.
 double EvenSampledSignal::AbsIntegral() const {
     auto f=[](const double &s){return (s>0?s:-s);};
-    return ::SimpsonRule(Amp.begin(),Amp.end(),dt(),f);
+    return ::SimpsonRule(Amp.begin(),Amp.end(),Delta(),f);
 }
 
 // butterworth filter.
@@ -287,21 +316,27 @@ void EvenSampledSignal::GaussianBlur(const double &sigma){
     ::GaussianBlur(Amp,Dt,sigma);
 }
 
+// Integerate (from velocity to displacement).
+void EvenSampledSignal::Integrate(){
+    std::partial_sum(Amp.begin(),Amp.end(),Amp.begin());
+    for (double &item: Amp) item*=Dt;
+}
+
 // Interpolate to certain sampling rate.
-void EvenSampledSignal::Interpolate(const double &delta){
-    *this=EvenSampledSignal (*this,delta);
+void EvenSampledSignal::Interpolate(const double &dt){
+    *this=EvenSampledSignal (*this,dt);
 }
 
 // Measure SNR.
 double EvenSampledSignal::SNR(const double &nt1, const double &nt2, const double &st1, const double &st2){
-    int NB=ceil((nt1-bt())/dt()),NL=ceil((nt2-nt1)/dt());
-    int SB=ceil((st1-bt())/dt()),SL=ceil((st2-st1)/dt());
+    int NB=ceil((nt1-BeginTime())/Delta()),NL=ceil((nt2-nt1)/Delta());
+    int SB=ceil((st1-BeginTime())/Delta()),SL=ceil((st2-st1)/Delta());
     return ::SNR(Amp,NB,NL,SB,SL);
 }
 
 // Stretch the signal horizontally and vertically.
 // Keep sampling rate the same, keep peak time the same, which means updates:
-// BeginTime, EndTime, Peak,
+// begin_time, EndTime, Peak,
 EvenSampledSignal EvenSampledSignal::Stretch(const double &h) const{
 
     EvenSampledSignal ans(*this);
@@ -320,11 +355,17 @@ EvenSampledSignal EvenSampledSignal::Stretch(const double &h) const{
     auto S=::StretchSignal(std::vector<double> (Amp.begin()+peak(),Amp.end()),h);
     ans.Amp.insert(ans.Amp.end(),S.begin(),S.end());
 
-    // Fix peak time (by adjusting BeginTime)
-    ans.BeginTime=OldPeakTime-ans.peak()*dt();
-    ans.EndTime=ans.BeginTime+(ans.size()-1)*dt();
+    // Fix peak time (by adjusting begin_time)
+    ans.begin_time=OldPeakTime-ans.peak()*Delta();
+    ans.EndTime=ans.begin_time+(ans.size()-1)*Delta();
     ans.FindPeakAround(pt(),1);
 
+    return ans;
+}
+
+std::vector<double> EvenSampledSignal::GetTime() const {
+    std::vector<double> ans;
+    for (size_t i=0;i<size();++i) ans.push_back(begin_time+i*Dt);
     return ans;
 }
 
@@ -336,8 +377,8 @@ EvenSampledSignal EvenSampledSignal::Tstar(const double &ts, const double &tol) 
     if (ts<=0) return ans;
 
     // Create a t* operator.
-    auto res=::TstarOperator(ts,dt(),tol);
-    EvenSampledSignal Ts(res.first,dt(),-dt()*res.second);
+    auto res=::TstarOperator(ts,Delta(),tol);
+    EvenSampledSignal Ts(res.first,Delta(),-Delta()*res.second);
     Ts.FindPeakAround(0,1);
     ans.Convolve(Ts);
     return ans;
@@ -345,7 +386,7 @@ EvenSampledSignal EvenSampledSignal::Tstar(const double &ts, const double &tol) 
 
 // Notice: remove trend and do a taper (10% of length) both on source and signal before the decon.
 // Changes:
-// Amp(signal length change),Peak(=Amp.size()/2),BeginTime(relative to peak time),EndTime(relative to peak time)
+// Amp(signal length change),Peak(=Amp.size()/2),begin_time(relative to peak time),EndTime(relative to peak time)
 void EvenSampledSignal::WaterLevelDecon(const EvenSampledSignal &source, const double &wl) {
     if (fabs(Dt-source.Dt)>1e-5)
         throw std::runtime_error("Signal inputs of decon have different sampling rate.");
@@ -355,35 +396,37 @@ void EvenSampledSignal::WaterLevelDecon(const EvenSampledSignal &source, const d
 
     auto S=source.Amp;
     ::HannTaper(S,0.1);
-    ::RemoveTrend(S,Dt,source.bt());
+    ::RemoveTrend(S,Dt,source.BeginTime());
 
     Amp=::WaterLevelDecon(Amp,Peak,S,source.Peak,Dt,wl);
     Peak=size()/2;
-    BeginTime=(Peak-1)*Dt*-1;
-    EndTime=BeginTime+(size()-1)*Dt;
+    begin_time=(Peak-1)*Dt*-1;
+    EndTime=begin_time+(size()-1)*Dt;
 }
 
 // Stack two same sampling rate, same begintime signal.
 EvenSampledSignal &EvenSampledSignal::operator+=(const EvenSampledSignal &item){
-    if (fabs(dt()-item.dt())>1e-5)
-        throw std::runtime_error("Tried to stack two signals with different sampling rate: "+std::to_string(dt())+" v.s. "+std::to_string(item.dt()));
-    if (fabs(bt()-item.bt())>1e-5)
-        throw std::runtime_error("Tried to stack two signals with different begin time: "+std::to_string(bt())+" v.s. "+std::to_string(item.bt()));
+    if (fabs(Delta()-item.Delta())>1e-5)
+        throw std::runtime_error("Tried to stack two signals with different sampling rate: "+std::to_string(Delta())+" v.s. "+std::to_string(item.Delta()));
+    if (fabs(BeginTime()-item.BeginTime())>1e-5)
+        throw std::runtime_error("Tried to stack two signals with different begin time: "+std::to_string(BeginTime())+" v.s. "+std::to_string(item.BeginTime()));
     if (size()!=item.size())
         throw std::runtime_error("Tried to stack two signals with different number of points: "+std::to_string(size())+" v.s. "+std::to_string(item.size()));
     for (size_t i=0;i<size();++i) Amp[i]+=item.Amp[i];
     return *this;
 }
 
-// Non-member functions.
+/* -----------------------------------------------------------------------------
+End of member function/operator definitions. -----------------------------------
+----------------------------------------------------------------------------- */
 
 // Compare two signals around their peaks.
 // t1 t2 are time window relative to the peak (in seconds, e.g. t1=-5, t2=5)
 SignalCompareResults CompareSignal(EvenSampledSignal S1, EvenSampledSignal S2, const double &t1, const double &t2, const double &AmpLevel){
-    if (fabs(S1.dt()-S2.dt())>0.01*S1.dt()) throw std::runtime_error("Comparing two differently sampled signals.");
+    if (fabs(S1.Delta()-S2.Delta())>0.01*S1.Delta()) throw std::runtime_error("Comparing two differently sampled signals.");
     S1.NormalizeToPeak();
     S2.NormalizeToPeak();
-    return ::CompareSignal(S1.Amp,S1.peak(),S2.Amp,S2.peak(),S1.dt(),t1,t2,AmpLevel);
+    return ::CompareSignal(S1.Amp,S1.peak(),S2.Amp,S2.peak(),S1.Delta(),t1,t2,AmpLevel);
 }
 
 std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2, const EvenSampledSignal &S2, const double &h1, const double &h2, const bool &Dump, const int &Flip, const std::pair<int,int> &ShiftLimit){
@@ -404,19 +447,19 @@ std::pair<EvenSampledSignal,EvenSampledSignal> StackSignals(const std::vector<Ev
         throw std::runtime_error("Input signals nubmer is different from weight number.");
 
     std::size_t n=Signals[0].size();
-    double delta=Signals[0].dt(),begintime=Signals[0].bt();
+    double dt=Signals[0].Delta(),begintime=Signals[0].BeginTime();
     for (const auto &item:Signals) {
         if (item.size()!=n)
             throw std::runtime_error("Input signals have different lengths.");
-        if (item.dt()!=delta)
+        if (item.Delta()!=dt)
             throw std::runtime_error("Input signals have different sampling rates.");
-        if (item.bt()!=begintime)
+        if (item.BeginTime()!=begintime)
             throw std::runtime_error("Input signals have different begin times.");
     }
 
     // Make stack.
     std::vector<double> V(m,0),W=Weights,S(n,0),STD(n,0);
-    
+
     for (std::size_t i=0;i<n;++i) {
         for (std::size_t j=0;j<m;++j)
             V[j]=Signals[j].Amp[i];
@@ -424,16 +467,16 @@ std::pair<EvenSampledSignal,EvenSampledSignal> StackSignals(const std::vector<Ev
         S[i]=res.first;
         STD[i]=res.second;
     }
-    return {EvenSampledSignal(S,Signals[0].dt(),Signals[0].bt()),EvenSampledSignal(STD,Signals[0].dt(),Signals[0].bt())};
+    return {EvenSampledSignal(S,Signals[0].Delta(),Signals[0].BeginTime()),EvenSampledSignal(STD,Signals[0].Delta(),Signals[0].BeginTime())};
 }
 
 // Overload operator ">>" to read a signal from a two-columned input (stdin/file/etc.)
 std::istream &operator>>(std::istream &is, EvenSampledSignal &item){
 
-    item.clear();
+    item.Clear();
     double x,y,dt=-1;
     while (is >> x >> y) {
-        if (item.Amp.empty()) item.BeginTime=x;
+        if (item.Amp.empty()) item.begin_time=x;
         else {
             // Check the ascending of Time serise.
             if (x<=item.EndTime)
@@ -443,14 +486,14 @@ std::istream &operator>>(std::istream &is, EvenSampledSignal &item){
             if (dt<0) dt=x-item.EndTime;
             else if (x-item.EndTime<=dt*0.99 || dt*1.01<=x-item.EndTime)
                 throw std::runtime_error("Input seems not even sampled.");
-            else dt=(x-item.BeginTime)/item.Amp.size();
+            else dt=(x-item.begin_time)/item.Amp.size();
         }
 
         item.Amp.push_back(y);
         item.EndTime=x;
     }
 
-    item.Dt=(item.EndTime-item.BeginTime);
+    item.Dt=(item.EndTime-item.begin_time);
     if (item.Amp.size()>1) item.Dt/=(item.Amp.size()-1);
 
     return is;
@@ -465,7 +508,7 @@ std::ostream &operator<<(std::ostream &os, const EvenSampledSignal &item){
 //
 //     os << std::fixed << std::scientific << std::setprecision(10);
     for (std::size_t i=0;i<item.size();++i)
-        os << item.BeginTime+item.Dt*i << '\t' << item.Amp[i] << '\n';
+        os << item.begin_time+item.Dt*i << '\t' << item.Amp[i] << '\n';
 
 //     // restore print format.
 //     os.copyfmt(state);
