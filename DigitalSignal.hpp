@@ -17,19 +17,24 @@ class DigitalSignal{
 
 private:   // private part never get inherited.
 
+
     std::vector<double> time;
+
 
 protected: // inherit mode is "private"               --> "private".
            // inherit mode is "protected" or "public" --> "protected".
+
 
     std::vector<double> amp;
     std::size_t peak;
     std::string filename;
     double amp_multiplier;
 
+
 public:    // inherit mode is "private"   --> "private".
            // inherit mode is "protected" --> "protected".
            // inherit mode is "public"    --> "public".
+
 
     // Constructor/Destructors.
     DigitalSignal ();
@@ -37,6 +42,7 @@ public:    // inherit mode is "private"   --> "private".
     DigitalSignal (const std::string &infile);                         // Read from a 2-column file.
     DigitalSignal (const std::vector<double> &ti, const std::vector<double> &am);   // By 2 vectors.
     virtual ~DigitalSignal () = default;                // Base class destructor need to be virtual.
+
 
     // Declaration of virtual functions/operators. They will be overwritten in drived class.
     // If function/operator is also defined here, they will be "in-line".

@@ -63,19 +63,19 @@ public:
 
     double BeginTime() const override final {return begin_time;}
     void Clear() override {*this=EvenSampledSignal ();}
-    double EndTime() const override {return BeginTime()+SignalDuration();}
-    double PeakTime() const override {return BeginTime()+GetPeak()*GetDelta();}
-    void ShiftTime(const double &t) override {begin_time+=t;}
-    double SignalDuration() const override {return (Size()<=1?0:GetDelta()*(Size()-1));}
+    double EndTime() const override final {return BeginTime()+SignalDuration();}
+    double PeakTime() const override final {return BeginTime()+GetPeak()*GetDelta();}
+    void ShiftTime(const double &t) override final {begin_time+=t;}
+    double SignalDuration() const override final {return (Size()<=1?0:GetDelta()*(Size()-1));}
 
-    bool CheckAndCutToWindow(const double &t1, const double &t2) override;
-    void FindPeakAround(const double &t, const double &w=5) override;
-    const std::vector<double> &GetTime() const override;
-    void HannTaper(const double &wl) override;
-    std::size_t LocateTime(const double &t) const override;
+    bool CheckAndCutToWindow(const double &t1, const double &t2) override final;
+    void FindPeakAround(const double &t, const double &w=5) override final;
+    const std::vector<double> &GetTime() const override final;
+    void HannTaper(const double &wl) override final;
+    std::size_t LocateTime(const double &t) const override final;
     void PrintInfo() const override;
-    std::pair<double,double> RemoveTrend() override;
-    void ZeroOutHannTaper(const double &wl, const double &zl) override;
+    std::pair<double,double> RemoveTrend() override final;
+    void ZeroOutHannTaper(const double &wl, const double &zl) override final;
 
 
     // Declaration of first appear and final functions/operators.
@@ -97,19 +97,17 @@ public:
     EvenSampledSignal Stretch(const double &h=1) const;
     EvenSampledSignal Tstar(const double &ts, const double &tol=1e-3) const;
     void WaterLevelDecon(const EvenSampledSignal &source, const double &wl=0.1);
-    // operator+= is overloaded, need "using" to make the version in DigitalSignal visible.
+    // operator+= is overloaded, need "using" to make the DigitalSignal version visible.
     using DigitalSignal::operator+=;
     EvenSampledSignal &operator+=(const EvenSampledSignal &item);
 
 
-    // declaration of non-member class/function/operators, who need access to
+    // Declaration of non-member class/function/operators who need access to
     // the private/protected parts of this class, therefore they need to be friend.
-    // ??? friend class SACSignals;
     friend SignalCompareResults CompareSignal(EvenSampledSignal S1, EvenSampledSignal S2, const double &t1, const double &t2, const double &AmpLevel);
     friend std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2, const EvenSampledSignal &S2, const double &h1, const double &h2, const bool &Dump=false, const int &Flip=0, const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()});
     friend std::pair<EvenSampledSignal,EvenSampledSignal> StackSignals (const std::vector<EvenSampledSignal> &Signals, const std::vector<double> &Weights={});
     friend std::istream &operator>>(std::istream &is, EvenSampledSignal &item);
-    friend std::ostream &operator<<(std::ostream &os, const EvenSampledSignal &item);
 
 }; // End of class declaration.
 
@@ -443,22 +441,26 @@ std::pair<EvenSampledSignal,EvenSampledSignal> StackSignals(const std::vector<Ev
 std::istream &operator>>(std::istream &is, EvenSampledSignal &item){
 
     item.Clear();
-    double x,y,dt=-1;
+    double x,y,dt=-1,CurEndTime=0;
     while (is >> x >> y) {
-        if (item.Amp.empty()) item.begin_time=x;
+        if (item.Size()==0) CurEndTime=item.begin_time=x;
         else {
             // Check the ascending of Time serise.
-            if (x<=item.EndTime())
-                throw std::runtime_error("Time serise is either not increasing or has repeating values.");
+            if (x<=CurEndTime) {
+                is.setstate(failbit);
+                return is;
+            }
+
 
             // Check even sampling.
-            if (dt<0) dt=x-item.EndTime();
-            else if (x-item.EndTime()<=dt*0.99 || dt*1.01<=x-item.EndTime())
-                throw std::runtime_error("Input seems not even sampled.");
+            if (dt<0) dt=x-CurEndTime;
+            else if (x-CurEndTime<=dt*0.99 || dt*1.01<=x-CurEndTime) {
+                is.setstate(failbit);
+                return is;
+            }
             else dt=(x-item.begin_time)/item.Size();
         }
-
-        item.Amp.push_back(y);
+        item.amp.push_back(y);
     }
 
     item.delta=(item.EndTime()-item.begin_time);
@@ -483,7 +485,8 @@ std::ostream &operator<<(std::ostream &os, const EvenSampledSignal &item){
                                     */
 
     for (std::size_t i=0;i<item.Size();++i)
-        os << item.BeginTime()+item.GetDelta()*i << '\t' << item.GetAmp()[i] << (i+1==item.Size()?"":"\n");
+        os << item.BeginTime()+item.GetDelta()*i << '\t' 
+           << item.GetAmp()[i] << (i+1==item.Size()?"":"\n");
 
     /*
 
