@@ -14,6 +14,10 @@ int main(){
 //     EvenSampledSignal B("data/ShiftPhase_in");
 
     A.SortByGcarc();
+    auto res=A.FindByNetwork("TA");
+    for (auto item:res)
+        cout << A.GetMData()[item] << endl;
+
 //     A.clear();
 
 //     A.CheckDist(40,85);
@@ -23,7 +27,7 @@ int main(){
 //     B.Interpolate(A.dt());
 
 
-//     A.PrintLessInfo();
+//     A.PrintListInfo();
 
 //     A.RemoveRecords(vector<size_t> {1});
 //     auto res=A.RemoveTrend();
@@ -51,7 +55,7 @@ int main(){
 //         cout << st[i] << " " << ans.first[i].first*A.dt() << " " << ans.first[i].second << endl;
 
 //     A.NormalizeToSignal();
-    A.PrintInfo();
+//     A.PrintInfo();
 //     A.WaterLevelDecon(A);
 //     A.WaterLevelDecon(B);
 //     A.GaussianBlur(1.3);

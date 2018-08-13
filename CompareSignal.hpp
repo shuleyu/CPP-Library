@@ -44,10 +44,25 @@
 ***************************************************************************/
 
 struct SignalCompareResults{
-    double Amp_CCC,Win_CCC,Amp_Diff,Amp_WinDiff,Win_Diff;
+    double Amp_CCC,Amp_Diff,Amp_WinDiff,Win_CCC,Win_Diff;
     int Amp_Shift,Win_Shift;
     SignalCompareResults () =default;
 };
+std::ostream &operator<<(std::ostream &os, const SignalCompareResults &item){
+    os << "Compare results after shifted to the cross-correlation position"
+          "using the part above AmpLevel: " << '\n';
+    os << "    Shifting points: " << item.Amp_Shift << '\n';
+    os << "    CCC: " << item.Amp_CCC << '\n';
+    os << "    Difference between the overlapping part above AmpLevel: " << item.Amp_Diff << '\n';
+    os << "    Difference between t1 ~ t2: " << item.Amp_WinDiff << '\n' << '\n';
+
+    os << "Compare results after shifted to the cross-correlation position"
+          "using the part between t1 ~ t2: " << '\n';
+    os << "    Shifting points: " << item.Win_Shift << '\n';
+    os << "    CCC: " << item.Win_CCC << '\n';
+    os << "    Difference between t1 ~ t2: " << item.Win_Diff;
+    return os;
+}
 
 template<class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
 SignalCompareResults CompareSignal(const std::vector<T1> &s1, const T2 &p1, const std::vector<T3> &s2, const T4 &p2,

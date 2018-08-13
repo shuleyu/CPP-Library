@@ -48,6 +48,8 @@ public:    // inherit mode is "private"   --> "private".
     // If function/operator is also defined here, they will be "in-line".
     // Use interface as much as possible to avoid nasty updates in the future.
 
+    virtual void Identify () const {std::cout << "Using DigitalSignal methods." << std::endl;}
+
     virtual double BeginTime() const {return (GetTime().empty()?0.0/0.0:GetTime()[0]);}
     virtual void Clear() {*this=DigitalSignal ();}
     virtual double EndTime() const {return (GetTime().empty()?0.0/0.0:GetTime().back());}
@@ -88,7 +90,7 @@ public:    // inherit mode is "private"   --> "private".
     double MaxAmp() const {
         return fabs(*std::max_element(GetAmp().begin(),GetAmp().end(),
             [](const double &a, const double &b){
-                return a<fabs(b);
+                return fabs(a)<fabs(b);
             }));
     }
     double MaxVal() const {return *std::max_element(GetAmp().begin(),GetAmp().end());}
@@ -135,8 +137,6 @@ DigitalSignal::DigitalSignal (const std::string &infile) {
     std::ifstream fpin(infile);
     fpin >> *this;
     fpin.close();
-    peak=-1;
-    amp_multiplier=1;
     filename=infile;
 }
 
@@ -166,7 +166,7 @@ bool DigitalSignal::CheckAndCutToWindow(const double &t1, const double &t2){
     std::swap(time,time2);
     std::swap(amp,amp2);
 
-    if (GetPeak()!=(size_t)(-1) && GetPeak()>=d1) peak-=d1;
+    if (GetPeak()<d2 && GetPeak()>=d1) peak-=d1;
     else peak=-1;
 
     return true;
@@ -185,7 +185,7 @@ void DigitalSignal::FindPeakAround(const double &t, const double &w){
 
     auto it=std::max_element(GetAmp().begin()+X,GetAmp().begin()+Y,
         [](const double &a, const double &b){
-            return a<fabs(b);
+            return fabs(a)<fabs(b);
         }
     );
     peak=X+std::distance(GetAmp().begin(),it);
@@ -201,6 +201,7 @@ void DigitalSignal::HannTaper(const double &wl){
     }
 }
 
+// if requested time outside of signal range, return 0 or Size()-1.
 std::size_t DigitalSignal::LocateTime(const double &t) const {
     if (t<BeginTime() || t>EndTime()) {
         std::cerr <<  "Warning in " << __func__
@@ -305,6 +306,8 @@ std::istream &operator>>(std::istream &is, DigitalSignal &item){
             i=j;
         }
     }
+    item.peak=-1;
+    item.amp_multiplier=1;
     return is;
 }
 

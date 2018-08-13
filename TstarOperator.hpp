@@ -28,7 +28,9 @@ extern "C"{
  *                         The smaller the tolerance, the longer the t* operator.
  *
  * return(s):
- * vector<double> ans  ----  t* impulse response (t* operator).
+ * pair<vector<double>,size_t> ans;
+ *        ans.first  ----  t* impulse response (t* operator).
+ *        ans.second ----  t* peak position.
  *
  * Shule Yu
  * Jan 20 2018

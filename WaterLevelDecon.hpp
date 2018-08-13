@@ -45,8 +45,8 @@ extern "C"{
 *********************************************************************/
 
 template<class T1, class T2>
-std::vector<double> WaterLevelDecon(std::vector<T1> &x, const std::size_t &px,
-                                    std::vector<T2> &y, const std::size_t &py,
+std::vector<double> WaterLevelDecon(const std::vector<T1> &x, const std::size_t &px,
+                                    const std::vector<T2> &y, const std::size_t &py,
                                     const double &delta, const double &wl) {
 
     if (x.empty()) return {};
