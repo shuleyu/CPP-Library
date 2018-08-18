@@ -7,11 +7,8 @@
 #include<algorithm>
 
 /****************************************************************
- * This c++ template is only a wrapper for the Wiginterp function
- * included in same library. I did some modification: now whether
- * x is ascending or descending doesn't matter. The only
- * restriction on x is stric monotonic. The SAC source code is in
- * Wiginterp.fun.cpp.
+ * This c++ template is modified from SAC source code, the
+ * wig-interp. The only restriction on x is stric monotonic.
  *
  * input(s):
  * const vector<T1> &x       ----  Time of original signal.
@@ -20,6 +17,7 @@
  *
  * return(s):
  * vector<double> yy  ----  Interpolated signal.
+ *
  * Shule Yu
  * Nov 14 2017
  *
