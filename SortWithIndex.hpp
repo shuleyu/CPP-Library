@@ -19,6 +19,7 @@
  * vector<T1>::iterator Begin  ----  Sort begin position.
  * vector<T1>::iterator End    ----  Sort end position.
  * T2 cmp                      ----  callable for comparison.
+ * const bool &ActualSortIt    ----  default: true. If false, input is not sorted.
  *
  * return(s):
  * vector<size_t> ans  ----  Original index for each element in the sorted array.
@@ -31,7 +32,7 @@
 *************************************************/
 
 template <class T1, class T2=std::less<class std::iterator_traits<T1>::value_type> >
-std::vector<size_t> SortWithIndex(T1 Begin, T1 End, T2 cmp=T2()) {
+std::vector<size_t> SortWithIndex(T1 Begin, T1 End, T2 cmp=T2(), const bool &ActualSortIt=true) {
 
     // Initialize original index locations.
     std::vector<size_t> idx;
@@ -45,9 +46,14 @@ std::vector<size_t> SortWithIndex(T1 Begin, T1 End, T2 cmp=T2()) {
     sort(idx.begin(),idx.end(),cmp2);
 
     // Actually sort the input array.
-    ReorderUseIndex(Begin,End,idx);
+    if (ActualSortIt) ReorderUseIndex(Begin,End,idx);
 
     return idx;
+}
+
+template <class T>
+std::vector<size_t> SortWithIndex(T Begin, T End, const bool &ActualSortIt) {
+    return SortWithIndex(Begin, End, std::less<class std::iterator_traits<T>::value_type> (), ActualSortIt);
 }
 
 #endif

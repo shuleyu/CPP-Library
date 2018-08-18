@@ -2,33 +2,28 @@
 #define ASU_GMT
 
 #include<iostream>
+#include<fstream>
 #include<iterator>
 #include<vector>
 #include<cstdlib>
 #include<cstring>
+#include<algorithm>
 
 extern "C" {
 // Current version: GMT-5.4.3
 #include<gmt/gmt.h>
 }
 
+#include<CreateGrid.hpp>
+
 /*************************************************
- * This C++ template returns the amplitude and the
- * positions of that amplitude.
+ * This is a wrapper for GMT API.
  *
- * input(s):
- * const vector<T> &p  ----  Input array.
- *
- * output(s):
- * pair<T,vector<size_t>> ans
- *                     ----  ans.first is the ampiltude.
- *                           ans.second is the position(s)
- *                           this amplitude occurs in p.
  *
  * Shule Yu
- * Dec 19 2017
+ * Aug 13 2018
  *
- * Key words: amplitude
+ * Key words: gmt plotting c++
 *************************************************/
 
 namespace GMT {
@@ -38,8 +33,9 @@ namespace GMT {
         void *API=GMT_Create_Session("My session",2,0,NULL);
         char *command=strdup(cmd.c_str());
         GMT_Call_Module(API,"set",GMT_MODULE_CMD,command);
-        GMT_Destroy_Session(API);
+
         delete [] command;
+        GMT_Destroy_Session(API);
     }
 
     // gmt pscoast.
@@ -47,8 +43,9 @@ namespace GMT {
         void *API=GMT_Create_Session("My session",2,0,NULL);
         char *command=strdup((cmd+" ->>"+outfile).c_str());
         GMT_Call_Module(API,"pscoast",GMT_MODULE_CMD,command);
-        GMT_Destroy_Session(API);
+
         delete [] command;
+        GMT_Destroy_Session(API);
     }
 
     // gmt psbasemap.
@@ -56,9 +53,31 @@ namespace GMT {
         void *API=GMT_Create_Session("My session",2,0,NULL);
         char *command=strdup((cmd+" ->>"+outfile).c_str());
         GMT_Call_Module(API,"psbasemap",GMT_MODULE_CMD,command);
-        GMT_Destroy_Session(API);
+
         delete [] command;
+        GMT_Destroy_Session(API);
     }
+
+    // gmt makecpt.
+    void makecpt(const std::string &cmd){
+        void *API=GMT_Create_Session("My session",2,0,NULL);
+        char *command=strdup(cmd.c_str());
+        GMT_Call_Module(API,"makecpt",GMT_MODULE_CMD,command);
+
+        delete [] command;
+        GMT_Destroy_Session(API);
+    }
+
+    // gmt psscale.
+    void psscale(const std::string &outfile, const std::string &cmd){
+        void *API=GMT_Create_Session("My session",2,0,NULL);
+        char *command=strdup((cmd+" ->>"+outfile).c_str());
+        GMT_Call_Module(API,"psscale",GMT_MODULE_CMD,command);
+
+        delete [] command;
+        GMT_Destroy_Session(API);
+    }
+
 
     // gmt pstext.
     class Text{
@@ -66,22 +85,28 @@ namespace GMT {
         std::string Justify,Font,Content;
         double X,Y;
         int Size;
-        Text(const double &x, const double &y, const std::string &c)               : Text(x,y,c,12) {}
-        Text(const double &x, const double &y, const std::string &c, const int &s) : Text(x,y,c,s,"CB") {}
+        Text(const double &x, const double &y, const std::string &c) : Text(x,y,c,12) {}
+        Text(const double &x, const double &y, const std::string &c, const int &s) :
+             Text(x,y,c,s,"CB") {}
         Text(const double &x, const double &y, const std::string &c, const int &s,
-             const std::string &j)                                                 : Text(x,y,c,s,j,"Helvetica") {}
+             const std::string &j) : Text(x,y,c,s,j,"Helvetica") {}
         Text(const double &x, const double &y, const std::string &c, const int &s,
-             const std::string &j, const std::string &f)                           {X=x;Y=y;Content=c;Size=s;Justify=j;Font=f;}
+             const std::string &j, const std::string &f) {
+                 X=x;Y=y;Content=c;Size=s;Justify=j;Font=f;
+             }
     };
 
-    void pstext(const std::string &outfile, const std::vector<GMT::Text> &texts, const std::string &cmd){
+    void pstext(const std::string &outfile, const std::vector<GMT::Text> &texts,
+                const std::string &cmd){
 
-        void *API=GMT_Create_Session("My session",2,0,NULL);
         size_t n=texts.size();
         if (n==0) return;
 
+        void *API=GMT_Create_Session("My session",2,0,NULL);
+
         uint64_t par[]={1,1,1};
-        GMT_TEXTSET *txt=(GMT_TEXTSET *)GMT_Create_Data(API,GMT_IS_TEXTSET,GMT_IS_NONE,0,par,NULL,NULL,0,-1,NULL);
+        GMT_TEXTSET *txt=(GMT_TEXTSET *)GMT_Create_Data(API,GMT_IS_TEXTSET,GMT_IS_NONE,
+                                                        0,par,NULL,NULL,0,-1,NULL);
 
         char filename[20];
         for (const auto &item:texts) {
@@ -92,77 +117,231 @@ namespace GMT {
             strcpy(txt->table[0]->segment[0]->data[0],s.c_str());
 
             GMT_Open_VirtualFile(API,GMT_IS_TEXTSET,GMT_IS_NONE,GMT_IN,txt,filename);
-            char *command=strdup(("-<"+std::string(filename)+" "+cmd+" -F+j"+item.Justify
-                                    +"+f"+std::to_string(item.Size)+"p,"+item.Font+" ->>"+outfile).c_str());
+            char *command=strdup(("-<"+std::string(filename)+" "+cmd+" -F+j"+item.Justify+"+f"+
+                                  std::to_string(item.Size)+"p,"+item.Font+" ->>"+outfile).c_str());
             GMT_Call_Module(API,"pstext",GMT_MODULE_CMD,command);
+
             delete [] command;
+            delete [] txt->table[0]->segment[0]->data[0];
+            txt->table[0]->segment[0]->data[0]=nullptr;
+            GMT_Close_VirtualFile(API,filename);
         }
+
+        GMT_Destroy_Data(API,txt);
         GMT_Destroy_Session(API);
         return;
     }
 
     // gmt psxy.
     template <class T>
-    void psxy(const std::string &outfile, const T XBegin, const T XEnd, const T YBegin, const T YEnd, const std::string &cmd){
+    void psxy(const std::string &outfile, const T XBegin, const T XEnd,
+              const T YBegin, const T YEnd, const std::string &cmd){
 
         // Check array size.
         size_t n=std::distance(XBegin,XEnd),m=std::distance(YBegin,YEnd);
+        if (n==0) return;
+
         if (m!=n) throw std::runtime_error("In __func__, input x,y size don't match.");
 
         void *API=GMT_Create_Session("My session",2,0,NULL);
-        
-        if (n==0) {
-            char *command=strdup(("-</dev/null "+cmd+" ->>"+outfile).c_str());
-            GMT_Call_Module(API,"psxy",GMT_MODULE_CMD,command);
-            GMT_Destroy_Session(API);
-            delete [] command;
-            return;
-        }
 
+
+        // Set vector dimensions..
         uint64_t par[2];
         par[0]=2;  // x,y value (2 columns).
         par[1]=n;  // npts (n rows).
 
+        // Create plot data.
+        GMT_VECTOR *vec=(GMT_VECTOR *)GMT_Create_Data(API,GMT_IS_VECTOR,GMT_IS_POINT,
+                                                      0,par,NULL,NULL,0,-1,NULL);
+
+        // Inject data.
         double *X = new double [n], *Y = new double [n];
         size_t i=0;
         for (auto it=XBegin;it!=XEnd;++it) X[i++]=*it;
         i=0;
         for (auto it=YBegin;it!=YEnd;++it) Y[i++]=*it;
 
-        GMT_VECTOR *vec=(GMT_VECTOR *)GMT_Create_Data(API,GMT_IS_VECTOR,GMT_IS_PLP,0,par,NULL,NULL,0,-1,NULL);
         GMT_Put_Vector(API,vec,0,GMT_DOUBLE,X);
         GMT_Put_Vector(API,vec,1,GMT_DOUBLE,Y);
 
+        // Get the virtual file.
         char filename[20];
+        GMT_Open_VirtualFile(API,GMT_IS_VECTOR,GMT_IS_POINT,GMT_IN,vec,filename);
 
-        GMT_Open_VirtualFile(API,GMT_IS_VECTOR,GMT_IS_PLP,GMT_IN,vec,filename);
+        // Plot.
         char *command=strdup(("-<"+std::string(filename)+" "+cmd+" ->>"+outfile).c_str());
         GMT_Call_Module(API,"psxy",GMT_MODULE_CMD,command);
-        delete [] command;
 
         // free spaces (X,Y seem to be deleted by GMT_Destroy_Session? very confusing).
+        delete [] command;
+        GMT_Close_VirtualFile(API,filename);
         GMT_Destroy_Data(API,vec);
         GMT_Destroy_Session(API);
 
         return;
     }
 
+    // gmt pshistogram.
+    template <class T>
+    void pshistogram(const std::string &outfile, const T XBegin, const T XEnd,
+                     const std::string &cmd){
+
+        // Check array size.
+        size_t n=std::distance(XBegin,XEnd);
+        if (n==0) return;
+
+        void *API=GMT_Create_Session("My session",2,0,NULL);
+
+
+        // Set vector dimensions..
+        uint64_t par[2];
+        par[0]=1;  // value (1 columns).
+        par[1]=n;  // npts (n rows).
+
+        // Create plot data.
+        GMT_VECTOR *vec=(GMT_VECTOR *)GMT_Create_Data(API,GMT_IS_VECTOR,GMT_IS_POINT,
+                                                      0,par,NULL,NULL,0,-1,NULL);
+
+        // Inject data.
+        double *X = new double [n];
+        size_t i=0;
+        for (auto it=XBegin;it!=XEnd;++it) X[i++]=*it;
+
+        GMT_Put_Vector(API,vec,0,GMT_DOUBLE,X);
+
+        // Get the virtual file.
+        char filename[20];
+        GMT_Open_VirtualFile(API,GMT_IS_VECTOR,GMT_IS_POINT,GMT_IN,vec,filename);
+
+        // Plot.
+        char *command=strdup(("-<"+std::string(filename)+" "+cmd+" ->>"+outfile).c_str());
+        GMT_Call_Module(API,"pshistogram",GMT_MODULE_CMD,command);
+
+        // free spaces.
+        delete [] command;
+        GMT_Close_VirtualFile(API,filename);
+        GMT_Destroy_Data(API,vec);
+        GMT_Destroy_Session(API);
+
+        return;
+    }
+
+    // gmt grdimage.
+
     template<class T>
-    void psxy(const std::string &outfile, std::vector<T> X, std::vector<T> Y, const std::string &cmd){
+    void grdimage(const std::string &outfile, const std::vector<std::vector<T>> &G,
+                  const double &xinc, const double &yinc, const std::string &cmd){
+
+        // Check array size.
+        for (const auto &item:G)
+            if (item.size()!=3)
+                throw std::runtime_error("In __func__, input is not x,y,z data");
+
+        void *API=GMT_Create_Session("My session",2,0,NULL);
+
+        // Set grid limits.
+        double MinVal=std::numeric_limits<double>::max(),MaxVal=-MinVal;
+        double wesn[]={MinVal,MaxVal,MinVal,MaxVal};
+        for (const auto &item:G) {
+            wesn[0]=std::min(wesn[0],item[0]);
+            wesn[1]=std::max(wesn[1],item[0]);
+            wesn[2]=std::min(wesn[2],item[1]);
+            wesn[3]=std::max(wesn[3],item[1]);
+            MinVal=std::min(MinVal,item[2]);
+            MaxVal=std::max(MaxVal,item[2]);
+        }
+
+        // Set grid increments.
+        double inc[]={xinc,yinc};
+
+        // Set up grid size.
+        auto res=CreateGrid(wesn[0],wesn[1],inc[0],-1);
+        size_t m=(size_t)res[0]+4;
+        res=CreateGrid(wesn[2],wesn[3],inc[1],-1);
+        size_t n=(size_t)res[0]+4;
+
+        // Create plot data.
+        GMT_GRID *grid=(GMT_GRID *)GMT_Create_Data(API,GMT_IS_GRID,GMT_IS_SURFACE,
+                                                   GMT_CONTAINER_ONLY,NULL,wesn,inc,
+                                                   GMT_GRID_NODE_REG,-1,NULL);
+
+        // Inject data.
+        float *aux_data = new float [m*n];
+        for (size_t i=0;i<m*n;++i) aux_data[i]=0.0/0.0;
+        for (const auto &item:G) {
+            size_t X=(size_t)((item[0]-wesn[0])/xinc);
+            size_t Y=(size_t)((item[1]-wesn[2])/yinc);
+            // swap X,Y position and flip along y-axis. 
+            aux_data[(n-3-Y)*m+X+2]=item[2];
+        }
+        grid->data=aux_data;
+
+
+        // Adjust something in the header. (magic)
+        grid->header->z_min=MinVal;
+        grid->header->z_max=MaxVal;
+        grid->header->grdtype=0;
+
+        grid->header->grdtype=3;
+        grid->header->gn=1;
+        grid->header->gs=1;
+        grid->header->BC[2]=3;
+        grid->header->BC[3]=3;
+
+        // periodic along longitude (x) direction.
+        grid->header->BC[0]=2;
+        grid->header->BC[1]=2;
+        for (size_t Y=0;Y<n;++Y) {
+            aux_data[(n-1-Y)*m+0]=aux_data[(n-1-Y)*m+m-4];
+            aux_data[(n-1-Y)*m+1]=aux_data[(n-1-Y)*m+m-3];
+            aux_data[(n-1-Y)*m+m-1]=aux_data[(n-1-Y)*m+3];
+            aux_data[(n-1-Y)*m+m-2]=aux_data[(n-1-Y)*m+2];
+        }
+
+        // Get the virtual file.
+        char filename[20];
+        GMT_Open_VirtualFile(API,GMT_IS_GRID,GMT_IS_SURFACE,GMT_IN,grid,filename);
+
+        // Plot.
+        char *command=strdup(("-<"+std::string(filename)+" "+cmd+" ->>"+outfile).c_str());
+        GMT_Call_Module(API,"grdimage",GMT_MODULE_CMD,command);
+
+        // Free spaces.
+        delete [] command;
+        GMT_Close_VirtualFile(API,filename);
+        GMT_Destroy_Data(API,grid);
+        GMT_Destroy_Session(API);
+
+        return;
+    }
+
+    template<class T>
+    void psxy(const std::string &outfile, const std::vector<T> &X,
+              const std::vector<T> &Y, const std::string &cmd){
         GMT::psxy(outfile,X.begin(),X.end(),Y.begin(),Y.end(),cmd);
         return;
     }
 
-    void beginplot(const std::string &outfile){
-        GMT::psxy(outfile,std::vector<double> (),std::vector<double> (),"-JX1i/1i -R-1/1/-1/1 -Xf0i -Yf0i -P -K");
+    template<class T>
+    void pshistogram(const std::string &outfile, const std::vector<T> &X, const std::string &cmd){
+        GMT::pshistogram(outfile,X.begin(),X.end(),cmd);
         return;
     }
-    void sealplot(const std::string &outfile){
-        GMT::psxy(outfile,std::vector<double> (),std::vector<double> (),"-J -R -O");
+
+    void BeginPlot(const std::string &outfile){
+        remove(outfile.c_str());
+        GMT::psbasemap(outfile,"-JX1i/1i -R-1/1/-1/1 -Bwens -P -K");
         return;
     }
-    void movereference(const std::string &outfile, const std::string &cmd){
-        GMT::psxy(outfile,std::vector<double> (),std::vector<double> (),"-J -R -O -K "+cmd);
+    void SealPlot(const std::string &outfile){
+        GMT::psbasemap(outfile,"-J -R -Bwens -O");
+        remove("gmt.conf");
+        remove("gmt.history");
+        return;
+    }
+    void MoveReferencePoint(const std::string &outfile, const std::string &cmd){
+        GMT::psbasemap(outfile,"-J -R -Bwens -O -K "+cmd);
         return;
     }
 }

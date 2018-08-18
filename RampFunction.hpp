@@ -10,6 +10,7 @@
  * f(x) =   0   x<=c1;
  *          1   x>=c2;
  *          linear rise from 0 to 1 while x from c1 to c2.
+ *          if c1==c2, becomes a step function with f(x)=(x>=c1?1:0)
  *
  * input(s):
  * const T1 &x   ----  x.

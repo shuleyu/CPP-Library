@@ -64,6 +64,7 @@ std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> 
         epsi+=fabs((y[i]-y[i-1])/(x[i]-x[i-1]));
     epsi*=(1e-4/(n-1));
 
+    if (epsi==0) return std::vector<double> (xx.size(),y[0]);
 
     // modified from sac source code wigint.c
 

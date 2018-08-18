@@ -82,7 +82,6 @@ int main(){
 //     A.Interpolate(0.02);
 //     cout << A.GetDelta() << endl;
 
-
 //     cout << A.SNR(-2.5,-1,-0.5,0.5) << endl;
 //     cout << A.SNR(10,15,24,26) << endl;
     return 0;

@@ -1,6 +1,9 @@
 #include<iostream>
+#include<fstream>
+#include<random>
 
 #include<GMT.hpp>
+#include<Lon2360.hpp>
 
 using namespace std;
 
@@ -9,7 +12,7 @@ int main(){
     bool PlotGrid=false;
 
     string outfile="GMT.ps";
-    size_t NRow=1,NCol=3;
+    size_t NRow=2,NCol=3;
     size_t row,col;
     double Len=5,SpaceRatio=0.1,XSIZE=(NCol+2*SpaceRatio)*Len,YSIZE=(NRow+SpaceRatio)*Len+1,xp,yp;
 
@@ -18,23 +21,21 @@ int main(){
     GMT::set("FONT_ANNOT 8p");
     GMT::set("PS_MEDIA "+to_string(XSIZE)+"ix"+to_string(YSIZE)+"i");
 
-    // begin plot. (Calling "psxy /dev/null -J -R -P -K >> outfile").
-    remove(outfile.c_str());
-    GMT::beginplot(outfile);
+    // begin plot.
+    GMT::BeginPlot(outfile);
 
     // pstitle.
-    GMT::movereference(outfile,"-Xc -Yf"+to_string(YSIZE-1)+"i");
+    GMT::MoveReferencePoint(outfile,"-Xc -Yf"+to_string(YSIZE-1)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-J -R -Bxa10f5 -Bya10f5 -BWSne -O -K");
 
     vector<GMT::Text> texts;
     texts.push_back(GMT::Text(0,0,"GMT API Examples",24,"CB"));
     GMT::pstext(outfile,texts,"-JX1i/1i -R-10/10/-10/10 -N -O -K");
 
-
     // pscoast.
     row=1,col=1;
     xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
-    GMT::movereference(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
+    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa10f5 -Bya10f5 -BWSne -O -K");
 
     GMT::pscoast(outfile,"-JR30/"+to_string(Len*(1-SpaceRatio))+"i -Rg -Bxa60g60 -Bya60g60 -BWSne -Glightgray -A10000 -O -K");
@@ -42,12 +43,13 @@ int main(){
     // psxy.
     row=1,col=2;
     xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
-    GMT::movereference(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
+    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa10f5 -Bya10f5 -BWSne -O -K");
     GMT::pscoast(outfile,"-JG-10/20/"+to_string(Len*(1-SpaceRatio))+"i -Rg -Bxa60g60 -Bya60g60 -BWSne -Glightgray -A10000 -O -K");
 
-    vector<double> lon{-60,40},lat{-20,30};
-    GMT::psxy(outfile,lon,lat,"-J -R -W0.5p,black,- -O -K");
+    vector<double> lon{-60,0,40},lat{-20,10,30};
+    GMT::psxy(outfile,lon,lat,"-J -R -W0.5p,black,- -L -O -K");
+    GMT::psxy(outfile,lon,lat,"-J -R -W0.5p,red -O -K");
     GMT::psxy(outfile,lon,lat,"-J -R -Gblue -Sc0.05i -W1p -O -K");
 
     texts.clear();
@@ -58,7 +60,7 @@ int main(){
     // pstext.
     row=1,col=3;
     xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
-    GMT::movereference(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
+    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-5/5/-5/5 -Bxa5g1 -Bya10g1 -BWSne -O -K");
 
     texts.clear();
@@ -66,12 +68,64 @@ int main(){
     texts.push_back(GMT::Text(0,-1,"@;red;SmallTitle@;;",12,"CB","Times-Bold"));
     GMT::pstext(outfile,texts,"-JX"+to_string(Len)+"i -R-5/5/-5/5 -N -O -K");
 
-    // Seal the page (Calling "psxy /dev/null -J -R -O >> outfile").
-    GMT::sealplot(outfile);
+    // grdimage 1.
+    row=2,col=1;
+    xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
+    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
+    if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
 
-    // remove configure files.
-    remove("gmt.conf");
-    remove("gmt.history");
+    vector<vector<double>> grid; 
+
+    ifstream fpin("/home/shule/Research/Fun.Bash.c001/ritsema.2880");
+    double la,lo,val,xinc=1,yinc=1,minval=numeric_limits<double>::max(),maxval=-minval;
+    while (fpin >> la >> lo >> val) {
+        minval=min(minval,val);
+        maxval=max(maxval,val);
+        grid.push_back({Lon2360(lo),la,val});
+    }
+    fpin.close();
+    minval=-2.5;maxval=2.5;
+    GMT::makecpt("-Cpolar -T"+to_string(minval)+"/"+to_string(maxval)+"/0.5 -I -Z > tmp.cpt");
+    yp+=1.1;
+    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
+    GMT::grdimage(outfile,grid,xinc,yinc,"-JR180/"+to_string(Len*(1-SpaceRatio))+"i -Rg -Ctmp.cpt -O -K");
+    // -D scale center position relative to last reference piont.
+    GMT::psscale(outfile,"-Ctmp.cpt -D"+to_string(Len*(1-SpaceRatio)/2)+"i/-0.5i/2i/0.1ih -O -K -B0.5:dVs(%):");
+    remove("tmp.cpt");
+    GMT::pscoast(outfile,"-J -R -Bxa60g60 -Bya60g60 -BWSne -W0.5p,black -A10000 -O -K");
+
+
+    // grdimage 2.
+    row=2,col=2;
+    xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
+    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
+    if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
+
+    grid.clear();
+    xinc=1,yinc=2,val=0;
+    for (double i=0;i<3;i+=xinc)
+        for (double j=0;j<3;j+=yinc)
+            grid.push_back({i,j,val+=1});
+
+    GMT::grdimage(outfile,grid,xinc,yinc,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Chot -O -K");
+
+    // pshistogram.
+    row=2,col=3;
+    xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
+    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
+    if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
+
+    std::default_random_engine generator;
+    std::normal_distribution<double> distribution(0,2.0);
+    vector<double> gaussian_val;
+    for (size_t i=0;i<3000;++i) gaussian_val.push_back(distribution(generator));
+
+    GMT::pshistogram(outfile,gaussian_val,"-JX"+to_string(Len*(1-SpaceRatio))+"i -R-10/10/0/40 "
+                                          "-Z1 -W1 -L0.5p -G50/50/250 -Bxa5f1 -Bya10f2+u\"%\" -BWS -O -K");
+
+
+    // Seal the page.
+    GMT::SealPlot(outfile);
 
     return 0;
 }

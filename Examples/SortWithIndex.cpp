@@ -19,13 +19,14 @@ int main(){
     // sort A and get sorting index.
 
 //     auto res=SortWithIndex(A.begin(),A.end());
+//     auto res=SortWithIndex(A.begin(),A.end(),false);
 
     // or ...
 //     auto res=SortWithIndex(A.begin(),A.end(),std::greater<double>());
 
     // or ...
-    auto f=[](const double &s1, const double &s2){return fabs(s1)<fabs(s2);};
-    auto res=SortWithIndex(A.begin(),A.end(),f);
+//     auto f=[](const double &s1, const double &s2){return fabs(s1)<fabs(s2);};
+//     auto res=SortWithIndex(A.begin(),A.end(),f);
 
     // sort B.
     ReorderUseIndex(B.begin(),B.end(),res);

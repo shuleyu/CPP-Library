@@ -131,8 +131,8 @@ EvenSampledSignal::EvenSampledSignal (const std::string &infile) {
     fpin >> *this;
     if (!fpin.eof()) {                            // failed to read from even sampled 2-column file.
         fpin.close();
-        std::cerr << "Warning: when constructing EvenSampledSignal, the input file "
-                  << "shows sign of un-even sampling. Using interpolation ..."<< std::endl;
+        std::cerr << "Warning: when constructing EvenSampledSignal, the input file: " << infile
+                  << " shows sign of un-even sampling. Using interpolation ..."<< std::endl;
 
         DigitalSignal item=DigitalSignal(infile);
         double dt=item.SignalDuration()/(item.Size()-1);

@@ -89,7 +89,7 @@ int main(){
     vector<double> ScS,Source;
 
     fpin.open("/home/shule/PROJ/t041.CA_D/Stretch/200608250044/S.modifiedsource");
-    MaxVal=numeric_limits<double>::min();
+    MaxVal=numeric_limits<double>::lowest();
     while (fpin >> x >> y) {
         if (MaxVal<fabs(y)) {
             MaxVal=fabs(y);
@@ -100,7 +100,7 @@ int main(){
     fpin.close();
 
     fpin.open("/home/shule/PROJ/t041.CA_D/ESF/200608250044_ScS/1/SMER.waveform");
-    MaxVal=numeric_limits<double>::min();
+    MaxVal=numeric_limits<double>::lowest();
     while (fpin >> x >> y) {
         if (MaxVal<fabs(y)) {
             MaxVal=fabs(y);

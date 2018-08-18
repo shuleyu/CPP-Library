@@ -1,16 +1,15 @@
 # Related directories.
 SACHOME  := /opt/sac-101.6
 SACHOME2 := /opt/sac
-GMTDIR   := RePlacedGMTdir
 Code     := UniQUEcoDeName
 
 # Compile parameters & dirs.
 COMP     := c++ -std=c++14 -Wall -fPIC
-INCDIR   := -I.. -I/opt/local/include -I$(SACHOME)/include -I$(SACHOME2)/include -I$(GMTDIR)/include
-LIBDIR   :=                           -L$(SACHOME)/lib     -L$(SACHOME2)/lib     -L$(GMTDIR)/lib64
+INCDIR   := -I.. -I/opt/local/include -I$(SACHOME)/include -I$(SACHOME2)/include
+LIBDIR   :=                           -L$(SACHOME)/lib     -L$(SACHOME2)/lib
 
 # LIBS     := -lsac -lsacio -lgsl -lgslcblas -lfftw3 -lm
-LIBS     := -lsac -lsacio -lmlpack -lgmt -larmadillo -lgsl -lgslcblas -lfftw3 -lm
+LIBS     := -lsac -lsacio -lmlpack -lgmt -lmariadb -larmadillo -lgsl -lgslcblas -lfftw3 -lm
 
 # example program files & its dependency files.
 EGFILES  := $(wildcard *.cpp)
