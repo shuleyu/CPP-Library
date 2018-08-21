@@ -6,8 +6,10 @@ using namespace std;
 
 int main(){
 
-    int NPTS=10,mode=1,Lowerbound=0,Upperbound=10;
-    double Inc=0.05,U;
+    int NPTS=10,mode=1;
+    double Lowerbound=1,Upperbound=20.000000000000001;
+//     double Lowerbound=1,Upperbound=19.999999999999996;
+    double Inc=1,U;
 
     // Use function mode 0.
 //     mode=0;

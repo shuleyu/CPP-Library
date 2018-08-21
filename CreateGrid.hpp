@@ -88,6 +88,8 @@ std::vector<double> CreateGrid(const T1 &lowerbound, const T2 &upperbound, const
 
         if (mode==-1) {
             double N=1+floor(1.0*(upperbound-lowerbound)/Inc);
+            if (fabs((upperbound-lowerbound-N*Inc))<Inc*1e-6) // float number rounding error?
+                N+=1;
             return {N,lowerbound+(N-1)*Inc};
         }
 
@@ -95,7 +97,7 @@ std::vector<double> CreateGrid(const T1 &lowerbound, const T2 &upperbound, const
 
         double Cur=lowerbound;
 
-        while (Cur<=upperbound) {
+        while (Cur<=upperbound || Cur-upperbound<Inc*1e-6) {
             ans.push_back(Cur);
             Cur+=Inc;
         }

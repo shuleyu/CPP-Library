@@ -105,127 +105,27 @@ namespace MariaDB {
 
     };
 
-
 /*
-
-    // Get certain field (int).
-    // To dos: Marker1 may be there's a generic way to select integer, string and double.
-    std::unordered_map<std::string,std::vector<int>>
-    SelectInteger(const std::string &fields, const std::string &cmd){
-        auto ID=mysql_init(NULL);
-        if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
-            std::cerr << mysql_error(ID) << std::endl;
-            throw std::runtime_error("Connet failed...");
-        }
-
-        std::string command="select "+fields+" "+cmd;
-        if (mysql_real_query(ID,command.c_str(),command.size())!=0) {
-            std::cerr << mysql_error(ID) << std::endl;
-            throw std::runtime_error("Select failed...");
-        }
-
-        auto res=mysql_store_result(ID);
-        size_t m=mysql_num_rows(res),n=mysql_num_fields(res);;
-
-        std::vector<std::vector<int>> V(n,std::vector<int> (m));
-        auto fi=mysql_fetch_fields(res);
-
-        std::unordered_map<std::string,std::vector<int>> ans;
-        for (size_t i=0;i<n;++i)
-            ans[std::string(fi[i].name)]=std::vector<int> ();
-
-        for (size_t i=0;i<m;++i) {
-            auto row=mysql_fetch_row(res);
-            for(size_t j=0;j<n;++j)
-                V[j][i]=(row[j]?atoi(row[j]):std::numeric_limits<int>::max());
-        }
-
-        for (size_t i=0;i<n;++i)
-            swap(V[i],ans[std::string(fi[i].name)]);
-
-        mysql_free_result(res);
-        mysql_close(ID);
-        return ans;
-    }
-
-    // Get certain field (char *, string).
-    std::unordered_map<std::string,std::vector<std::string>>
-    SelectString(const std::string &fields, const std::string &cmd){
-        auto ID=mysql_init(NULL);
-        if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
-            std::cerr << mysql_error(ID) << std::endl;
-            throw std::runtime_error("Connet failed...");
-        }
-
-        std::string command="select "+fields+" "+cmd;
-        if (mysql_real_query(ID,command.c_str(),command.size())!=0) {
-            std::cerr << mysql_error(ID) << std::endl;
-            throw std::runtime_error("Select failed...");
-        }
-
-        auto res=mysql_store_result(ID);
-        size_t m=mysql_num_rows(res),n=mysql_num_fields(res);;
-
-        std::vector<std::vector<std::string>> V(n,std::vector<std::string> (m));
-        auto fi=mysql_fetch_fields(res);
-
-        std::unordered_map<std::string,std::vector<std::string>> ans;
-        for (size_t i=0;i<n;++i)
-            ans[std::string(fi[i].name)]=std::vector<std::string> ();
-
-        for (size_t i=0;i<m;++i) {
-            auto row=mysql_fetch_row(res);
-            for(size_t j=0;j<n;++j)
-                V[j][i]=(row[j]?std::string(row[j]):"NULL");
-        }
-
-        for (size_t i=0;i<n;++i)
-            swap(V[i],ans[std::string(fi[i].name)]);
-
-        mysql_free_result(res);
-        mysql_close(ID);
-        return ans;
-    }
-
-    // Get certain field (float, double).
-    std::unordered_map<std::string,std::vector<double>>
-    SelectDouble(const std::string &fields, const std::string &cmd){
-        auto ID=mysql_init(NULL);
-        if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
-            std::cerr << mysql_error(ID) << std::endl;
-            throw std::runtime_error("Connet failed...");
-        }
-
-        std::string command="select "+fields+" "+cmd;
-        if (mysql_real_query(ID,command.c_str(),command.size())!=0) {
-            std::cerr << mysql_error(ID) << std::endl;
-            throw std::runtime_error("Select failed...");
-        }
-
-        auto res=mysql_store_result(ID);
-        size_t m=mysql_num_rows(res),n=mysql_num_fields(res);;
-
-        std::vector<std::vector<double>> V(n,std::vector<double> (m));
-        auto fi=mysql_fetch_fields(res);
-
-        std::unordered_map<std::string,std::vector<double>> ans;
-        for (size_t i=0;i<n;++i)
-            ans[std::string(fi[i].name)]=std::vector<double> ();
-
-        for (size_t i=0;i<m;++i) {
-            auto row=mysql_fetch_row(res);
-            for(size_t j=0;j<n;++j)
-                V[j][i]=(row[j]?atof(row[j]):0.0/0.0);
-        }
-
-        for (size_t i=0;i<n;++i)
-            swap(V[i],ans[std::string(fi[i].name)]);
-
-        mysql_free_result(res);
-        mysql_close(ID);
-        return ans;
+    template<class T>
+    WriteColumn(const std::string &db, const std::string &table, const std::string &fieldname,
+                const std::vector<T> &data) {
     }
 */
+    
+    void Query(const std::string &cmd){
+        auto ID=mysql_init(NULL);
+
+        if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
+            std::cerr << mysql_error(ID) << std::endl;
+            throw std::runtime_error("Connet failed...");
+        }
+
+        if (mysql_query(ID,cmd.c_str())!=0) {
+            std::cerr << mysql_error(ID) << std::endl;
+            throw std::runtime_error("Query failed...");
+        }
+        return;
+    }
 }
 
 #endif

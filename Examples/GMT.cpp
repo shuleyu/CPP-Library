@@ -109,6 +109,7 @@ int main(){
 
     GMT::grdimage(outfile,grid,xinc,yinc,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Chot -O -K");
 
+
     // pshistogram.
     row=2,col=3;
     xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
