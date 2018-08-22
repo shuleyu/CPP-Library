@@ -26,7 +26,7 @@ int main(){
 
     // pstitle.
     GMT::MoveReferencePoint(outfile,"-Xc -Yf"+to_string(YSIZE-1)+"i");
-    if (PlotGrid) GMT::psbasemap(outfile,"-J -R -Bxa10f5 -Bya10f5 -BWSne -O -K");
+    if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa10f5 -Bya10f5 -BWSne -O -K");
 
     vector<GMT::Text> texts;
     texts.push_back(GMT::Text(0,0,"GMT API Examples",24,"CB"));
@@ -92,7 +92,7 @@ int main(){
     // -D scale center position relative to last reference piont.
     GMT::psscale(outfile,"-Ctmp.cpt -D"+to_string(Len*(1-SpaceRatio)/2)+"i/-0.5i/2i/0.1ih -O -K -B0.5:dVs(%):");
     remove("tmp.cpt");
-    GMT::pscoast(outfile,"-J -R -Bxa60g60 -Bya60g60 -BWSne -W0.5p,black -A10000 -O -K");
+    GMT::pscoast(outfile,"-JR180/"+to_string(Len*(1-SpaceRatio))+"i -Rg -Bxa60g60 -Bya60g60 -BWSne -W0.5p,black -A10000 -O -K");
 
 
     // grdimage 2.

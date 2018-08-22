@@ -240,6 +240,8 @@ namespace GMT { // the order of the function definition matters: dependencies sh
     void grdimage(const std::string &outfile, const std::vector<std::vector<T>> &G,
                   const double &xinc, const double &yinc, const std::string &cmd){
 
+        if (G.empty()) return;
+
         // Check array size.
         for (const auto &item:G)
             if (item.size()!=3)
