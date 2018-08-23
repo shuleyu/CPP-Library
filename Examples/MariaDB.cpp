@@ -29,14 +29,10 @@ int main(){
 
     MariaDB::UpdateTable("playground.T1","playground.T2","pairname");
 
-    enum class Q1I{END};
-    enum class Q1S{pairname,netwk,END};
-    enum class Q1F{lat,END};
-    auto res=MariaDB::Select<Q1I,Q1S,Q1F>("pairname,netwk,lat from playground.T1");
 
+    auto res=MariaDB::Select("pairname as pn,netwk,abs(lat) as x from playground.T1");
     for (size_t i=0;i<res.NRow();++i)
-        cout << res[Q1S::pairname][i] << " " << res[Q1S::netwk][i] << " " << res[Q1F::lat][i] << endl;
-    res.Clear();
+        cout << res.GetString("pn")[i] << " " << res.GetDouble("x")[i] << endl;
 
     return 0;
 }
