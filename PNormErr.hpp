@@ -32,22 +32,29 @@
 *************************************************/
 
 template<class T1, class T2, class T3>
-double PNormErr(const std::vector<T1> &x, const std::vector<T2> &y, const T3 &p){
+double PNormErr(const T1 XBegin, const T1 XEnd, const T2 YBegin, const T2 YEnd, const T3 &p){
 
-    if (x.size()!=y.size()) {
+    size_t m=std::distance(XBegin,XEnd),n=std::distance(YBegin,YEnd);
+
+    if (m!=n) {
         std::cerr <<  "Error in " << __func__ << ": input arrays x and y size don't match ..." << std::endl;
         return 0;
     }
-    if (x.size()<=0) return 0;
+    if (m<=0) return 0;
     if (p==0) {
         std::cerr <<  "Error in " << __func__ << ": p is zero ..." << std::endl;
         return 0;
     }
 
     double Sum=0;
-    for (size_t i=0;i<x.size();++i) Sum+=pow(fabs(x[i]-y[i]),p);
+    for (size_t i=0;i<m;++i) Sum+=pow(fabs((*std::next(XBegin,i))-(*std::next(YBegin,i))),p);
 
-    return pow(Sum,1.0/p)/PNorm(y,p);
+    return pow(Sum,1.0/p)/PNorm(YBegin,YEnd,p);
+}
+
+template<class T1, class T2, class T3>
+double PNormErr(const std::vector<T1> &x, const std::vector<T2> &y, const T3 &p){
+    return PNormErr(x.begin(),x.end(),y.begin(),y.end(),p);
 }
 
 #endif

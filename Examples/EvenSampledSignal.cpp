@@ -27,7 +27,7 @@ int main(){
 //     A.SetBeginTime(0);
 //     cout << A.BeginTime() << endl;
 
-    A.CheckAndCutToWindow(15,45);
+//     A.CheckAndCutToWindow(15,45);
 
 //     A.FindPeakAround(25,4);
 //     auto B=A;
@@ -84,5 +84,6 @@ int main(){
 
 //     cout << A.SNR(-2.5,-1,-0.5,0.5) << endl;
 //     cout << A.SNR(10,15,24,26) << endl;
+    A.OutputToFile("xx");
     return 0;
 }

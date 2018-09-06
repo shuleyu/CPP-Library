@@ -92,10 +92,12 @@ public:
     void NormalizeToGlobal();
     void NormalizeToPeak();
     void NormalizeToSignal();
+    void OutputToSAC(const std::vector<std::size_t> &indices=std::vector<std::size_t> (),
+                     const std::string &prefix="") const;
     std::vector<double> PeakTime() const;
     void PrintInfo() const;
     void PrintListInfo() const;
-    void RemoveRecords(std::vector<std::size_t> &indices);
+    void RemoveRecords(const std::vector<std::size_t> &indices);
     std::vector<std::pair<double,double>> RemoveTrend();
     bool SameSamplingRate () const;
     bool SameSize () const;
@@ -388,6 +390,38 @@ void SACSignals::NormalizeToSignal(){
         data[i].NormalizeToSignal();
 }
 
+void SACSignals::OutputToSAC(const std::vector<std::size_t> &indices,
+                             const std::string &prefix) const {
+    std::vector<std::size_t> ind;
+    if (indices.empty()) {
+        ind.resize(Size());
+        for (std::size_t i=0;i<Size();++i) ind[i]=i;
+    }
+    else ind=indices;
+
+    char tmpfilename[300];
+    int npts,nerr,prev_size=0;
+    float dt,bt,*amp=nullptr;
+    for (const size_t &i:ind) {
+
+        std::string outfile=prefix+std::to_string(i)+".sac";
+        strcpy(tmpfilename,outfile.c_str());
+        npts=data[i].Size();
+        dt=data[i].GetDelta();
+        bt=data[i].BeginTime();
+
+        if (prev_size!=npts) {
+            delete [] amp;
+            amp = new float [npts];
+            prev_size=npts;
+        }
+        for (int j=0;j<npts;++j) amp[j]=data[i].GetAmp()[j];
+
+        wsac1(tmpfilename,amp,&npts,&bt,&dt,&nerr,outfile.size());
+    }
+    delete [] amp;
+}
+
 std::vector<double> SACSignals::PeakTime() const{
     std::vector<double> ans;
     for (size_t i=0;i<Size();++i)
@@ -411,13 +445,15 @@ void SACSignals::PrintListInfo() const {
     std::cout << "Current valid trace nubmer: " << Size() << '\n';
 }
 
-void SACSignals::RemoveRecords(std::vector<std::size_t> &indices){
-    std::sort(indices.begin(),indices.end(),std::greater<std::size_t>());
-    for (const auto &i:indices){
+void SACSignals::RemoveRecords(const std::vector<std::size_t> &indices){
+    if (indices.empty()) return;
+    auto ind=indices;
+    std::sort(ind.begin(),ind.end(),std::greater<std::size_t>());
+    for (const auto &i:ind){
         std::swap(mdata[i],mdata.back());mdata.pop_back();
         std::swap(data[i],data.back());data.pop_back();
     }
-    if (!indices.empty()) sorted_by="None";
+    sorted_by="None";
 }
 
 std::vector<std::pair<double,double>> SACSignals::RemoveTrend(){

@@ -33,7 +33,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
     // gmt set.
     void set(const std::string &cmd){
-        void *API=GMT_Create_Session("My session",2,0,NULL);
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
         char *command=strdup(cmd.c_str());
         GMT_Call_Module(API,"set",GMT_MODULE_CMD,command);
 
@@ -44,7 +44,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
     // gmt pscoast.
     void pscoast(const std::string &outfile, const std::string &cmd){
-        void *API=GMT_Create_Session("My session",2,0,NULL);
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
         char *command=strdup((cmd+" ->>"+outfile).c_str());
         GMT_Call_Module(API,"pscoast",GMT_MODULE_CMD,command);
 
@@ -55,7 +55,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
     // gmt makecpt.
     void makecpt(const std::string &cmd){
-        void *API=GMT_Create_Session("My session",2,0,NULL);
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
         char *command=strdup(cmd.c_str());
         GMT_Call_Module(API,"makecpt",GMT_MODULE_CMD,command);
 
@@ -66,7 +66,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
     // gmt psscale.
     void psscale(const std::string &outfile, const std::string &cmd){
-        void *API=GMT_Create_Session("My session",2,0,NULL);
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
         char *command=strdup((cmd+" ->>"+outfile).c_str());
         GMT_Call_Module(API,"psscale",GMT_MODULE_CMD,command);
 
@@ -77,7 +77,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
     // gmt psbasemap.
     void psbasemap(const std::string &outfile, const std::string &cmd){
-        void *API=GMT_Create_Session("My session",2,0,NULL);
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
         char *command=strdup((cmd+" ->>"+outfile).c_str());
         GMT_Call_Module(API,"psbasemap",GMT_MODULE_CMD,command);
 
@@ -108,7 +108,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         size_t n=texts.size();
         if (n==0) return;
 
-        void *API=GMT_Create_Session("My session",2,0,NULL);
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
 
         uint64_t par[]={1,1,1};
         GMT_TEXTSET *txt=(GMT_TEXTSET *)GMT_Create_Data(API,GMT_IS_TEXTSET,GMT_IS_NONE,
@@ -148,9 +148,9 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         size_t n=std::distance(XBegin,XEnd),m=std::distance(YBegin,YEnd);
         if (n==0) return;
 
-        if (m!=n) throw std::runtime_error("In __func__, input x,y size don't match.");
+        if (m!=n) throw std::runtime_error("In "+std::string(__func__)+", input x,y size don't match.");
 
-        void *API=GMT_Create_Session("My session",2,0,NULL);
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
 
 
         // Set vector dimensions..
@@ -198,7 +198,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         size_t n=std::distance(XBegin,XEnd);
         if (n==0) return;
 
-        void *API=GMT_Create_Session("My session",2,0,NULL);
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
 
 
         // Set vector dimensions..
@@ -245,9 +245,9 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         // Check array size.
         for (const auto &item:G)
             if (item.size()!=3)
-                throw std::runtime_error("In __func__, input is not x,y,z data");
+                throw std::runtime_error("In "+std::string(__func__)+", input is not x,y,z data");
 
-        void *API=GMT_Create_Session("My session",2,0,NULL);
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
 
         // Set grid limits.
         double MinVal=std::numeric_limits<double>::max(),MaxVal=-MinVal;

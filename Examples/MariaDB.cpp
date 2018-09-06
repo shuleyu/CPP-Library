@@ -30,7 +30,7 @@ int main(){
     MariaDB::UpdateTable("playground.T1","playground.T2","pairname");
 
 
-    auto res=MariaDB::Select("pairname as pn,netwk,abs(lat) as x from playground.T1");
+    auto res=MariaDB::Select("pairname as pn,abs(lat) as x from playground.T1");
     for (size_t i=0;i<res.NRow();++i)
         cout << res.GetString("pn")[i] << " " << res.GetDouble("x")[i] << endl;
 

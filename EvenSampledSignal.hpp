@@ -15,8 +15,10 @@
 #include<CreateGrid.hpp>
 #include<CrossCorrelation.hpp>
 #include<DigitalSignal.hpp>
+#include<FFT.hpp>
 #include<GaussianBlur.hpp>
 #include<HannTaper.hpp>
+#include<IFFT.hpp>
 #include<Interpolate.hpp>
 #include<RemoveTrend.hpp>
 #include<SimpsonRule.hpp>
@@ -82,6 +84,7 @@ public:
     const std::vector<double> &GetTime() const override final;
     void HannTaper(const double &wl) override final;
     std::size_t LocateTime(const double &t) const override final;
+    void OutputToFile(const std::string &s) const override;
     void PrintInfo() const override;
     std::pair<double,double> RemoveTrend() override final;
     void ZeroOutHannTaper(const double &wl, const double &zl) override final;
@@ -100,6 +103,7 @@ public:
     double AbsIntegral() const;
     void Butterworth(const double &f1, const double &f2, const int &order=2, const int &passes=2);
     void Convolve(const EvenSampledSignal &item);
+    std::pair<EvenSampledSignal,EvenSampledSignal> FFT(const bool &ReturnAmpAndPhase=true) const;
     void GaussianBlur(const double &sigma=1);
     void Integrate();
     void Interpolate(const double &dt);
@@ -309,6 +313,16 @@ void EvenSampledSignal::Convolve(const EvenSampledSignal &s2){
     amp.resize(OrignalSize);
 }
 
+std::pair<EvenSampledSignal,EvenSampledSignal>
+EvenSampledSignal::FFT(const bool &ReturnAmpAndPhase) const {
+
+    if (Size()==1) return {};
+
+    auto res=::FFT(GetAmp(),GetDelta(),ReturnAmpAndPhase);
+    return {EvenSampledSignal(res.first,1.0/2/GetDelta()/(res.first.size()-1),0),
+            EvenSampledSignal(res.second,1.0/2/GetDelta()/(res.second.size()-1),0)};
+}
+
 // gaussian blur.
 // changes: amp(value change).
 void EvenSampledSignal::GaussianBlur(const double &sigma){
@@ -333,7 +347,7 @@ double EvenSampledSignal::SNR(const double &nt1, const double &nt2,
         throw std::runtime_error("SNR measuring error: window not suitable.");
 
     std::size_t n1=LocateTime(nt1),n2=LocateTime(nt2),s1=LocateTime(st1),s2=LocateTime(st2);
-    return ::SNR(GetAmp(),n1,n2-n2,s1,s2-s1);
+    return ::SNR(GetAmp(),n1,n2-n1,s1,s2-s1);
 }
 
 // Stretch the signal horizontally and vertically.
@@ -357,7 +371,7 @@ EvenSampledSignal EvenSampledSignal::Stretch(const double &h) const{
     double OldPeakTime=PeakTime(),OldBeginTime=BeginTime();
     ans.filename=GetFileName();
     ans.amp_multiplier=GetAmpMultiplier();
-    ans.delta=SignalDuration()/(ans.Size()-1);
+    ans.delta=GetDelta();
     ans.begin_time=OldPeakTime-(OldPeakTime-OldBeginTime)*h;
     ans.peak=(size_t)((OldPeakTime-ans.BeginTime())/ans.GetDelta());
     ans.FindPeakAround(PeakTime(),0.5);
@@ -380,21 +394,14 @@ EvenSampledSignal EvenSampledSignal::Tstar(const double &ts, const double &tol) 
     return ans;
 }
 
-// Notice: remove trend and do a taper (10% of length) both on source and signal before the decon.
+// Notice: no pre-processing (such as remove trend or taper).
 // Changes:
 // amp(signal length change),peak(=Size()/2),begin_time(relative to peak time)
 void EvenSampledSignal::WaterLevelDecon(const EvenSampledSignal &source, const double &wl) {
     if (fabs(GetDelta()-source.GetDelta())>1e-5)
         throw std::runtime_error("Signal inputs of decon have different sampling rate.");
 
-    HannTaper(0.1*SignalDuration());
-    RemoveTrend();
-
-    auto S=source;
-    S.HannTaper(0.1*S.SignalDuration());
-    S.RemoveTrend();
-
-    amp=::WaterLevelDecon(GetAmp(),GetPeak(),S.GetAmp(),S.GetPeak(),GetDelta(),wl);
+    amp=::WaterLevelDecon(GetAmp(),GetPeak(),source.GetAmp(),source.GetPeak(),GetDelta(),wl);
     peak=Size()/2;
     begin_time=-GetDelta()*(GetPeak()-1);
 }
@@ -605,6 +612,20 @@ StackSignals(const std::vector<EvenSampledSignal> &Signals, const std::vector<do
         STD[i]=res.second;
     }
     return {EvenSampledSignal(S,dt,bt),EvenSampledSignal(STD,dt,bt)};
+}
+
+EvenSampledSignal IFFT(const EvenSampledSignal &amp,const EvenSampledSignal &phase) {
+    auto res=::IFFT(amp.GetAmp(),phase.GetAmp(),amp.GetDelta());
+    return EvenSampledSignal(res,1.0/2/amp.GetTime().back());
+}
+
+// I guess "this" pointer will have dynamic binding?
+// Therefore you need to define another function for EvenSampledSignal to call
+// its version of "<<" operator.
+void EvenSampledSignal::OutputToFile(const std::string &s) const {
+    std::ofstream fpout(s);
+    fpout << (*this) << std::endl;
+    fpout.close();
 }
 
 #endif

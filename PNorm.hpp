@@ -24,9 +24,9 @@
 ***********************************************************/
 
 template<class T1, class T2>
-double PNorm(const std::vector<T1> &x, const T2 &p){
-
-    if (x.size()<=0) return 0;
+double PNorm(const T1 XBegin, const T1 XEnd, const T2 &p){
+    size_t n=std::distance(XBegin,XEnd);
+    if (n<=0) return 0;
     if (p==0) {
         std::cerr <<  "Error in " << __func__ << ": p is zero ..." << std::endl;
         return 0;
@@ -34,9 +34,14 @@ double PNorm(const std::vector<T1> &x, const T2 &p){
 
     double Sum=0;
 
-    for (const auto &item:x) Sum+=pow(fabs(item),p);
+    for (auto it=XBegin;it!=XEnd;++it) Sum+=pow(fabs(*it),p);
 
     return pow(Sum,1.0/p);
+}
+
+template<class T1, class T2>
+double PNorm(const std::vector<T1> &x, const T2 &p){
+    return PNorm(x.begin(),x.end(),p);
 }
 
 #endif

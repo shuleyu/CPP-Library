@@ -61,6 +61,7 @@ public:    // inherit mode is "private"   --> "private".
     virtual void FindPeakAround(const double &t,const double &w=5);                // t, w   in sec.
     virtual void HannTaper(const double &wl);                                      // wl is  in sec.
     virtual std::size_t LocateTime(const double &t) const;                         // t      in sec.
+    virtual void OutputToFile(const std::string &s) const;
     virtual void PrintInfo() const;
     virtual std::pair<double,double> RemoveTrend();
     virtual void ShiftTime(const double &t){                   // t in sec. t>0: shift to the right.
@@ -87,6 +88,7 @@ public:    // inherit mode is "private"   --> "private".
         if (t1<BeginTime() || t2>EndTime()) return false;
         else return true;
     }
+    void FlipPeakUp() {if (GetAmp()[GetPeak()]<0) *this*=-1;}
     double MaxAmp() const {
         return fabs(*std::max_element(GetAmp().begin(),GetAmp().end(),
             [](const double &a, const double &b){
@@ -311,6 +313,7 @@ std::istream &operator>>(std::istream &is, DigitalSignal &item){
     return is;
 }
 
+
 // Overload operator "<<" to print a signal in a two-columned format.
 // Customize this section code to define other printing format.
 std::ostream &operator<<(std::ostream &os, const DigitalSignal &item){
@@ -364,6 +367,12 @@ DigitalSignal operator/(const DigitalSignal &item,const double &a){
     DigitalSignal ans(item);
     ans/=a;
     return ans;
+}
+
+void DigitalSignal::OutputToFile(const std::string &s) const {
+    std::ofstream fpout(s);
+    fpout << (*this) << std::endl;
+    fpout.close();
 }
 
 #endif

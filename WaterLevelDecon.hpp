@@ -49,8 +49,6 @@ std::vector<double> WaterLevelDecon(const std::vector<T1> &x, const std::size_t 
                                     const std::vector<T2> &y, const std::size_t &py,
                                     const double &delta, const double &wl) {
 
-    if (x.empty()) return {};
-
     int n=x.size(),N=y.size();
 
     if (n<=1 || N<=1){

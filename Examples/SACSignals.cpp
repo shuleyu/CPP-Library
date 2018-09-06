@@ -13,10 +13,10 @@ int main(){
     SACSignals A("data/SACSignals_in");
 //     EvenSampledSignal B("data/ShiftPhase_in");
 
-    A.SortByGcarc();
-    auto res=A.FindByNetwork("TA");
-    for (auto item:res)
-        cout << A.GetMData()[item] << endl;
+//     A.SortByGcarc();
+//     auto res=A.FindByNetwork("TA");
+//     for (auto item:res)
+//         cout << A.GetMData()[item] << endl;
 
 //     A.clear();
 
@@ -72,6 +72,9 @@ int main(){
 
 //     auto S=A.MakeNeatStack();
 //     cout << S << endl;
+
+    cout << A.GetFileList()[0] << endl;
+    A.OutputToSAC(vector<size_t> {0});
 
     return 0;
 }

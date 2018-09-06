@@ -17,9 +17,15 @@ int main(){
     double Len=5,SpaceRatio=0.1,XSIZE=(NCol+2*SpaceRatio)*Len,YSIZE=(NRow+SpaceRatio)*Len+1,xp,yp;
 
     // config, define media ("gmt set PS_MEDIA 8.5ix8.5i").
-    GMT::set("MAP_FRAME_PEN 0.25p,black");
-    GMT::set("FONT_ANNOT 8p");
     GMT::set("PS_MEDIA "+to_string(XSIZE)+"ix"+to_string(YSIZE)+"i");
+
+    GMT::set("MAP_FRAME_PEN 0.25p,black");
+//     GMT::set("MAP_TICK_PEN_PRIMARY 0.4p,black");
+//     GMT::set("MAP_TICK_LENGTH_PRIMARY 0.007i");
+//     GMT::set("MAP_TICK_LENGTH_SECONDARY 0.004i");
+//     GMT::set("MAP_ANNOT_OFFSET_PRIMARY 0.02i");
+//     GMT::set("FONT_LABEL 2.5p");
+    GMT::set("FONT_ANNOT 8p");
 
     // begin plot.
     GMT::BeginPlot(outfile);

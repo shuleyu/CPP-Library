@@ -7,6 +7,7 @@
 #include<algorithm>
 #include<vector>
 #include<map>
+#include<unistd.h>
 
 extern "C" {
 // Current version: mariadb-connector-c-3.0.4
@@ -215,7 +216,7 @@ namespace MariaDB {
         if (Cnt>1)
             throw std::runtime_error("Table "+t1+" have multiple fields called "+fieldname+"...");
 
-        auto res2=Select("column_name,column_type from information_schema.columns where table_schema='"+t2db+"' and table_name='"+t2table+"'");
+        auto res2=Select("column_name,column_type,column_comment from information_schema.columns where table_schema='"+t2db+"' and table_name='"+t2table+"'");
         Cnt=0;
         for (const auto &item: res2.GetString("column_name"))
             if (item==fieldname) ++Cnt;
@@ -230,7 +231,9 @@ namespace MariaDB {
         sort(T1N.begin(),T1N.end());
         auto id=SortWithIndex(T2N.begin(),T2N.end());
         auto T2TP=res2.GetString("column_type");
+        auto T2CM=res2.GetString("column_comment");
         ReorderUseIndex(T2TP.begin(),T2TP.end(),id);
+        ReorderUseIndex(T2CM.begin(),T2CM.end(),id);
 
         std::vector<std::string> NeedUpdate(T1N.size());
         auto it=std::set_intersection(T1N.begin(),T1N.end(),T2N.begin(),T2N.end(),NeedUpdate.begin());
@@ -241,32 +244,46 @@ namespace MariaDB {
         auto it2=std::set_difference(T2N.begin(),T2N.end(),T1N.begin(),T1N.end(),NeedAdd.begin());
         NeedAdd.resize(it2-NeedAdd.begin());
 
-        // update same columns.
+        // create a tmp table.
+        std::string tmptable=t1db+".tmptable"+std::to_string(getpid());
+        Query("create table "+tmptable+" like "+t1);
 
-        for (const auto &item: NeedUpdate) {
-            Query("update "+t1+", "+t2+" set "+t1+"."+item+"="+t2+"."+item+" where "+t1+"."+fieldname+"="+t2+"."+fieldname);
-        }
-
-
-        // add new columns to t1.
-        for (const auto &item:NeedAdd)
+        // add new columns to tmp table.
+        for (const auto &item:NeedAdd) {
             for (size_t i=0;i<T2N.size();++i) {
                 if (T2N[i]==item){
-                    Query("alter table "+t1+" add column "+item+" "+T2TP[i]);
+                    Query("alter table "+tmptable+" add column "+item+" "+T2TP[i]+(T2CM[i].empty()?"":(" comment \""+T2CM[i]+"\"")));
                     break;
                 }
             }
+        }
 
-        // dump t2 data into t1.
-        cmd=" set ";
-        for (const auto &item:NeedAdd)
-            cmd+=(t1+"."+item+"="+t2+"."+item+",");
+        // dump t1, t2 data into tmp table.
+        cmd="";
+        std::string cmd2="";
+        for (const auto &item:res1.GetString("column_name")) {
+            cmd2+=(t1+"."+item+",");
+            if (std::find(NeedUpdate.begin(),NeedUpdate.end(),item)==NeedUpdate.end())
+                cmd+=(t1+"."+item+",");
+            else 
+                cmd+=(t2+"."+item+",");
+        }
+        for (const auto &item:NeedAdd) {
+            cmd+=(t2+"."+item+",");
+            cmd2+="NULL,";
+        }
         cmd.pop_back();
-        Query("update "+t1+" inner join "+t2+" on "+t1+"."+fieldname+"="+t2+"."+fieldname+cmd);
+        cmd2.pop_back();
+
+        Query("insert "+tmptable+" select "+cmd+" from "+t1+" join "+t2+" on "+t1+"."+fieldname+"="+t2+"."+fieldname);
+        Query("insert "+tmptable+" select "+cmd2+" from "+t1+" left join "+t2+" on "+t1+"."+fieldname+"="+t2+"."+fieldname+" where "+t2+"."+fieldname+" is null");
+
+        // rename tmp table to t1.
+        Query("drop table "+t1);
+        Query("rename table "+tmptable+" to "+t1);
 
         return;
     }
-
 }
 
 #endif

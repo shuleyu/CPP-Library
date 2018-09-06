@@ -76,5 +76,6 @@ int main(){
 //     A.ShiftTimeReferenceToPeak();
 //     cout << A.PeakTime() << endl;
 
+    A.OutputToFile("xx");
     return 0;
 }

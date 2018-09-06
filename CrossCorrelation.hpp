@@ -9,8 +9,8 @@
 #include<numeric>
 
 /**************************************************************************
- * This C function(s) calculate cross-correlation between x and y.
- * First we remove the mean of two signals.
+ * This C function(s) calculate Zero-normalized cross-correlationbetween x
+ * and y.
  *
  * numerator:
  * x*y [tau] = sum ( x[n+tau]y[n] ) over overlapping section.
@@ -70,7 +70,7 @@
 **************************************************************************/
 
 template<class T1, class T2>
-std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const T1 XBegin, const T1 XEnd, T2 YBegin, T2 YEnd, const bool &Dump=false, const int &Flip=0, const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}){
+std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const T1 XBegin, const T1 XEnd, const T2 YBegin, const T2 YEnd, const bool &Dump=false, const int &Flip=0, const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}){
 
     // Check signal length.
     int m=std::distance(XBegin,XEnd),n=std::distance(YBegin,YEnd);

@@ -10,21 +10,22 @@ extern "C"{
 }
 
 /*********************************************************************
- * This C++ template runs fft on input real signals (same length, same
- * sampling rate) and return the amplitudes and phases.
+ * This C++ template runs fft on input real signal and return the
+ * amplitudes and phases / or real part and imaginary part.
  *
  * Note: For amplitude, power normalization is not included. (not divided by NPTS)
  *       If signal length is odd number (npts is odd), a 0 is padded.
  *
  * input(s):
- * const vector<T>  &x      ----  input signal array. (NPTS is its length)
- * const double     &delta  ----  Sampling rate (for all signals).
+ * const vector<T>  &x                  ----  input signal array. (NPTS is its length)
+ * const double     &delta              ----  Sampling rate (for all signals).
+ * const bool       &ReturnAmpAndPhase  ----  (optional) default is true, return amp and phase.
  *
  * return(s):
- * pair<std::vector<double>,std::vector<double>> ans. {amp,phase}
+ * pair<std::vector<double>,std::vector<double>> ans. {amp,phase} or {real,imag}
  * amp:   amplitudes for each signal at each frequency (not normalize by NPTS).
  * phase: phases for each signal at each frequency.
- * (for frequencies, create grid between 0 and 1/2/delta with size of amp)
+ * (for frequencies, the user need to create grid between 0 and 1/2/delta using the size of amp)
  *
  * Shule Yu
  * Jan 20 2018
@@ -35,7 +36,8 @@ extern "C"{
 *********************************************************************/
 
 template<class T>
-std::pair<std::vector<double>,std::vector<double>> FFT(const std::vector<T> &x, const double &delta){
+std::pair<std::vector<double>,std::vector<double>>
+FFT(const std::vector<T> &x, const double &delta, const bool &ReturnAmpAndPhase=true){
 
     if (x.empty()) return {};
 
@@ -55,12 +57,20 @@ std::pair<std::vector<double>,std::vector<double>> FFT(const std::vector<T> &x, 
     // Run fft.
     fftw_execute(p);
 
-    std::vector<double> amp,phase;
-
-    // Get result for each frequency.
-    for (int i=0;i<N/2+1;++i){
-        amp.push_back(sqrt(pow(Out[i][0],2)+pow(Out[i][1],2)));
-        phase.push_back(atan2(Out[i][1],Out[i][0]));
+    std::vector<double> X,Y;
+    if (ReturnAmpAndPhase) {
+        // Get amp and phase for each frequency.
+        for (int i=0;i<N/2+1;++i){
+            X.push_back(sqrt(pow(Out[i][0],2)+pow(Out[i][1],2)));
+            Y.push_back(atan2(Out[i][1],Out[i][0]));
+        }
+    }
+    else {
+        // Get real and imag for each frequency.
+        for (int i=0;i<N/2+1;++i){
+            X.push_back(Out[i][0]);
+            Y.push_back(Out[i][1]);
+        }
     }
 
     // free resources.
@@ -68,7 +78,7 @@ std::pair<std::vector<double>,std::vector<double>> FFT(const std::vector<T> &x, 
     fftw_free(Out);
     delete [] In;
 
-    return {amp,phase};
+    return {X,Y};
 }
 
 #endif
