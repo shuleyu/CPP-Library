@@ -25,6 +25,8 @@ int main(){
 //     GMT::set("MAP_TICK_LENGTH_SECONDARY 0.004i");
 //     GMT::set("MAP_ANNOT_OFFSET_PRIMARY 0.02i");
 //     GMT::set("FONT_LABEL 2.5p");
+//     GMT::set("MAP_GRID_PEN_PRIMARY 0.25p,gray,.");
+//     GMT::set("MAP_TICK_PEN_PRIMARY 0.25p,black");
     GMT::set("FONT_ANNOT 8p");
 
     // begin plot.
