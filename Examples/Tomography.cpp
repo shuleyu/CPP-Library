@@ -17,7 +17,9 @@ int main(){
     double depth=2800,dlon=1,dlat=1,minval=numeric_limits<double>::max(),maxval=-minval;
     for (double lon=-179;lon<181; lon+=dlon)
         for (double lat=-90; lat<=90; lat+=dlat) {
-            grid.push_back({lon,lat,model.GetVelocity(depth,lon,lat)/Dvs(depth)*100-100});
+//             grid.push_back({lon,lat,model.GetValueAt(depth,lon,lat)});
+            grid.push_back({lon,lat,model.GetValueAt(depth,lon,lat)/Dvs(depth)*100-100});
+//             grid.push_back({lon,lat,model.GetValueAt(depth,lon,lat)/Dvp(depth)*100-100});
             minval=min(minval,grid.back().back());
             maxval=max(maxval,grid.back().back());
         }

@@ -7,6 +7,7 @@
 #include<algorithm>
 
 #include<Lon2180.hpp>
+#include<Lon2360.hpp>
 #include<LinearInterp.hpp>
 
 extern "C" {
@@ -29,6 +30,7 @@ namespace Tomography{
     class Model{
 
         std::vector<double> depth,lat,lon,v; // depth in km. lon between [-180,180].
+        bool Use360;
 
     public:
         Model()=default;
@@ -36,7 +38,8 @@ namespace Tomography{
               const std::vector<double> &la, const std::vector<double> &data) {
             if (data.size()!=d.size()*lo.size()*la.size())
                 throw std::runtime_error("In "+std::string(__func__)+", input sizes don't match.");
-            depth=d;lat=la;lon=lo;v=data;
+            depth=d;lat=la;lon=lo;v=data;Use360=(!lo.empty() && lo[0]>=0);
+
         }
         Model(const std::string &nc_filename){
 
@@ -105,6 +108,7 @@ namespace Tomography{
             data=new float [lon_len];
             retval=nc_get_var_float(ncid,lon_varid,data);
             if (retval!=0) throw std::runtime_error(nc_strerror(retval));
+            Use360=(data[0]>=0);
             for (size_t i=0;i<lon_len;++i) lon[i]=data[i];
             delete [] data;
 
@@ -129,18 +133,18 @@ namespace Tomography{
             if (retval!=0) throw std::runtime_error(nc_strerror(retval));
         }
 
-        double GetVelocity(const double &d, double lo, const double &la);
+        double GetValueAt(const double &d, double lo, const double &la);
 
     };
 
-    double Model::GetVelocity(const double &d, double lo, const double &la){
+    double Model::GetValueAt(const double &d, double lo, const double &la){
 
         if (v.empty())
             throw std::runtime_error("In "+std::string(__func__)+", model is empty.");
 
         if (d<depth[0] || d>depth.back() || la<lat[0] || la>lat.back()) return 0.0/0.0;
 
-        lo=Lon2180(lo);
+        lo=(Use360?Lon2360(lo):Lon2180(lo));
         size_t index_depth=std::distance(depth.begin(),
                                          std::lower_bound(depth.begin(),depth.end(),d));
         size_t index_lat=std::distance(lat.begin(),std::lower_bound(lat.begin(),lat.end(),la));
