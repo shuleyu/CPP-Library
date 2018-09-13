@@ -133,11 +133,15 @@ namespace Tomography{
             if (retval!=0) throw std::runtime_error(nc_strerror(retval));
         }
 
-        double GetValueAt(const double &d, double lo, const double &la);
+        double GetValueAt(const double &d, double lo, const double &la) const;
+        const std::vector<double> &GetDepths() const {return depth;}
+        const std::vector<double> &GetLatitudes() const {return lat;}
+        const std::vector<double> &GetLongitudes() const {return lon;}
+        const std::vector<double> &GetValues() const {return v;}
 
     };
 
-    double Model::GetValueAt(const double &d, double lo, const double &la){
+    double Model::GetValueAt(const double &d, double lo, const double &la) const {
 
         if (v.empty())
             throw std::runtime_error("In "+std::string(__func__)+", model is empty.");
