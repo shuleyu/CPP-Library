@@ -8,11 +8,11 @@ using namespace std;
 
 int main(){
 
-    string nc_filename="/home/shule/Research/t062.WholeMantleTomographyModels.180912/S40RTS_dvs.nc";
+    string nc_filename="/home/shule/Research/t062.WholeMantleTomographyModels.180912/SP12RTS_dvs.nc";
     auto model=Tomography::Model(nc_filename);
 
     // a depth section.
-    double depth=100;
+    double depth=2850;
     vector<vector<double>> grid;
     double dlon=1,dlat=1,minval=numeric_limits<double>::max(),maxval=-minval;
     for (double lon=-180;lon<180; lon+=dlon)
@@ -31,7 +31,7 @@ int main(){
     GMT::BeginPlot(outfile);
 
     GMT::MoveReferencePoint(outfile,"-Xf1i -Yf4i");
-    GMT::makecpt("-Cpolar -T-7/7 -I -D > tmp.cpt");
+    GMT::makecpt("-Cpolar -T-1.5/1.5 -I -D > tmp.cpt");
 //     GMT::makecpt("-Cpolar -T-"+to_string(maxval)+"/"+to_string(maxval)+" -I -D > tmp.cpt");
     GMT::grdimage(outfile,grid,dlon,dlat,"-JR140/8i -Rg -Ctmp.cpt -O -K");
     GMT::psscale(outfile,"-Ctmp.cpt -D4i/-0.5i/2i/0.1ih -B1:dV(%): -O -K");
