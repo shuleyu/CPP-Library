@@ -8,8 +8,7 @@ using namespace std;
 
 int main(){
 
-    string nc_filename="/home/shule/Research/t062.WholeMantleTomographyModels.180912/SP12RTS_dvs.nc";
-    auto tomo=Tomography::Model(nc_filename);
+    auto tomo=Tomography::Model("/home/shule/Research/t062.WholeMantleTomographyModels.180912/SP12RTS_dvs.nc");
 
     // Example 1. One value at request location (depth, lon, lat).
 //     cout << tomo.GetValueAt(2343.5,253.03,-43.4) << endl;
