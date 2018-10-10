@@ -189,6 +189,56 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         return;
     }
 
+    // psxy with multiple coloms.
+    template <class T>
+    void psxy(const std::string &outfile, const std::vector<std::vector<T>> &Data,
+              const std::string &cmd){
+
+
+        // Check array size.
+        if (Data.empty()) return;
+        size_t n=Data.size(),m=Data[0].size(); // m rows, n columns
+        for (size_t i=0;i<n;++i)
+            if (Data[i].size()!=m)
+                throw std::runtime_error("In "+std::string(__func__)
+                                         +", input data column size don't match.");
+
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
+
+        // Set vector dimensions..
+        uint64_t par[2];
+        par[0]=n;  // x,y,z,... value (n columns).
+        par[1]=m;  // (m of rows).
+
+        // Create plot data.
+        GMT_VECTOR *vec=(GMT_VECTOR *)GMT_Create_Data(API,GMT_IS_VECTOR,GMT_IS_POINT,
+                                                      0,par,NULL,NULL,0,-1,NULL);
+
+        // Inject data.
+        for (size_t i=0;i<n;++i) {
+            double *X = (double *)malloc(m*sizeof(double));
+            for (size_t j=0;j<m;++j)
+                X[j]=Data[i][j];
+            GMT_Put_Vector(API,vec,i,GMT_DOUBLE,X);
+        }
+
+        // Get the virtual file.
+        char filename[20];
+        GMT_Open_VirtualFile(API,GMT_IS_VECTOR,GMT_IS_POINT,GMT_IN,vec,filename);
+
+        // Plot.
+        char *command=strdup(("-<"+std::string(filename)+" "+cmd+" ->>"+outfile).c_str());
+        GMT_Call_Module(API,"psxy",GMT_MODULE_CMD,command);
+
+        // free spaces (X's seem to be deleted by GMT_Destroy_Session? very confusing).
+        delete [] command;
+        GMT_Close_VirtualFile(API,filename);
+        GMT_Destroy_Data(API,vec);
+        GMT_Destroy_Session(API);
+
+        return;
+    }
+
     // gmt pshistogram.
     template <class T>
     void pshistogram(const std::string &outfile, const T XBegin, const T XEnd,
@@ -367,7 +417,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
     }
 
     void SealPlot(const std::string &outfile){
-        GMT::psbasemap(outfile,"-J -R -Bwens -O");
+        GMT::psbasemap(outfile,"-JX1i/1i -R-1/1/-1/1 -Bwens -O");
         remove("gmt.conf");
         remove("gmt.history");
         return;

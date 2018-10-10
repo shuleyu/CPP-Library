@@ -111,9 +111,12 @@ public:
     EvenSampledSignal Stretch(const double &h=1) const;
     EvenSampledSignal Tstar(const double &ts, const double &tol=1e-3) const;
     void WaterLevelDecon(const EvenSampledSignal &source, const double &wl=0.1);
-    // notice operator+= is overloaded, need "using" to make the DigitalSignal version visible.
+    // notice operator+=, operator-= is overloaded,
+    // need "using" to make the DigitalSignal version visible.
     using DigitalSignal::operator+=;
+    using DigitalSignal::operator-=;
     EvenSampledSignal &operator+=(const EvenSampledSignal &item);
+    EvenSampledSignal &operator-=(const EvenSampledSignal &item);
 
     // declaration of non-member class/function/operators as friend.
     // Input operator >> need access to the private/protected parts of this class,
@@ -438,6 +441,40 @@ EvenSampledSignal &EvenSampledSignal::operator+=(const EvenSampledSignal &item){
     return *this;
 }
 
+// Subtract two same sampling rate, same begin time signal.
+EvenSampledSignal &EvenSampledSignal::operator-=(const EvenSampledSignal &item){
+
+    if (Size()==0) {
+        *this=item;
+        delta=item.GetDelta();
+        filename="--SubtractResult";
+        amp_multiplier=1;
+        peak=-1;
+        *this*=-1;
+        return *this;
+    }
+
+    if (fabs(GetDelta()-item.GetDelta())>1e-5)
+        throw std::runtime_error("Tried to subtract two signals with different "
+                                 "sampling rate: "+std::to_string(GetDelta())+" v.s. "
+                                +std::to_string(item.GetDelta()));
+
+    if (fabs(BeginTime()-item.BeginTime())>1e-5)
+        throw std::runtime_error("Tried to subtract two signals with different "
+                                 "begin time: "+std::to_string(BeginTime())+" v.s. "
+                                +std::to_string(item.BeginTime()));
+
+    if (Size()!=item.Size())
+        throw std::runtime_error("Tried to subtract two signals with different "
+                                 "number of points: "+std::to_string(Size())+" v.s. "
+                                +std::to_string(item.Size()));
+
+    for (size_t i=0;i<Size();++i) amp[i]-=item.GetAmp()[i];
+
+    return *this;
+}
+
+
 /* -----------------------------------------------------------------------------
 End of member function/operator definitions. -----------------------------------
 ----------------------------------------------------------------------------- */
@@ -527,6 +564,11 @@ EvenSampledSignal operator+(const EvenSampledSignal &s1,const EvenSampledSignal 
 EvenSampledSignal operator-(const EvenSampledSignal &item,const double &a){
     return item+(-a);
 }
+EvenSampledSignal operator-(const EvenSampledSignal &s1,const EvenSampledSignal &s2){
+    EvenSampledSignal ans(s1);
+    ans-=s2;
+    return ans;
+}
 
 // Overload operator "*,/" to Scale.
 EvenSampledSignal operator*(const EvenSampledSignal &item,const double &a){
@@ -581,7 +623,8 @@ CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2
 }
 
 std::pair<EvenSampledSignal,EvenSampledSignal>
-StackSignals(const std::vector<EvenSampledSignal> &Signals, const std::vector<double> &Weights) {
+StackSignals(const std::vector<EvenSampledSignal> &Signals,
+             const std::vector<double> &Weights=std::vector<double> ()) {
 
     // Check size.
     std::size_t m=Signals.size();

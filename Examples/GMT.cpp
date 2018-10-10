@@ -9,17 +9,17 @@ using namespace std;
 
 int main(){
 
-    bool PlotGrid=false;
+    bool PlotGrid=true;
 
     string outfile="GMT.ps";
-    size_t NRow=2,NCol=3;
+    size_t NRow=3,NCol=3;
     size_t row,col;
     double Len=5,SpaceRatio=0.1,XSIZE=(NCol+2*SpaceRatio)*Len,YSIZE=(NRow+SpaceRatio)*Len+1,xp,yp;
 
     // config, define media ("gmt set PS_MEDIA 8.5ix8.5i").
     GMT::set("PS_MEDIA "+to_string(XSIZE)+"ix"+to_string(YSIZE)+"i");
 
-    GMT::set("MAP_FRAME_PEN 0.25p,black");
+    GMT::set("MAP_FRAME_PEN 0.4p,black");
 //     GMT::set("MAP_TICK_PEN_PRIMARY 0.4p,black");
 //     GMT::set("MAP_TICK_LENGTH_PRIMARY 0.007i");
 //     GMT::set("MAP_TICK_LENGTH_SECONDARY 0.004i");
@@ -131,6 +131,17 @@ int main(){
 
     GMT::pshistogram(outfile,gaussian_val,"-JX"+to_string(Len*(1-SpaceRatio))+"i -R-10/10/0/40 "
                                           "-Z1 -W1 -L0.5p -G50/50/250 -Bxa5f1 -Bya10f2+u\"%\" -BWS -O -K");
+
+    // psxy with different colors.
+    row=3,col=1;
+    xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
+    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
+    if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
+
+    vector<vector<double>> data={{1.0,1.0,2.0},{3,-6,9.0},{0.3,0.6,0.9}};
+    GMT::makecpt("-Cgray -T0/1 -I > tmp.cpt");
+    GMT::psxy(outfile,data,"-J -R -Sc0.1i -Ctmp.cpt -W1p,black -N -O -K");
+    remove("tmp.cpt");
 
 
     // Seal the page.

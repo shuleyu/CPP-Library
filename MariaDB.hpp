@@ -40,6 +40,7 @@ namespace MariaDB {
             std::cerr << mysql_error(ID) << std::endl;
             throw std::runtime_error("Query failed...");
         }
+        mysql_close(ID);
         return;
     }
 
@@ -106,6 +107,8 @@ namespace MariaDB {
             }
 
             auto res=mysql_store_result(ID);
+            mysql_close(ID);
+
             m=mysql_num_rows(res),n=mysql_num_fields(res);
             auto fields=mysql_fetch_fields(res);
             std::vector<size_t> FieldIndexToIndex(n);
@@ -150,7 +153,6 @@ namespace MariaDB {
             }
             mysql_free_result(res);
         }
-
     };
 
 
@@ -204,6 +206,7 @@ namespace MariaDB {
             Query("insert "+t1+" select * from "+t2);
             return;
         }
+        mysql_close(ID);
 
 
         // 3. check fieldname exists and not repeated.

@@ -105,6 +105,10 @@ public:
     void SortByGcarc();
     void SortByNetwork();
     void SortByStnm();
+    std::vector<double> SNR(const double &nt1, const double &nt2,
+                            const double &st1, const double &st2,
+                            const std::vector<double> &na=std::vector<double> (),
+                            const std::vector<double> &sa=std::vector<double> ()) const;
     void WaterLevelDecon(const EvenSampledSignal &s, const double &wl=0.1);
     void WaterLevelDecon(SACSignals &D, const double &wl=0.1);
 
@@ -296,6 +300,7 @@ std::vector<std::string> SACSignals::GetNetworkNames() const{
         ans.push_back(item.network);
     return ans;
 }
+
 
 std::vector<std::string> SACSignals::GetStationNames() const{
     std::vector<std::string> ans;
@@ -510,6 +515,17 @@ void SACSignals::SortByStnm() {
     return;
 }
 
+std::vector<double> SACSignals::SNR(const double &nt1, const double &nt2,
+                                    const double &st1, const double &st2, 
+                                    const std::vector<double> &na,
+                                    const std::vector<double> &sa) const{
+    std::vector<double> ans;
+    for (std::size_t i=0;i<Size();++i)
+        ans.push_back(data[i].SNR(na.empty()?0:na[i]+nt1,na.empty()?0:na[i]+nt2,
+                                  sa.empty()?0:sa[i]+st1,sa.empty()?0:sa[i]+st2));
+    return ans;
+}
+
 void SACSignals::WaterLevelDecon(const EvenSampledSignal &s, const double &wl){
     for (std::size_t i=0;i<Size();++i)
         data[i].WaterLevelDecon(s,wl);
@@ -547,13 +563,17 @@ void SACSignals::FindPeakAround(const std::vector<T> &center_time, const double 
         data[i].FindPeakAround(center_time[i],wl);
 }
 
+// Set the given time to zero.
 template<class T>
 void SACSignals::ShiftTime(const std::vector<T> &t){
     //check size;
     if (Size()!=t.size())
         throw std::runtime_error("Time shift array size doesn't match.");
-    for (std::size_t i=0;i<Size();++i)
-        data[i].ShiftTime(t[i]);
+    for (std::size_t i=0;i<Size();++i) {
+        data[i].ShiftTime(-t[i]);
+        for (auto it=mdata[i].tt.begin();it!=mdata[i].tt.end();++it)
+            it->second-=t[i];
+    }
 }
 
 template<class T>
