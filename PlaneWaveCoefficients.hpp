@@ -67,7 +67,7 @@
  *     const T7     &inc       ----  Incident angle(in deg) in media 1.
  *     const string &cmp       ----  Component. "PSV" or "SH".
  *     const string &mode      ----  Structure mode. "SS", "SL", "SA", "LS", "LL", "LA".
- *     const int    &FreqSign  ----  (Optional.) Sign of frequencies. Default value is -1.
+ *     const int    &FreqSign  ----  (Optional, physics convention) Default value is -1, sign of frequencies.
  *
  * G. return(s):
  *
@@ -88,7 +88,9 @@
 template <class T1, class T2, class T3, class T4, class T5, class T6, class T7>
 std::vector<std::complex<double>> PlaneWaveCoefficients(const T1 &rho1,const T2 &vp1 ,const T3 &vs1,
                                                         const T4 &rho2,const T5 &vp2 ,const T6 &vs2,
-                                                        const T7 &inc,const std::string &cmp, const std::string &mode, const int &FreqSign=-1){
+                                                        const T7 &inc,const std::string &cmp,
+                                                        const std::string &mode,
+                                                        const int &FreqSign=-1){
 
     double sini=sin(inc/180*M_PI),cosi=sqrt(1-sini*sini);
 

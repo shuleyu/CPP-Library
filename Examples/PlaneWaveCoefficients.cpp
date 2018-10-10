@@ -49,10 +49,10 @@ int main(){
 
     inc=asin(4.3519*180/M_PI/3510*Dvs(2861))*180/M_PI;
     auto ans=PlaneWaveCoefficients(rho1,vp1,vs1,rho2,vp2,vs2,inc,"PSV","SS");
-    printf("R_SS: %.9lf + %.9lfi    Amp: %.9lf, Angle: %.9lf\n",ans[3].real(),ans[3].imag(),abs(ans[3]),180/M_PI*arg(ans[3]));
-    printf("R_SP: %.9lf + %.9lfi    Amp: %.9lf, Angle: %.9lf\n",ans[2].real(),ans[2].imag(),abs(ans[2]),180/M_PI*arg(ans[2]));
+    printf("R_SS: %.9lf + %.9lfi    Amp: %.9lf, Phase: %.9lf\n",ans[3].real(),ans[3].imag(),abs(ans[3]),180/M_PI*arg(ans[3]));
+    printf("R_SP: %.9lf + %.9lfi    Amp: %.9lf, Phase: %.9lf\n",ans[2].real(),ans[2].imag(),abs(ans[2]),180/M_PI*arg(ans[2]));
 //     auto c=ans[6]*ans[0]*ans[4];
-//     printf("T_SP*R_PP*T_PP: %.9lf + %.9lfi    Amp: %.9lf, Angle: %.9lf\n",c.real(),c.imag(),abs(c),180/M_PI*arg(c));
+//     printf("T_SP*R_PP*T_PP: %.9lf + %.9lfi    Amp: %.9lf, Phase: %.9lf\n",c.real(),c.imag(),abs(c),180/M_PI*arg(c));
 
     /* Experiment 2.
 
