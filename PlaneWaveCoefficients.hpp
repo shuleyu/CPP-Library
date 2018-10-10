@@ -24,7 +24,10 @@
  *    we use i for incident angle; j (with subscripts "_r", "_pp", "_ps", "_sp" and "_ss" for specific
  *    cases) to denote reflection or refraction(transmission) angles.
  *
- * E. Interfaces code names (SS,SA,SL,LS) (Media1 -> Media2):
+ * E. Interfaces code names (SS,SA,SL,LS) (Media1 -> Media2).
+ *
+ *    Return (ans) order, for example, if cmp=="PSV" and mode=="SS":
+ *    ans[0]=R_PP, ans[1]=R_PS, ...
  *
  *     Solid -> Solid  (SS):
  *
@@ -64,6 +67,8 @@
  *     const T4     &rho2      ----  Density of media 2.
  *     const T5     &vp2       ----  P-wave velocity of media 2.
  *     const T6     &vs2       ----  S-wave velocity of media 2.
+ *     (If media2 is liquid or air, rho2, vp2, vs2 sometimes are ignored)
+ *
  *     const T7     &inc       ----  Incident angle(in deg) in media 1.
  *     const string &cmp       ----  Component. "PSV" or "SH".
  *     const string &mode      ----  Structure mode. "SS", "SL", "SA", "LS", "LL", "LA".
@@ -71,7 +76,7 @@
  *
  * G. return(s):
  *
- *     vector<complex<double>> ans  ----  displacement coefficients. (see section D)
+ *     vector<complex<double>> ans  ----  displacement coefficients. (see section E)
  *
  * Shule Yu
  * Apr 03 2018
