@@ -21,12 +21,12 @@
  * Note: output size is p.size()-1.
 ******************************************************/
 
-template<class T>
+template<typename T>
 inline std::vector<T> Diff(const std::vector<T> &p){
 
     std::vector<T> ans;
 
-    for (size_t i=0;i+1<p.size();++i)
+    for (std::size_t i=0;i+1<p.size();++i)
         ans.push_back(p[i+1]-p[i]);
 
     return ans;

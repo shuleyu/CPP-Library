@@ -34,7 +34,7 @@
  * Key words: convolution.
 ***********************************************************/
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::vector<double> Convolve(const std::vector<T1> &x, const std::vector<T2> &y,
                              const bool &Cut=false, const bool &Normalize=false){
 

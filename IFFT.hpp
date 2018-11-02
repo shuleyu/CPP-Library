@@ -32,7 +32,7 @@ extern "C"{
  * Key words : fast fourier transform, ifft.
 *********************************************************************/
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::vector<double>
 IFFT(const std::vector<T1> &amp, const std::vector<T2> &phase, const double &df){
 

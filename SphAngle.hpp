@@ -11,10 +11,10 @@
  * Phi       : angle with x, counter-clockwise.
  *
  * input(s):
- * const T1 &theta1  ----  theta1.
- * const T2 &phi1    ----  phi1.
- * const T1 &theta2  ----  theta2.
- * const T2 &phi2    ----  phi2.
+ * const double &theta1  ----  theta1.
+ * const double &phi1    ----  phi1.
+ * const double &theta2  ----  theta2.
+ * const double &phi2    ----  phi2.
  *
  * return(s):
  * double ans  ----  the angle between input directions.
@@ -25,8 +25,7 @@
  * Key words: geography, coordinates, angle.
 ***********************************************************/
 
-template <class T1,class T2,class T3,class T4>
-double SphAngle(const T1 &theta1, const T2 &phi1, const T3 &theta2, const T4 &phi2){
+double SphAngle(const double &theta1, const double &phi1, const double &theta2, const double &phi2){
 
     double a1,b1,c1,a2,b2,c2;
 

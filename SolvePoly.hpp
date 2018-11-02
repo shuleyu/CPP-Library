@@ -10,9 +10,9 @@
  * iterative method.
  *
  * input(s):
- * const vector<T1> &C        ----  Coefficients of the polynomial. C[0] is the highest order.
- * const T2         &Initial  ----  Initial guess value. Also the returning solution.
- * const T3         &tol      ----  Tolerance of error. (ending criteria)
+ * const vector<T> &C        ----  Coefficients of the polynomial. C[0] is the highest order.
+ * const double    &Initial  ----  Initial guess value. Also the returning solution.
+ * const double    &tol      ----  Tolerance of error. (ending criteria)
  *
  * return(s):
  * pair<bool,double> ans  ----  {flag,x0}.
@@ -27,8 +27,8 @@
  *       carefully examed!
 ****************************************************************/
 
-template<class T1, class  T2, class T3>
-std::pair<bool,double> SolvePoly(const std::vector<T1> &C,const T2 &Initial, const T3 &tol){
+template<typename T>
+std::pair<bool,double> SolvePoly(const std::vector<T> &C,const double &Initial, const double &tol){
 
     int n=C.size();
     double abstol=fabs(tol),ans=Initial;

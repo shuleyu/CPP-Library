@@ -26,7 +26,7 @@
  * Key words: LU decomposition. least square.
 ***************************************************************/
 
-template<class T1, class T2, class T3=double>
+template<typename T1, typename T2, typename T3=double>
 std::vector<double> PolyFit(const std::vector<T1> &x, const std::vector<T2> &y,
                             const int &Degree, const std::vector<T3> &weight={}){
 

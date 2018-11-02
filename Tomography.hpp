@@ -54,7 +54,7 @@ public:
 
         // get depth length and data.
         int depth_id;
-        size_t depth_len;
+        std::size_t depth_len;
         retval=nc_inq_dimid(ncid,"depth",&depth_id);
         if (retval!=0) throw std::runtime_error(nc_strerror(retval));
         retval=nc_inq_dimlen(ncid,depth_id,&depth_len);
@@ -68,13 +68,13 @@ public:
         data=new float [depth_len];
         retval=nc_get_var_float(ncid,depth_varid,data);
         if (retval!=0) throw std::runtime_error(nc_strerror(retval));
-        for (size_t i=0;i<depth_len;++i) depth[i]=data[i];
+        for (std::size_t i=0;i<depth_len;++i) depth[i]=data[i];
         delete [] data;
 
 
         // get latitude length and data.
         int lat_id;
-        size_t lat_len;
+        std::size_t lat_len;
         retval=nc_inq_dimid(ncid,"latitude",&lat_id);
         if (retval!=0) throw std::runtime_error(nc_strerror(retval));
         retval=nc_inq_dimlen(ncid,lat_id,&lat_len);
@@ -88,12 +88,12 @@ public:
         data=new float [lat_len];
         retval=nc_get_var_float(ncid,lat_varid,data);
         if (retval!=0) throw std::runtime_error(nc_strerror(retval));
-        for (size_t i=0;i<lat_len;++i) lat[i]=data[i];
+        for (std::size_t i=0;i<lat_len;++i) lat[i]=data[i];
         delete [] data;
 
         // get longitude length and data.
         int lon_id;
-        size_t lon_len;
+        std::size_t lon_len;
         retval=nc_inq_dimid(ncid,"longitude",&lon_id);
         if (retval!=0) throw std::runtime_error(nc_strerror(retval));
         retval=nc_inq_dimlen(ncid,lon_id,&lon_len);
@@ -107,13 +107,13 @@ public:
         data=new float [lon_len];
         retval=nc_get_var_float(ncid,lon_varid,data);
         if (retval!=0) throw std::runtime_error(nc_strerror(retval));
-        for (size_t i=0;i<lon_len;++i) lon[i]=data[i];
+        for (std::size_t i=0;i<lon_len;++i) lon[i]=data[i];
         delete [] data;
 
         range_is_360=(!lon.empty() && lon[0]>=0);
 
         // get velocity length and data.
-        size_t v_len=depth_len*lat_len*lon_len;
+        std::size_t v_len=depth_len*lat_len*lon_len;
         v.resize(v_len);
 
         int v_varid;
@@ -123,7 +123,7 @@ public:
         data=new float [v_len];
         retval=nc_get_var_float(ncid,v_varid,data);
         if (retval!=0) throw std::runtime_error(nc_strerror(retval));
-        for (size_t i=0;i<v_len;++i) v[i]=data[i];
+        for (std::size_t i=0;i<v_len;++i) v[i]=data[i];
         delete [] data;
 
 
@@ -151,17 +151,17 @@ double Tomography::GetValueAt(const double &d, double lo, const double &la) cons
 
     if (d<depth[0] || d>depth.back() || la<lat[0] || la>lat.back()) return 0.0/0.0;
 
-    size_t lat_len=GetLatitudes().size(),lon_len=GetLongitudes().size();
+    std::size_t lat_len=GetLatitudes().size(),lon_len=GetLongitudes().size();
 
     lo=(range_is_360?Lon2360(lo):Lon2180(lo));
-    size_t index_depth=std::distance(depth.begin(),
+    std::size_t index_depth=std::distance(depth.begin(),
                                      std::lower_bound(depth.begin(),depth.end(),d));
-    size_t index_lat=std::distance(lat.begin(),std::lower_bound(lat.begin(),lat.end(),la));
-    size_t index_lon=std::distance(lon.begin(),std::lower_bound(lon.begin(),lon.end(),lo));
+    std::size_t index_lat=std::distance(lat.begin(),std::lower_bound(lat.begin(),lat.end(),la));
+    std::size_t index_lon=std::distance(lon.begin(),std::lower_bound(lon.begin(),lon.end(),lo));
 
-    size_t index_prev_depth=(index_depth==0?0:index_depth-1);
-    size_t index_prev_lat=(index_lat==0?0:index_lat-1);
-    size_t index_prev_lon=(index_lon==0?lon_len-1:index_lon-1);
+    std::size_t index_prev_depth=(index_depth==0?0:index_depth-1);
+    std::size_t index_prev_lat=(index_lat==0?0:index_lat-1);
+    std::size_t index_prev_lon=(index_lon==0?lon_len-1:index_lon-1);
     if (index_lon==lon_len) index_lon=0;
 
 
@@ -186,12 +186,12 @@ double Tomography::GetValueAt(const double &d, double lo, const double &la) cons
 
 void Tomography::ReverseLatitude(){
     auto old_data=GetValues();
-    size_t lat_len=GetLatitudes().size(),lon_len=GetLongitudes().size();
+    std::size_t lat_len=GetLatitudes().size(),lon_len=GetLongitudes().size();
 
-    for (size_t i=0;i<GetValues().size();++i){
-        size_t depth_index=i/(lat_len*lon_len);
-        size_t lat_index=lat_len-1-(i%(lat_len*lon_len))/lon_len;
-        size_t lon_index=(i%(lat_len*lon_len))%lon_len;
+    for (std::size_t i=0;i<GetValues().size();++i){
+        std::size_t depth_index=i/(lat_len*lon_len);
+        std::size_t lat_index=lat_len-1-(i%(lat_len*lon_len))/lon_len;
+        std::size_t lon_index=(i%(lat_len*lon_len))%lon_len;
         v[i]=old_data[depth_index*(lat_len*lon_len)+lat_index*lon_len+lon_index];
     }
     std::reverse(lat.begin(),lat.end());

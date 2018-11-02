@@ -17,28 +17,28 @@
  * There's some small template you can use for just one value.
  *
  * input(s):
- * const T   &Depth  ----  Given depth (in km)
- * const int &iso    ----  0/1: (set to 1 if want isotropy result)
- * const int &ocean  ----  0/1: (set to 1 if want ocean properties near surface)
- * double    &rho    ----  density (g/cm^3)
- * double    &vpv    ----  Vertical polarity P-wave speed (P-wave speed when traveling along the radius direction)
- * double    &vph    ----  Horizontal polarity P-wave speed (P-wave speed when traveling perpendicular to the radius direction)
- * double    &vsv    ----  Vertical polarity S-wave speed (SV-wave speed when traveling perpendicular to the radius direction)
- * double    &vsh    ----  Horizontal polarity S-wave speed (SH-wave speed when traveling perpendicular to the radius direction)
- *                                                          (also, SV- and SH-wave speed when traveling along the radius direction)
- * double    &qu     ----  Isotropic dissipation of shear energy.
- * double    &qk     ----  Isotropic dissipation of compressional energy.
- * double    &yita   ----  Anisotropic parameter.
+ * const double &Depth  ----  Given depth (in km)
+ * const int    &iso    ----  0/1: (set to 1 if want isotropy result)
+ * const int    &ocean  ----  0/1: (set to 1 if want ocean properties near surface)
+ * double       &rho    ----  density (g/cm^3)
+ * double       &vpv    ----  Vertical polarity P-wave speed (P-wave speed when traveling along the radius direction)
+ * double       &vph    ----  Horizontal polarity P-wave speed (P-wave speed when traveling perpendicular to the radius direction)
+ * double       &vsv    ----  Vertical polarity S-wave speed (SV-wave speed when traveling perpendicular to the radius direction)
+ * double       &vsh    ----  Horizontal polarity S-wave speed (SH-wave speed when traveling perpendicular to the radius direction)
+ *                                                             (also, SV- and SH-wave speed when traveling along the radius direction)
+ * double       &qu     ----  Isotropic dissipation of shear energy.
+ * double       &qk     ----  Isotropic dissipation of compressional energy.
+ * double       &yita   ----  Anisotropic parameter.
  *
  * output(s):
- * double    &rho  (in-place)
- * double    &vpv  (in-place)
- * double    &vph  (in-place)
- * double    &vsv  (in-place)
- * double    &vsh  (in-place)
- * double    &qu   (in-place)
- * double    &qk   (in-place)
- * double    &yita (in-place)
+ * double &rho  (in-place)
+ * double &vpv  (in-place)
+ * double &vph  (in-place)
+ * double &vsv  (in-place)
+ * double &vsh  (in-place)
+ * double &qu   (in-place)
+ * double &qk   (in-place)
+ * double &yita (in-place)
  *
  * Shule Yu
  * Dec 29 2017
@@ -49,8 +49,7 @@
  *     Physics_of_the_earth_and_planetary_interiors_1981_Dziewonski
 ***********************************************************/
 
-template<class T>
-void PREM(const T &Depth,const int &iso, const int &ocean,
+void PREM(const double &Depth,const int &iso, const int &ocean,
           double &rho, double &vpv, double &vph, double &vsv,
           double &vsh, double &qu, double &qk, double &yita){
 
@@ -248,46 +247,39 @@ void PREM(const T &Depth,const int &iso, const int &ocean,
     return ;
 }
 
-template<class T>
-double Dvs(const T &Depth){
+double Dvs(const double &Depth){
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return vsv;
 }
 
-template<class T>
-double Dvp(const T &Depth){
+double Dvp(const double &Depth){
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return vpv;
 }
 
-template<class T>
-double Drho(const T &Depth){
+double Drho(const double &Depth){
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return rho;
 }
 
-template<class T>
-double Rvs(const T &Radius){
+double Rvs(const double &Radius){
     return Dvs(6371.0-Radius);
 }
 
-template<class T>
-double Rvp(const T &Radius){
+double Rvp(const double &Radius){
     return Dvp(6371.0-Radius);
 }
 
-template<class T>
-double Rrho(const T &Radius){
+double Rrho(const double &Radius){
     return Drho(6371.0-Radius);
 }
 
 // PREMSmoothed
 
-template<class T>
-void PREMSmoothed(const T &Depth, double &rho,double &vpv,double &vph,
+void PREMSmoothed(const double &Depth, double &rho,double &vpv,double &vph,
                   double &vsv,double &vsh,double &qu,double &qk,double &yita,
                   const int &RemoveCrust,const int &Remove220,
                   const int &Remove400, const int &Remove670){
@@ -333,52 +325,45 @@ void PREMSmoothed(const T &Depth, double &rho,double &vpv,double &vph,
     return;
 }
 
-template<class T>
-double DvsS(const T &Depth,const int &RemoveCrust, const int &Remove220,
+double DvsS(const double &Depth,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670);
     return vsv;
 }
 
-template<class T>
-double DvpS(const T &Depth,const int &RemoveCrust, const int &Remove220,
+double DvpS(const double &Depth,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670);
     return vpv;
 }
 
-template<class T>
-double DrhoS(const T &Depth,const int &RemoveCrust, const int &Remove220,
+double DrhoS(const double &Depth,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670);
     return rho;
 }
 
-template<class T>
-double RvsS(const T &Radius,const int &RemoveCrust, const int &Remove220,
+double RvsS(const double &Radius,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
     return DvsS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
 }
 
-template<class T>
-double RvpS(const T &Radius,const int &RemoveCrust, const int &Remove220,
+double RvpS(const double &Radius,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
     return DvpS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
 }
 
-template<class T>
-double RrhoS(const T &Radius,const int &RemoveCrust, const int &Remove220,
+double RrhoS(const double &Radius,const int &RemoveCrust, const int &Remove220,
             const int &Remove400, const int &Remove670){
     return DrhoS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
 }
 
 // PREMX
 
-template<class T>
-void PREMX(const T &Depth, double &rho,double &vpv,double &vph,
+void PREMX(const double &Depth, double &rho,double &vpv,double &vph,
            double &vsv,double &vsh,double &qu,double &qk,double &yita){
 
     PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
@@ -411,39 +396,33 @@ void PREMX(const T &Depth, double &rho,double &vpv,double &vph,
     return;
 }
 
-template<class T>
-double DvsX(const T &Depth){
+double DvsX(const double &Depth){
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return vsv;
 }
 
-template<class T>
-double DvpX(const T &Depth){
+double DvpX(const double &Depth){
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return vpv;
 }
 
-template<class T>
-double DrhoX(const T &Depth){
+double DrhoX(const double &Depth){
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
     PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita);
     return rho;
 }
 
-template<class T>
-double RvsX(const T &Radius){
+double RvsX(const double &Radius){
     return DvsX(6371.0-Radius);
 }
 
-template<class T>
-double RvpX(const T &Radius){
+double RvpX(const double &Radius){
     return DvpX(6371.0-Radius);
 }
 
-template<class T>
-double RrhoX(const T &Radius){
+double RrhoX(const double &Radius){
     return DrhoX(6371.0-Radius);
 }
 

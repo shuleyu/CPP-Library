@@ -22,7 +22,7 @@
  * Key words: arguments, parameters.
 *************************************************************/
 
-template<class T1,class T2,class T3>
+template<typename T1,typename T2,typename T3>
 class ReadParameters{
 
     std::vector<int> PI;

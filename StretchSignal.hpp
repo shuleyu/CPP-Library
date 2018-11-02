@@ -12,8 +12,8 @@
  * according to the given parameter.
  *
  * inpput(s):
- * const vector<T1> &p  ----  Input signal. signal length is npts.
- * const T2         &r  ----  Horizontal stretch factor. output signal length is r*npts.
+ * const vector<T> &p  ----  Input signal. signal length is npts.
+ * const double     &r  ----  Horizontal stretch factor. output signal length is r*npts.
  *
  *                             e.g.
  *                             r = 1 means the original trace.
@@ -29,8 +29,8 @@
  * Notice: Will not check aliasing effects. Use with caution.
 ***********************************************************/
 
-template<class T1, class T2>
-std::vector<double> StretchSignal(const std::vector<T1> &p, const T2 &r){
+template<typename T>
+std::vector<double> StretchSignal(const std::vector<T> &p, const double &r){
 
     std::vector<double> ans;
 

@@ -34,7 +34,7 @@
  * Key words: reorder, x2y
 *************************************************/
 
-template <class T>
+template <typename T>
 std::vector<std::vector<T>> ReorderX2Y(const std::vector<std::vector<T>> &p){
 
     std::vector<std::vector<T>> ans;

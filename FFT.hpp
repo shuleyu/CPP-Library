@@ -35,7 +35,7 @@ extern "C"{
  * Key words : fast fourier transform, fft.
 *********************************************************************/
 
-template<class T>
+template<typename T>
 std::pair<std::vector<double>,std::vector<double>>
 FFT(const std::vector<T> &x, const double &delta, const bool &ReturnAmpAndPhase=true){
 

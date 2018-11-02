@@ -22,8 +22,8 @@
  * const bool &ActualSortIt    ----  default: true. If false, input is not sorted.
  *
  * return(s):
- * vector<size_t> ans  ----  Original index for each element in the sorted array.
- *                           Original[ans[i]]=Sorted[i].
+ * vector<std::size_t> ans  ----  Original index for each element in the sorted array.
+ *                                Original[ans[i]]=Sorted[i].
  *
  * Shule Yu
  * Dec 28 2017
@@ -31,16 +31,16 @@
  * Key words: sort, index
 *************************************************/
 
-template <class T1, class T2=std::less<class std::iterator_traits<T1>::value_type> >
-std::vector<size_t> SortWithIndex(T1 Begin, T1 End, T2 cmp=T2(), const bool &ActualSortIt=true) {
+template <typename T1, typename T2=std::less<typename std::iterator_traits<T1>::value_type> >
+std::vector<std::size_t> SortWithIndex(T1 Begin, T1 End, T2 cmp=T2(), const bool &ActualSortIt=true) {
 
     // Initialize original index locations.
-    std::vector<size_t> idx;
-    size_t index=0;
+    std::vector<std::size_t> idx;
+    std::size_t index=0;
     for (auto it=Begin;it!=End;++it) idx.push_back(index++);
 
     // Sort indexes based on comparing values.
-    auto cmp2=[&cmp,&Begin](const size_t &i1, const size_t &i2) {
+    auto cmp2=[&cmp,&Begin](const std::size_t &i1, const std::size_t &i2) {
         return cmp(*(Begin+i1),*(Begin+i2));
     };
     sort(idx.begin(),idx.end(),cmp2);
@@ -51,9 +51,9 @@ std::vector<size_t> SortWithIndex(T1 Begin, T1 End, T2 cmp=T2(), const bool &Act
     return idx;
 }
 
-template <class T>
-std::vector<size_t> SortWithIndex(T Begin, T End, const bool &ActualSortIt) {
-    return SortWithIndex(Begin, End, std::less<class std::iterator_traits<T>::value_type> (), ActualSortIt);
+template <typename T>
+std::vector<std::size_t> SortWithIndex(T Begin, T End, const bool &ActualSortIt) {
+    return SortWithIndex(Begin, End, std::less<typename std::iterator_traits<T>::value_type> (), ActualSortIt);
 }
 
 #endif

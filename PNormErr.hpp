@@ -20,7 +20,7 @@
  * input(s):
  * const <T1> &x  ----  Input array.
  * const <T2> &y  ----  Model array.
- * const T3   &p  ----  p.
+ * const int  &p  ----  p.
  *
  * return(s):
  * double ans  ----  p-norm difference between x and y
@@ -31,10 +31,10 @@
  * Key words: p norm error.
 *************************************************/
 
-template<class T1, class T2, class T3>
-double PNormErr(const T1 XBegin, const T1 XEnd, const T2 YBegin, const T2 YEnd, const T3 &p){
+template<typename T1, typename T2>
+double PNormErr(const T1 XBegin, const T1 XEnd, const T2 YBegin, const T2 YEnd, const int &p){
 
-    size_t m=std::distance(XBegin,XEnd),n=std::distance(YBegin,YEnd);
+    std::size_t m=std::distance(XBegin,XEnd),n=std::distance(YBegin,YEnd);
 
     if (m!=n) {
         std::cerr <<  "Error in " << __func__ << ": input arrays x and y size don't match ..." << std::endl;
@@ -47,13 +47,13 @@ double PNormErr(const T1 XBegin, const T1 XEnd, const T2 YBegin, const T2 YEnd, 
     }
 
     double Sum=0;
-    for (size_t i=0;i<m;++i) Sum+=pow(fabs((*std::next(XBegin,i))-(*std::next(YBegin,i))),p);
+    for (std::size_t i=0;i<m;++i) Sum+=pow(fabs((*std::next(XBegin,i))-(*std::next(YBegin,i))),p);
 
     return pow(Sum,1.0/p)/PNorm(YBegin,YEnd,p);
 }
 
-template<class T1, class T2, class T3>
-double PNormErr(const std::vector<T1> &x, const std::vector<T2> &y, const T3 &p){
+template<typename T1, typename T2>
+double PNormErr(const std::vector<T1> &x, const std::vector<T2> &y, const int &p){
     return PNormErr(x.begin(),x.end(),y.begin(),y.end(),p);
 }
 

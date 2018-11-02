@@ -13,9 +13,9 @@
  *          if c1==c2, becomes a step function with f(x)=(x>=c1?1:0)
  *
  * input(s):
- * const T1 &x   ----  x.
- * const T1 &c1  ----  left boundary.
- * const T1 &c2  ----  right boundary.
+ * const double &x   ----  x.
+ * const double &c1  ----  left boundary.
+ * const double &c2  ----  right boundary.
  *
  * return(s):
  * double ans  ----  The ramp function value at x.
@@ -26,8 +26,7 @@
  * Key words: ramp function.
 ***********************************************************/
 
-template<class T1, class T2, class T3>
-double RampFunction(const T1 &x, const T2 &c1, const T3 &c2){
+double RampFunction(const double &x, const double &c1, const double &c2){
 
     if (c1>c2){ // check range.
         std::cerr <<  "Error in " << __func__ << ":  range c1 > c2 ..." << std::endl;

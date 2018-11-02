@@ -6,7 +6,7 @@
  * [0,360] deg.
  *
  * input(s):
- * const T &lon  ----  Longitude.
+ * const double &lon  ----  Longitude.
  *
  * return(s):
  * double ans  ----  Longitude in 0 ~ 360.
@@ -17,8 +17,7 @@
  * Key words: coordinates, longitude.
 ***********************************************************/
 
-template<class T>
-inline double Lon2360(const T &lon){
+inline double Lon2360(const double &lon){
 
     double ans=lon;
     if (ans>=0) ans-=360.0*((int)(ans/360));

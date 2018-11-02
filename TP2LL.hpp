@@ -22,8 +22,8 @@
  * Latitude : -90 <= lat <= 90.
  *
  * input(s):
- * const T1 &theta  ----  theta.
- * const T2 &phi    ----  phi.
+ * const double &theta  ----  theta.
+ * const double &phi    ----  phi.
  *
  * return(s):
  * pair<double,double> ans  ----  {lon,lat}
@@ -34,8 +34,7 @@
  * Key words: geography, coordinates, convertion.
 *****************************************************/
 
-template<class T1, class T2>
-std::pair<double,double> TP2LL(const T1 &theta,const T2 &phi){
+std::pair<double,double> TP2LL(const double &theta,const double &phi){
 
     // Deal with latitude, theta.
     // Check theta.

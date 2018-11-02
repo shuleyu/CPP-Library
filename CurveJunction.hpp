@@ -22,14 +22,14 @@
  * The search also terminates when new npts>1e6.
  *
  * input(s):
- * vector<T1> &x1   ----  Signal 1, X.
- * vector<T2> &y1   ----  Signal 1, Y.
- * vector<T3> &x2   ----  Signal 2, X.
- * vector<T4> &y2   ----  Signal 2, Y.
- * const T5   &tol  ----  tolerance of Y (0<tol<1).
- *                        e.g. tol=0.01 and y1,y2 intercept at Y=-99,
- *                        then when |NewY1-NewY2| < |99|*tol = 0.99
- *                        the search terminates.
+ * vector<T1>   &x1   ----  Signal 1, X.
+ * vector<T2>   &y1   ----  Signal 1, Y.
+ * vector<T3>   &x2   ----  Signal 2, X.
+ * vector<T4>   &y2   ----  Signal 2, Y.
+ * const double &tol  ----  (optional) tolerance of Y (0<tol<1, default is 0.01).
+ *                          e.g. tol=0.01 and y1,y2 intercept at Y=-99,
+ *                          then when |NewY1-NewY2| < |99|*tol = 0.99
+ *                          the search terminates.
  *
  * return(s):
  * pair<double,double> ans  ----  the junction point ({x,y}).
@@ -40,9 +40,10 @@
  * Key words: curve junction.
 ***********************************************************/
 
-template<class T1,class T2,class T3,class T4,class T5>
+template<typename T1,typename T2,typename T3,typename T4>
 std::pair<double,double> CurveJunction(const std::vector<T1> &x1, const std::vector<T2> &y1,
-                                       const std::vector<T3> &x2, const std::vector<T4> &y2, const T5 &tol){
+                                       const std::vector<T3> &x2, const std::vector<T4> &y2,
+                                       const double &tol=0.01){
 
     // check sorted.
     auto cmp1=[](const T1 &x, const T1 &y){

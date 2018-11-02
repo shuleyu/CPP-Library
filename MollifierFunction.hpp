@@ -16,8 +16,8 @@
  * g(x)=exp(-1/(1-|x|^2))
  *
  * input(s):
- * const T1 &x      ----  x.
- * const T2 &delta  ----  delta.
+ * const double &x      ----  x.
+ * const double &delta  ----  delta.
  *
  * return(s):
  * double ans  ----  Value of the mollifier function.
@@ -30,8 +30,7 @@
  * Reference: https://en.wikipedia.org/wiki/Mollifier#Concrete_example
 ***********************************************************/
 
-template<class T1, class T2>
-inline double MollifierFunction(const T1 &x, const T2 &delta){
+inline double MollifierFunction(const double &x, const double &delta){
     if (fabs(x)>=delta) return 0;
     else return exp(-1.0/(1-(1.0*x/delta)*(1.0*x/delta)))/delta;
 }

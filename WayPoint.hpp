@@ -19,10 +19,10 @@
  *     dist:  0   ~ 180.
  *
  * input(s):
- * const T1 &lon   ----  longitude of start point
- * const T2 &lat   ----  latitude  of start point
- * const T3 &azi   ----  direction, azimuth centerd on the start piont.
- * const T4 &dist  ----  GCP length from start point to waypoint. ( deg. )
+ * const double &lon   ----  longitude of start point
+ * const double &lat   ----  latitude  of start point
+ * const double &azi   ----  direction, azimuth centerd on the start piont.
+ * const double &dist  ----  GCP length from start point to waypoint. ( deg. )
  *
  * return(s):
  * pair<double,double> ans  ----  {plon,plat}, location of the waypoint.
@@ -36,8 +36,8 @@
  *     http://en.wikipedia.org/wiki/Great-circle_navigation
 **************************************************************/
 
-template<class T1,class T2, class T3, class T4>
-std::pair<double,double> WayPoint(const T1 &lon, const T2 &lat, const T3 &azi, const T4 &dist){
+std::pair<double,double> WayPoint(const double &lon, const double &lat,
+                                  const double &azi, const double &dist){
 
     // Step 1. Calculate azimuth from event to station. (azimuth is centered on event)
     double a,az;

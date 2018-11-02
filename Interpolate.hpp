@@ -24,7 +24,7 @@
  * Key words: interpolate, wiggins
 ****************************************************************/
 
-template<class T1, class T2, class T3>
+template<typename T1, typename T2, typename T3>
 std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> &y, const std::vector<T3> &xx){
 
     // Check array size.
@@ -47,7 +47,7 @@ std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> 
 
     // check is x even sampling.
     double dx;
-    for (size_t i=1;i<x.size();++i){
+    for (std::size_t i=1;i<x.size();++i){
         double d=x[i]-x[i-1];
         if (i==1) dx=d;
         else if (fabs(d)<=fabs(dx)*0.99 || fabs(dx)*1.01<=fabs(d)) {
@@ -58,7 +58,7 @@ std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> 
 
     // Calculate epsi.
     double epsi=0;
-    for (size_t i=1;i<x.size();++i)
+    for (std::size_t i=1;i<x.size();++i)
         epsi+=fabs((y[i]-y[i-1])/(x[i]-x[i-1]));
     epsi*=(1e-4/(n-1));
 
@@ -69,7 +69,7 @@ std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> 
     std::vector<double> yy(xx.size(),0);
     double Min=std::min(x[0],x.back()),Max=std::max(x[0],x.back());
 
-    for (size_t i=0;i<xx.size();++i) {
+    for (std::size_t i=0;i<xx.size();++i) {
 
         if (xx[i]<Min || xx[i]>Max) {
             yy[i]=0.0/0.0;

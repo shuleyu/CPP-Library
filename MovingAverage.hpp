@@ -26,7 +26,7 @@
  * Key words: moving average. 
 *************************************************/
 
-template <class T>
+template <typename T>
 std::vector<double> MovingAverage(const T PBegin, const T PEnd, const int &npts){
 
     std::vector<double> ans;
@@ -41,15 +41,15 @@ std::vector<double> MovingAverage(const T PBegin, const T PEnd, const int &npts)
     std::vector<double> S(ans.size());
     std::partial_sum(PBegin,PEnd,S.begin());
 
-    for (size_t i=0;i<ans.size();++i){
-        size_t B=std::max(0,(int)i-npts/2),E=std::min((int)ans.size()-1,(int)i+(npts-1)/2);
+    for (std::size_t i=0;i<ans.size();++i){
+        std::size_t B=std::max(0,(int)i-npts/2),E=std::min((int)ans.size()-1,(int)i+(npts-1)/2);
         ans[i]=(S[E]-S[B]+*next(PBegin,B))/(E-B+1);
     }
 
     return ans;
 }
 
-template <class T>
+template <typename T>
 std::vector<double> MovingAverage(const std::vector<T> &p, const int &npts){
     return MovingAverage(p.begin(),p.end(),npts);
 }

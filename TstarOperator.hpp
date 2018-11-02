@@ -18,9 +18,9 @@ extern "C"{
  * T-Star operator.
  *
  * input(s):
- * const T1  &ts     ----  tstar parameter.
- * const T2  &delta  ----  Sampling rate (in sec.).
- * const T3  &tol    ----  (optional) tolerance. After the
+ * const double &ts     ----  tstar parameter.
+ * const double &delta  ----  Sampling rate (in sec.).
+ * const double &tol    ----  (optional) tolerance. After the
  *                         t* operator is normalized to peak=1,
  *                         upper bound of the amplitude of the first point.
  *                         default value is 1e-3.
@@ -28,7 +28,7 @@ extern "C"{
  *                         The smaller the tolerance, the longer the t* operator.
  *
  * return(s):
- * pair<vector<double>,size_t> ans;
+ * pair<vector<double>,std::size_t> ans;
  *        ans.first  ----  t* impulse response (t* operator).
  *        ans.second ----  t* peak position.
  *
@@ -41,8 +41,8 @@ extern "C"{
  *       returns a delta function at t= ~1 sec.
 *********************************************************/
 
-template<class T1, class T2, class T3=double>
-std::pair<std::vector<double>,std::size_t> TstarOperator(const T1 &ts, const T2 &delta, const T3 &tol=1e-3){
+std::pair<std::vector<double>,std::size_t>
+TstarOperator(const double &ts, const double &delta, const double &tol=1e-3){
 
     if (ts<=0){
         std::vector<double> ans(100,0);

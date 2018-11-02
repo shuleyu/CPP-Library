@@ -8,10 +8,10 @@
  * geographic locations.
  *
  * input(s):
- * const T1 lo1  ----  longitude of point 1
- * const T2 la1  ----  latitude  of point 1
- * const T3 lo2  ----  longitude of point 2
- * const T4 la2  ----  latitude  of point 2
+ * const double &lo1  ----  longitude of point 1
+ * const double &la1  ----  latitude  of point 1
+ * const double &lo2  ----  longitude of point 2
+ * const double &la2  ----  latitude  of point 2
  *
  * return(s):
  * double ans  ----  distance.
@@ -25,8 +25,7 @@
  *     http://en.wikipedia.org/wiki/Great-circle_distance
 *****************************************************/
 
-template<class T1,class T2, class T3, class T4>
-double GcpDistance(const T1 &lo1,const T2 &la1,const T3 &lo2,const T4 &la2){
+double GcpDistance(const double &lo1,const double &la1,const double &lo2,const double &la2){
 
     double a,b,C,x,y;
 

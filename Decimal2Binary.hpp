@@ -8,7 +8,7 @@
  * represent by string. (32-bit)
  *
  * input(s):
- * const T &n  ----  Input integer. T should be integer.
+ * const int &n  ----  Input integer.
  *
  * return(s):
  * string ans  ----  Converted binary 0/1 string.
@@ -19,8 +19,7 @@
  * Key words: decimal to binary.
 *************************************************/
 
-template<class T>
-std::string Decimal2Binary(const T &n){
+std::string Decimal2Binary(const int &n){
 
     // set the sign bit.
     std::string Ans(32,'0');

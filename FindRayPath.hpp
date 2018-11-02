@@ -13,10 +13,10 @@
  * input(s):
  * const vector<T1> &r  ----  layer radius array. r[0] is the shallowest layer.
  * const vector<T2> &v  ----  velocity at each radius.
- * const T3 &r1         ----  Radius of the first point.
- * const T4 &r2         ----  Radius of the second point.
- * const T5 &t          ----  Distance (in deg) between the two points.
- * const T6 &tol        ----  (Optional) Takeoff angle error tolerance (in deg, default is 0.001).
+ * const double &r1     ----  Radius of the first point.
+ * const double &r2     ----  Radius of the second point.
+ * const double &t      ----  Distance (in deg) between the two points.
+ * const double &tol    ----  (Optional) Takeoff angle error tolerance (in deg, default is 0.001).
  *
  * return(s):
  * double rayp  ----  Ray parameter connection the two points. (in sec/deg, p=Rsin/c/180*PI)
@@ -27,9 +27,9 @@
  * Key words: rayp, ray parameter, ray tracing.
 ***********************************************************/
 
-template<class T1,class T2,class T3,class T4,class T5,class T6=double>
+template<typename T1,typename T2>
 double FindRayPath(const std::vector<T1> &r, const std::vector<T2> &v,
-                   const T3 &r1, const T4 &r2, const T5 &t, const T6 &tol=1e-3){
+                   const double &r1, const double &r2, const double &t, const double &tol=1e-3){
 
     // check inputs.
     auto cmp=[](const T1 &a, const T1 &b){
@@ -48,7 +48,7 @@ double FindRayPath(const std::vector<T1> &r, const std::vector<T2> &v,
 
     // locate our start Layer and end Layer.
     // because the grid could be unevenly spaced, this is a bit lengthy;
-    size_t P1;
+    std::size_t P1;
     double CurMin=std::numeric_limits<double>::max();
     for (P1=0;P1<r.size();++P1) {
         double NewMin=fabs(R1-r[P1]);
@@ -59,7 +59,7 @@ double FindRayPath(const std::vector<T1> &r, const std::vector<T2> &v,
     // Start Calculating.
     double RE=6371.0,theta=fabs(t),ll=0,rr=90,mid,rayp=0;
     std::vector<double> degree;
-    size_t radius;
+    std::size_t radius;
 
     while (rr-ll>tol){
         mid=ll+(rr-ll)/2;

@@ -31,14 +31,14 @@
  * Key words: bootstrap, mean, standard deviation.
 **********************************************************/
 
-template <class T1, class T2=double>
+template <typename T1, typename T2=double>
 std::pair<std::vector<double>,std::vector<double>> Bootstrap(const std::vector<std::vector<T1>> &p,const int &BootN,
                                                              std::vector<std::vector<double>> &RerollStack, const std::vector<T2> &w=std::vector<T2>()){
 
     // Check p size.
     if (p.empty()) return {};
 
-    size_t N=p[0].size();
+    std::size_t N=p[0].size();
     for (auto &item:p)
         if (item.size()!=N) {
             std::cerr <<  "Error in " << __func__ << ": input 2D array size error ..." << std::endl;

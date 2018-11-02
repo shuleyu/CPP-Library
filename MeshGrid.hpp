@@ -50,7 +50,7 @@
  * Key words: mixing, mesh grid.
 ***********************************************************/
 
-template<class T>
+template<typename T>
 std::vector<std::vector<double>> MeshGrid(const std::vector<std::vector<T>> &p, const int &mode){
 
     // check mode.

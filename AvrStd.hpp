@@ -33,7 +33,7 @@
  *     http://www.analyticalgroup.com/download/WEIGHTED_MEAN.pdf
 ***********************************************************/
 
-template <class T1,class T2=double>
+template <typename T1,typename T2=double>
 std::pair<double,double> AvrStd(const std::vector<T1> &V,const std::vector<T2> &W=std::vector<T2>()){
 
     // Check weight size.
@@ -45,12 +45,12 @@ std::pair<double,double> AvrStd(const std::vector<T1> &V,const std::vector<T2> &
     // Calculate (weighted) mean.
     double SumW=(W.empty()?V.size():0),avr=0;
     if (W.empty()) {
-        for (size_t i=0;i<V.size();++i){
+        for (std::size_t i=0;i<V.size();++i){
             avr+=V[i];
         }
     }
     else {
-        for (size_t i=0;i<V.size();++i){
+        for (std::size_t i=0;i<V.size();++i){
             SumW+=(W[i]>0?W[i]:-W[i]);
             avr+=W[i]*V[i];
         }
@@ -74,12 +74,12 @@ std::pair<double,double> AvrStd(const std::vector<T1> &V,const std::vector<T2> &
     double Sum=0;
 
     if (W.empty()){
-        for (size_t i=0;i<V.size();++i){
+        for (std::size_t i=0;i<V.size();++i){
             Sum+=(V[i]-avr)*(V[i]-avr);
         }
     }
     else {
-        for (size_t i=0;i<V.size();++i){
+        for (std::size_t i=0;i<V.size();++i){
             double diff=(W[i]>0?1:-1)*V[i]-avr;
             Sum+=(W[i]>0?W[i]:-W[i])*diff*diff;
         }

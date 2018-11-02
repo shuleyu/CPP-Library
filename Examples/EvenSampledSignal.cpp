@@ -84,6 +84,7 @@ int main(){
 
 //     cout << A.SNR(-2.5,-1,-0.5,0.5) << endl;
 //     cout << A.SNR(10,15,24,26) << endl;
+    A.Diff();
     A.OutputToFile("xx");
     return 0;
 }

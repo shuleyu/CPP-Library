@@ -10,9 +10,9 @@
  * vector.
  *
  * intput(s):
- * vector<T1>::iterator Begin  ----  Reorder begin position.
- * vector<T1>::iterator End    ----  Reorder end position.
- * const vector<size_t> &bi    ----  The indices of original position.
+ * vector<T1>::iterator      Begin  ----  Reorder begin position.
+ * vector<T1>::iterator      End    ----  Reorder end position.
+ * const vector<std::size_t> &bi    ----  The indices of original position.
  *
  * Shule Yu
  * Aug 07 2018
@@ -20,8 +20,8 @@
  * Key words: reorder, index
 *************************************************/
 
-template <class T>
-void ReorderUseIndex(T Begin, T End, const std::vector<size_t> &bi) {
+template <typename T>
+void ReorderUseIndex(T Begin, T End, const std::vector<std::size_t> &bi) {
 
     // Check array size.
     int n=std::distance(Begin,End);
@@ -32,10 +32,10 @@ void ReorderUseIndex(T Begin, T End, const std::vector<size_t> &bi) {
 
     std::vector<bool> flag(bi.size(),false);
 
-    for (size_t i=0;i<bi.size();++i){
+    for (std::size_t i=0;i<bi.size();++i){
         if (flag[i]) continue;
         auto cache=*(Begin+i);
-        size_t j=i;
+        std::size_t j=i;
         while (!flag[bi[j]]){
             flag[j]=true;
             *(Begin+j)=*(Begin+bi[j]);

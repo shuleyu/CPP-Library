@@ -32,7 +32,7 @@
  * Key words: gaussian, blur, low pass filter.
 ***********************************************************/
 
-template<class T>
+template<typename T>
 void GaussianBlur(std::vector<T> &p, const double &dt, const double &sigma){
 
     // Check p size.

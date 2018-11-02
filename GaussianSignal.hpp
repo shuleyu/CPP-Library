@@ -18,9 +18,9 @@
  * f(x)=1/sqrt(2pi)/sigma * e^{-x^2/2/sigma^2}
  *
  * input(s):
- * const int  &N      ----  Requested signal length.
- * const T1   &dt     ----  Requested sampilng rate.
- * const T2   &sigma  ----  standard deviation, sigma.
+ * const int    &N      ----  Requested signal length.
+ * const double &dt     ----  Requested sampilng rate.
+ * const double &sigma  ----  standard deviation, sigma.
  *
  * return(s):
  * vector<double> ans  ----  output Gaussian signal.
@@ -31,8 +31,7 @@
  * Key words: gaussian function.
 ***********************************************************/
 
-template<class T1, class T2>
-std::vector<double> GaussianSignal(const int &N, const T1 &dt, const T2 &sigma){
+std::vector<double> GaussianSignal(const int &N, const double &dt, const double &sigma){
 
     // Check parameters.
 

@@ -20,7 +20,7 @@
  * Key words: union, intervals
 ***********************************************************/
 
-template<class T>
+template<typename T>
 std::vector<std::pair<T,T>> UnionIntervals(const std::vector<std::pair<T,T>> &x){
 
     std::vector<std::pair<T,T>> ans;

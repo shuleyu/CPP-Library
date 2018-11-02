@@ -23,13 +23,13 @@
  *
  * input(s):
  * const vector<T1> &s1        ----  Signal 1.
- * const T2         &p1        ----  Signal 1 peak position.
- * const vector<T3> &s2        ----  Signal 2.
- * const T4         &p2        ----  Signal 2 peak position.
- * const T5         &delta     ----  Sampling rate of signal 1 & 2.
- * const T6         &t1        ----  Time window begin (relative to their peaks, in sec.).
- * const T7         &t2        ----  Time window end (relative to their peaks, in sec.).
- * const T8         &AmpLevel  ----  CC compare part. (compare the part above this amplitude value)
+ * const double     &p1        ----  Signal 1 peak position.
+ * const vector<T2> &s2        ----  Signal 2.
+ * const double     &p2        ----  Signal 2 peak position.
+ * const double     &delta     ----  Sampling rate of signal 1 & 2.
+ * const double     &t1        ----  Time window begin (relative to their peaks, in sec.).
+ * const double     &t2        ----  Time window end (relative to their peaks, in sec.).
+ * const double     &AmpLevel  ----  CC compare part. (compare the part above this amplitude value)
  *
  * return(s):
  * SignalCompareResults ans  ----  Defined as above.
@@ -64,9 +64,11 @@ std::ostream &operator<<(std::ostream &os, const SignalCompareResults &item){
     return os;
 }
 
-template<class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
-SignalCompareResults CompareSignal(const std::vector<T1> &s1, const T2 &p1, const std::vector<T3> &s2, const T4 &p2,
-                                  const T5 &delta, const T6 &t1, const T7 &t2,const T8 &AmpLevel) {
+template<typename T1,typename T2>
+SignalCompareResults CompareSignal(const std::vector<T1> &s1, const std::size_t &p1,
+                                   const std::vector<T2> &s2, const std::size_t &p2,
+                                   const double &delta, const double &t1, const double &t2,
+                                   const double &AmpLevel) {
 
     // check input.
     int P1=p1,P2=p2,n1=s1.size(),n2=s2.size();

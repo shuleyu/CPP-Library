@@ -11,9 +11,9 @@
  * South phi=pi; Up theta=0, Down theta=pi. in deg.)
  *
  * input(s):
- * const T1 &strike  ----  Strike (in deg.)
- * const T2 &dip     ----  Dip (in deg.)
- * const T3 &rake    ----  Rake (in deg.)
+ * const double &strike  ----  Strike (in deg.)
+ * const double &dip     ----  Dip (in deg.)
+ * const double &rake    ----  Rake (in deg.)
  *
  * return(s):
  * pair<double,double> ans  ----  {azimuth,theta}
@@ -26,8 +26,7 @@
  * Key words: CMT, coordinates, convertion.
 ************************************************************/
 
-template<class T1, class T2, class T3>
-std::pair<double,double> CMT2Sph(const T1 &strike, const T2 &dip, const T3 &rake){
+std::pair<double,double> CMT2Sph(const double &strike, const double &dip, const double &rake){
 
     // Convert cmt to rad.
     double s=strike*M_PI/180;

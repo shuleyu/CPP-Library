@@ -4,9 +4,8 @@
 CodeName=$1
 CodeName=${CodeName%.*}
 
-make Code=${CodeName}
+make Code=${CodeName} SAC=${SACHOME}
 [ $? -ne 0 ] && exit 1
-
 
 time ./${CodeName}.out
 

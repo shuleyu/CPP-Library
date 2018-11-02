@@ -27,7 +27,7 @@
  * Key words : fast fourier transform, envelope, hilbert.
 **************************************************************/
 
-template<class T>
+template<typename T>
 std::vector<double> Envelope(const std::vector<T> &x){
 
     if (x.empty()) return {};
@@ -36,7 +36,7 @@ std::vector<double> Envelope(const std::vector<T> &x){
     auto ans=ShiftPhase(x,-90);
 
     // Find Envelope.
-    for (size_t i=0;i<x.size();++i)
+    for (std::size_t i=0;i<x.size();++i)
         ans[i]=sqrt(ans[i]*ans[i]+x[i]*x[i]);
 
     return ans;

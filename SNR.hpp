@@ -46,7 +46,7 @@
  * Key words: signal to noise ratio, SNR
 ***********************************************************/
 
-template<class T>
+template<typename T>
 double SNR(const std::vector<T> &p,const int &nloc,const int &nlen,const int &sloc,const int &slen,const int &method=0){
 
     int npts=p.size();

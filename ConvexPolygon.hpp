@@ -23,7 +23,7 @@
  * Key words: convex polygon, incomplete.
 ****************************************************************/
 
-template<class T1,class T2>
+template<typename T1,typename T2>
 bool ConvexPolygon(const std::vector<std::pair<T1,T2>> &p){
 
     if (p.size()<=2) {
@@ -31,9 +31,9 @@ bool ConvexPolygon(const std::vector<std::pair<T1,T2>> &p){
         return false;
     }
 
-    for (size_t i=0;i<p.size();++i){
+    for (std::size_t i=0;i<p.size();++i){
         std::vector<std::pair<double,double>> polygon;
-        for (size_t j=0;j<p.size();++j)
+        for (std::size_t j=0;j<p.size();++j)
             if (j!=i) polygon.push_back(p[j]);
         if (PointInPolygon(polygon,p[i],-1)) return false;
     }

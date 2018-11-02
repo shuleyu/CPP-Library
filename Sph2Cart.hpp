@@ -25,8 +25,7 @@
  * Reference: https://en.wikipedia.org/wiki/Spherical_coordinate_system
 ***********************************************************/
 
-template<class T1,class T2,class T3>
-inline std::vector<double> Sph2Cart(const T1 &r, const T2 &theta, const T3 &phi){
+inline std::vector<double> Sph2Cart(const double &r, const double &theta, const double &phi){
     return {r*cos(phi)*sin(theta),r*sin(phi)*sin(theta),r*cos(theta)};
 }
 

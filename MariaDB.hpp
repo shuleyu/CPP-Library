@@ -47,7 +47,7 @@ namespace MariaDB {
 
     class Select {
 
-        size_t ICnt=0,SCnt=0,DCnt=0,m,n;
+        std::size_t ICnt=0,SCnt=0,DCnt=0,m,n;
         std::map<std::string,int> NameToIndex,TypeCheck;
         std::vector<std::vector<int>> PI;
         std::vector<std::vector<std::string>> PS;
@@ -88,8 +88,8 @@ namespace MariaDB {
             TypeCheck.clear();
         }
 
-        const size_t &NCol() const {return n;}
-        const size_t &NRow() const {return m;}
+        const std::size_t &NCol() const {return n;}
+        const std::size_t &NRow() const {return m;}
 
         Select()=default;
         Select(const std::string &cmd) {
@@ -111,13 +111,13 @@ namespace MariaDB {
 
             m=mysql_num_rows(res),n=mysql_num_fields(res);
             auto fields=mysql_fetch_fields(res);
-            std::vector<size_t> FieldIndexToIndex(n);
+            std::vector<std::size_t> FieldIndexToIndex(n);
 
-            for (size_t i=0;i<m;++i) {
+            for (std::size_t i=0;i<m;++i) {
 
                 auto row=mysql_fetch_row(res);
 
-                for (size_t j=0;j<n;++j) {
+                for (std::size_t j=0;j<n;++j) {
 
                     if (fields[j].type==FIELD_TYPE_FLOAT || fields[j].type==FIELD_TYPE_DOUBLE) {
                         if (i==0) {
@@ -253,7 +253,7 @@ namespace MariaDB {
 
         // add new columns to tmp table.
         for (const auto &item:NeedAdd) {
-            for (size_t i=0;i<T2N.size();++i) {
+            for (std::size_t i=0;i<T2N.size();++i) {
                 if (T2N[i]==item){
                     Query("alter table "+tmptable+" add column "+item+" "+T2TP[i]+(T2CM[i].empty()?"":(" comment \""+T2CM[i]+"\"")));
                     break;

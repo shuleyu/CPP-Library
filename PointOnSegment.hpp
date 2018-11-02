@@ -25,7 +25,7 @@
  * Key words: point on line segment.
 ****************************************************************/
 
-template<class T1,class T2,class T3,class T4,class T5,class T6>
+template<typename T1,typename T2,typename T3,typename T4,typename T5,typename T6>
 bool PointOnSegment(const std::pair<T1,T2> &p1,const std::pair<T3,T4> &p2,const std::pair<T5,T6> &p){
 
     double dx1=p1.first-p.first,dy1=p1.second-p.second,dx2=p2.first-p.first,dy2=p2.second-p.second;

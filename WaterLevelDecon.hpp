@@ -23,12 +23,12 @@ extern "C"{
  * from the edges due to the padding.
  *
  * input(s):
- * const vector<T1> &x      ----  1-D array x (signal).
- * const size_t     &px     ----  Peak positions on the signal.
- * const vector<T2> &y      ----  1-D array y (source).
- * const size_t     &py     ----  Peak position on the source.
- * const double     &delta  ----  Signals and source sampling rate.
- * const double     &wl     ----  Water level. (percentage of the peak spectrum value)
+ * const vector<T1>  &x      ----  1-D array x (signal).
+ * const std::size_t &px     ----  Peak positions on the signal.
+ * const vector<T2>  &y      ----  1-D array y (source).
+ * const std::size_t &py     ----  Peak position on the source.
+ * const double      &delta  ----  Signals and source sampling rate.
+ * const double      &wl     ----  Water level. (percentage of the peak spectrum value)
  *
  * return(s):
  * vector<double>   &ans  ----  Deconed trace (length=2*max(x.size(),y.size())).
@@ -44,7 +44,7 @@ extern "C"{
  * Key words : deconvolution, water-level
 *********************************************************************/
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::vector<double> WaterLevelDecon(const std::vector<T1> &x, const std::size_t &px,
                                     const std::vector<T2> &y, const std::size_t &py,
                                     const double &delta, const double &wl) {

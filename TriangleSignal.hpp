@@ -8,8 +8,8 @@
  * The signal has peak at its center, amplitude is 1.
  *
  * input(s):
- * const int &N     ----  request signal length.
- * const T   &frac  ----  request fraction of the non-zero part
+ * const int    &N     ----  request signal length.
+ * const double &frac  ----  request fraction of the non-zero part
  *                           (explaned below)
  *
  *                      *
@@ -29,8 +29,7 @@
  * Key words: triangle signal.
 ***********************************************************/
 
-template<class T>
-std::vector<double> TriangleSignal(const int &N,const T &frac){
+std::vector<double> TriangleSignal(const int &N,const double &frac){
 
     // Check requested size.
     if (N<=0) return {};

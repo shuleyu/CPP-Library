@@ -36,7 +36,7 @@
  * Key words: modified cross-correlation, moving standard deviaiton
 ****************************************************************/
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::pair<int,double> CrossStd(const std::vector<T1> &s1, const std::vector<T2> &s2){
 
     int xlen=s1.size(),ylen=s2.size();

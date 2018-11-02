@@ -9,9 +9,9 @@
  * to r, theta, phi ( in rad. ) in Shperical coordinates.
  *
  * input(s):
- * const T1 &x      ----  x
- * const T2 &y      ----  y
- * const T3 &z      ----  z
+ * const double &x      ----  x
+ * const double &y      ----  y
+ * const double &z      ----  z
  *
  * return(s):
  * vector<double> ans  ----  {r,theta,phi}
@@ -26,8 +26,7 @@
  * Reference: https://en.wikipedia.org/wiki/Spherical_coordinate_system
 ***********************************************************/
 
-template<class T1,class T2,class T3>
-inline std::vector<double> Cart2Sph(const T1 &x, const T2 &y, const T3 &z){
+inline std::vector<double> Cart2Sph(const double &x, const double &y, const double &z){
     return{sqrt(x*x+y*y+z*z),atan2(sqrt(1.0*x*x+y*y),1.0*z),atan2(1.0*y,1.0*x)};
 }
 

@@ -8,12 +8,12 @@
  * Signal should be even sampled at delta.
  *
  * input(s):
- * vector<T1> &p       ----  Signal.
- * const T2   &delta   ----  Sampling rate (in sec.)
- * const T3   &TBegin  ----  Begin time of the signal (in sec.)
+ * vector<T>   &p       ----  Signal.
+ * const double &delta   ----  Sampling rate (in sec.)
+ * const double &TBegin  ----  Begin time of the signal (in sec.)
  *
  * return(s):
- * vector<T1> &p (in-place)
+ * vector<T> &p (in-place)
  * pair<double,double> ans  ----  {slope,intercept} Polynominal degree 1 fitting result.
  *
  * Shule Yu
@@ -25,8 +25,8 @@
  *     http://en.wikipedia.org/wiki/Simple_linear_regression
 ***********************************************************/
 
-template<class T1, class T2, class T3>
-std::pair<double,double> RemoveTrend(std::vector<T1> &p,const T2 &delta, const T3 &TBegin){
+template<typename T>
+std::pair<double,double> RemoveTrend(std::vector<T> &p,const double &delta, const double &TBegin){
 
     if (p.size()<=1) return {0,0};
 

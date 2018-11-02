@@ -7,8 +7,8 @@
  * This C++ template returns the combination of input integers.
  *
  * input(s):
- * const T &n  ----  Lower number.
- * const T &k  ----  Upper number. T should be non-negativee integer.
+ * const std::size_t &n  ----  Lower number.
+ * const std::size_t &k  ----  Upper number.
  *
  * return(s):
  * int ans  ---- C_n^k
@@ -19,8 +19,7 @@
  * Key words: combination
 **************************************************************/
 
-template<class T>
-int Combination(const T &n, const T &k){
+int Combination(const std::size_t &n, const std::size_t &k){
 
     if ( n < 0 || k < 0 || k > n ){
         std::cerr <<  "Error in " << __func__ << ": mathematic error ..." << std::endl;
@@ -28,8 +27,8 @@ int Combination(const T &n, const T &k){
     }
 
     int ans=1;
-    for (int i=1;i<=k;++i) ans*=(n-k+i);
-    for (int i=1;i<=k;++i) ans/=i;
+    for (std::size_t i=1;i<=k;++i) ans*=(n-k+i);
+    for (std::size_t i=1;i<=k;++i) ans/=i;
 
     return ans;
 }

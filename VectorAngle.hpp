@@ -22,7 +22,7 @@
  * Key words: angle, vector.
 *********************************************************/
 
-template<class T1,class T2,class T3,class T4>
+template<typename T1,typename T2,typename T3,typename T4>
 double VectorAngle(const std::pair<T1,T2> &v1,const std::pair<T3,T4> &v2){
 
     // Do dot product.

@@ -10,9 +10,9 @@
  * event depth, component name to take-off angle (in deg).
  *
  * input(s):
- * const T1   &rayp   ----  Ray parameter as the output of TauP.
- * const T2   &depth  ----  Event depth.
- * const char &cmp    ----  'P' or 'S'.
+ * const double &rayp   ----  Ray parameter as the output of TauP.
+ * const double &depth  ----  Event depth.
+ * const char   &cmp    ----  'P' or 'S'.
  *
  * return(s):
  * double ans  ----  Take-off angle (0~90)
@@ -23,8 +23,7 @@
  * Key words: ray parameter, take off angle.
 ***********************************************************/
 
-template<class T1, class T2>
-double RayP2TakeOff(const T1 &rayp, const T2 &depth,const char &cmp){
+double RayP2TakeOff(const double &rayp, const double &depth, const char &cmp){
 
     double V;
 

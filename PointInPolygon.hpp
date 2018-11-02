@@ -32,7 +32,7 @@
  * Reference: http://geomalgorithms.com/a03-_inclusion.html
 ****************************************************************/
 
-template<class T1,class T2,class T3, class T4>
+template<typename T1,typename T2,typename T3, typename T4>
 bool PointInPolygon(const std::vector<std::pair<T1,T2>> &Polygon,const std::pair<T3,T4> &Point,const int BoundaryMode=0){
 
     int n=Polygon.size(),WN=0;

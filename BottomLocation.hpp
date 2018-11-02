@@ -16,11 +16,11 @@
  * Using TauP toolkit. Model is PREM.
  *
  * input(s):
- * const T1     &evtlon  ----  event lon
- * const T2     &evtlat  ----  event lat
- * const T3     &EVDP    ----  event depth (in km.)
- * const T4     &stalon  ----  station lon
- * const T5     &stalat  ----  station lat
+ * const double &evtlon  ----  event lon
+ * const double &evtlat  ----  event lat
+ * const double &EVDP    ----  event depth (in km.)
+ * const double &stalon  ----  station lon
+ * const double &stalat  ----  station lat
  * const string &Phase   ----  seismic phase
  *
  * return(s):
@@ -32,9 +32,9 @@
  * Key words: bottom location.
 **************************************************/
 
-template<class T1, class T2, class T3, class T4, class T5>
-std::vector<double> BottomLocation(const T1 &evtlon, const T2 &evtlat, const T3 &EVDP,
-                                   const T4 &stalon, const T5 &stalat,const std::string &Phase){
+std::vector<double> BottomLocation(const double &evtlon, const double &evtlat, const double &EVDP,
+                                   const double &stalon, const double &stalat,
+                                   const std::string &Phase){
 
     std::string command="taup_path -mod prem -h "+std::to_string(EVDP)+" -ph "+Phase
                         +" -evt "+std::to_string(evtlat)+" "+std::to_string(evtlon)+
@@ -48,7 +48,7 @@ std::vector<double> BottomLocation(const T1 &evtlon, const T2 &evtlat, const T3 
     }
 
     // Parse the string.
-    size_t pb=0,p=0;
+    std::size_t pb=0,p=0;
     while (std::isspace(res[p])) ++p;
     pb=p;
     while (!std::isspace(res[p])) ++p;

@@ -25,7 +25,7 @@
  * Key words: kmeans, cluster analysis.
 ***********************************************************/
 
-template<class T>
+template<typename T>
 std::vector<int> Kmeans(const std::vector<std::vector<T>> &data,const int &CateN){
 
     if (data.empty()) return {};
@@ -46,7 +46,7 @@ std::vector<int> Kmeans(const std::vector<std::vector<T>> &data,const int &CateN
             data_aux[k++]=data[i][j];
 
     arma::mat A(data_aux,nptsy,nptsx,false,true);
-    arma::Row<size_t> assignments;
+    arma::Row<std::size_t> assignments;
 
     mlpack::kmeans::RefinedStart K;
     K.Percentage()=0.5;

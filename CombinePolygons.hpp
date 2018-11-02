@@ -26,7 +26,7 @@
  * Key words: polygon, union set.
 *****************************************************************/
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::vector<std::vector<std::pair<double,double>>> CombinePolygons(const std::vector<std::vector<std::pair<T1,T2>>> &P){
 
     int NP=P.size();

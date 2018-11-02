@@ -22,8 +22,8 @@
  * Latitude : -90 <= lat <= 90.
  *
  * input(s):
- * const T1 &Lon  ----  Longitude.
- * const T2 &Lat  ----  Latitude.
+ * const double &Lon  ----  Longitude.
+ * const double &Lat  ----  Latitude.
  *
  * return(s):
  * pair<double,double> ans  ----  {theta,phi}
@@ -34,8 +34,7 @@
  * Key words: geography, coordinates, convertion.
 *****************************************************/
 
-template<class T1, class T2>
-inline std::pair<double,double> LL2TP(const T1 &lon, const T2 &lat){
+inline std::pair<double,double> LL2TP(const double &lon, const double &lat){
 
     // Deal with latitude, theta.
     // Check latitude.

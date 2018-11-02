@@ -24,7 +24,7 @@
  * Key words: modified cross-correlation, moving standard deviaiton
 ****************************************************************/
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::pair<std::pair<int,int>,double> CrossStd2D(const std::vector<std::vector<T1>> &s1, const std::vector<std::vector<T2>> &s2){
 
     int m1=s1.size(),m2=s2.size();

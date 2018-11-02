@@ -105,7 +105,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
     void pstext(const std::string &outfile, const std::vector<GMT::Text> &texts,
                 const std::string &cmd){
 
-        size_t n=texts.size();
+        std::size_t n=texts.size();
         if (n==0) return;
 
         void *API=GMT_Create_Session(__func__,2,0,NULL);
@@ -140,12 +140,12 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
 
     // gmt psxy.
-    template <class T>
+    template <typename T>
     void psxy(const std::string &outfile, const T XBegin, const T XEnd,
               const T YBegin, const T YEnd, const std::string &cmd){
 
         // Check array size.
-        size_t n=std::distance(XBegin,XEnd),m=std::distance(YBegin,YEnd);
+        std::size_t n=std::distance(XBegin,XEnd),m=std::distance(YBegin,YEnd);
         if (n==0) return;
 
         if (m!=n) throw std::runtime_error("In "+std::string(__func__)+", input x,y size don't match.");
@@ -164,7 +164,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
         // Inject data.
         double *X = new double [n], *Y = new double [n];
-        size_t i=0;
+        std::size_t i=0;
         for (auto it=XBegin;it!=XEnd;++it) X[i++]=*it;
         i=0;
         for (auto it=YBegin;it!=YEnd;++it) Y[i++]=*it;
@@ -190,15 +190,15 @@ namespace GMT { // the order of the function definition matters: dependencies sh
     }
 
     // psxy with multiple coloms.
-    template <class T>
+    template <typename T>
     void psxy(const std::string &outfile, const std::vector<std::vector<T>> &Data,
               const std::string &cmd){
 
 
         // Check array size.
         if (Data.empty()) return;
-        size_t n=Data.size(),m=Data[0].size(); // m rows, n columns
-        for (size_t i=0;i<n;++i)
+        std::size_t n=Data.size(),m=Data[0].size(); // m rows, n columns
+        for (std::size_t i=0;i<n;++i)
             if (Data[i].size()!=m)
                 throw std::runtime_error("In "+std::string(__func__)
                                          +", input data column size don't match.");
@@ -215,9 +215,9 @@ namespace GMT { // the order of the function definition matters: dependencies sh
                                                       0,par,NULL,NULL,0,-1,NULL);
 
         // Inject data.
-        for (size_t i=0;i<n;++i) {
+        for (std::size_t i=0;i<n;++i) {
             double *X = (double *)malloc(m*sizeof(double));
-            for (size_t j=0;j<m;++j)
+            for (std::size_t j=0;j<m;++j)
                 X[j]=Data[i][j];
             GMT_Put_Vector(API,vec,i,GMT_DOUBLE,X);
         }
@@ -240,12 +240,12 @@ namespace GMT { // the order of the function definition matters: dependencies sh
     }
 
     // gmt pshistogram.
-    template <class T>
+    template <typename T>
     void pshistogram(const std::string &outfile, const T XBegin, const T XEnd,
                      const std::string &cmd){
 
         // Check array size.
-        size_t n=std::distance(XBegin,XEnd);
+        std::size_t n=std::distance(XBegin,XEnd);
         if (n==0) return;
 
         void *API=GMT_Create_Session(__func__,2,0,NULL);
@@ -262,7 +262,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
         // Inject data.
         double *X = new double [n];
-        size_t i=0;
+        std::size_t i=0;
         for (auto it=XBegin;it!=XEnd;++it) X[i++]=*it;
 
         GMT_Put_Vector(API,vec,0,GMT_DOUBLE,X);
@@ -286,7 +286,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
     // gmt grdimage.
 
-    template<class T>
+    template<typename T>
     void grdimage(const std::string &outfile, const std::vector<std::vector<T>> &G,
                   const double &xinc, const double &yinc, const std::string &cmd){
 
@@ -317,9 +317,9 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
         // Set up grid size.
         auto res=CreateGrid(wesn[0],wesn[1],inc[0],-1);
-        size_t m=(size_t)res[0]+4;
+        std::size_t m=(std::size_t)res[0]+4;
         res=CreateGrid(wesn[2],wesn[3],inc[1],-1);
-        size_t n=(size_t)res[0]+4;
+        std::size_t n=(std::size_t)res[0]+4;
 
 
         // Create plot data.
@@ -329,10 +329,10 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
         // Inject data.
         float *aux_data = new float [m*n];
-        for (size_t i=0;i<m*n;++i) aux_data[i]=0.0/0.0;
+        for (std::size_t i=0;i<m*n;++i) aux_data[i]=0.0/0.0;
         for (const auto &item:G) {
-            size_t X=(size_t)round((item[0]-wesn[0])/xinc);
-            size_t Y=(size_t)round((item[1]-wesn[2])/yinc);
+            std::size_t X=(std::size_t)round((item[0]-wesn[0])/xinc);
+            std::size_t Y=(std::size_t)round((item[1]-wesn[2])/yinc);
             // swap X,Y position and flip along y-axis. 
             aux_data[(n-3-Y)*m+X+2]=item[2];
         }
@@ -352,7 +352,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         // periodic along longitude (x) direction.
         grid->header->BC[0]=2;
         grid->header->BC[1]=2;
-        for (size_t Y=0;Y<n;++Y) {
+        for (std::size_t Y=0;Y<n;++Y) {
             aux_data[(n-1-Y)*m+0]=aux_data[(n-1-Y)*m+m-4];
             aux_data[(n-1-Y)*m+1]=aux_data[(n-1-Y)*m+m-3];
             aux_data[(n-1-Y)*m+m-1]=aux_data[(n-1-Y)*m+3];
@@ -396,14 +396,14 @@ namespace GMT { // the order of the function definition matters: dependencies sh
     }
 
 
-    template<class T>
+    template<typename T>
     void psxy(const std::string &outfile, const std::vector<T> &X,
               const std::vector<T> &Y, const std::string &cmd){
         GMT::psxy(outfile,X.begin(),X.end(),Y.begin(),Y.end(),cmd);
         return;
     }
 
-    template<class T>
+    template<typename T>
     void pshistogram(const std::string &outfile, const std::vector<T> &X, const std::string &cmd){
         GMT::pshistogram(outfile,X.begin(),X.end(),cmd);
         return;

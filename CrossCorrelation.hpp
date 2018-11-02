@@ -69,7 +69,7 @@
  * Key words: cross-correlation.
 **************************************************************************/
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const T1 XBegin, const T1 XEnd, const T2 YBegin, const T2 YEnd, const bool &Dump=false, const int &Flip=0, const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}){
 
     // Check signal length.
@@ -142,7 +142,7 @@ std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const T1 X
     return {{shift,ccc},res};
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const std::vector<T1> &x, const std::vector<T2> &y, const bool &Dump=false, const int &Flip=0, const std::pair<int,int> &ShiftLimit={std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}){
     return CrossCorrelation(x.begin(),x.end(),y.begin(),y.end(),Dump,Flip,ShiftLimit);
 }

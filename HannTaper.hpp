@@ -10,12 +10,12 @@
  * using a Hanning Window.
  *
  * input(s):
- * vector<T1> &p  ----  Signal that get tapered. length is npts.
- * const T2   &w  ----  Taper one-side length compared to npts.
- *                      (width max at 0.5, which means the taper
- *                       covers the whole signal)
+ * vector<T>    &p  ----  Signal that get tapered. length is npts.
+ * const double &w  ----  Taper one-side length compared to npts.
+ *                        (width max at 0.5, which means the taper
+ *                        covers the whole signal)
  *
- *                      e.g.
+ *                        e.g.
  *
  *                         Signal:    ************************* (npts=25)
  *                         Target:    tttt*****************tttt (taper one-side length=4)
@@ -23,7 +23,7 @@
  *                                    --> input w should be 4/25.
  *
  * return(s):
- * vector<T1> &p (in-place)
+ * vector<T> &p (in-place)
  * Shule Yu
  * Jan 22 2018
  *
@@ -32,8 +32,8 @@
  * Reference: https://en.wikipedia.org/wiki/Hann_function
 ***********************************************************/
 
-template<class T1, class T2>
-void HannTaper(std::vector<T1> &p,const T2 &w){
+template<typename T>
+void HannTaper(std::vector<T> &p,const double &w){
 
     if (w>0.5) {
         std::cerr <<  "Error in " << __func__ << ": taper window too big ..." << std::endl;

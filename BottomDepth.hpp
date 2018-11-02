@@ -15,8 +15,8 @@
  * Using TauP toolkit. Model is PREM.
  *
  * input(s):
- * const T1     &Dist   ----  gcp distance (in deg.)
- * const T2     &EVDP   ----  source depth (in km.)
+ * const double &Dist   ----  gcp distance (in deg.)
+ * const double &EVDP   ----  source depth (in km.)
  * const string &Phase  ----  seismic phase.
  *
  * return(s):
@@ -28,8 +28,7 @@
  * Key words: bottom depth.
 *****************************************************/
 
-template<class T1, class T2>
-double BottomDepth(const T1 &Dist,const T2 &EVDP,const std::string &Phase){
+double BottomDepth(const double &Dist,const double &EVDP,const std::string &Phase){
 
     std::string command="taup_path -mod prem -h "+std::to_string(EVDP)+" -ph "+Phase
                         +" -evt 0 0 -sta 0 "+std::to_string(Dist)

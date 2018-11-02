@@ -15,17 +15,17 @@
  * input(s):
  * const vector<T1> &r             ----  layer radius array. r[0] is the shallowest layer.
  * const vector<T2> &v             ----  velocity array at each radius.
- * const T3         &rayp          ----  ray parameter. (in sec/deg, p=Rsin/c/180*PI)
- * const T4         &MinDepth      ----  depth to start the ray tracing.
- * const T5         &MaxDepth      ----  depth to stop the ray tracing.
+ * const double     &rayp          ----  ray parameter. (in sec/deg, p=Rsin/c/180*PI)
+ * const double     &MinDepth      ----  depth to start the ray tracing.
+ * const double     &MaxDepth      ----  depth to stop the ray tracing.
  * vector<double>   &degree        ----  Output ray path, angles. If degree[0]<-1e5, will only output degree.back();
- * size_t           &radius        ----  Output ray path end index in "r".
- * const T6         &TurningAngle  ----  (Optional) the critical angle for turning assessment.
+ * std::size_t      &radius        ----  Output ray path end index in "r".
+ * const double     &TurningAngle  ----  (Optional) the critical angle for turning assessment.
  *                                       default value is 89.9 deg.
  * return(s):
  * pair<pair<double,double>,bool>  ans  ----  {{travel time (s) / pursuit distance (km)}, RayTurns?}
  * vector<double> &degree (in-place)
- * size_t         &radius (in-place)
+ * std::size_t    &radius (in-place)
  *
  * Shule Yu
  * Jan 28 2018
@@ -33,11 +33,11 @@
  * Key words: ray path, ray tracing, layers.
 ********************************************************************/
 
-template<class T1, class T2, class T3, class T4, class T5, class T6=double>
-std::pair<std::pair<double,double>,bool> RayPath(const std::vector<T1> &r, const std::vector<T2> &v,
-                                                 const T3 &rayp, const T4 &MinDepth, const T5 &MaxDepth,
-                                                 std::vector<double> &degree,size_t &radius,
-                                                 const T6 &TurningAngle=89.9){
+template<typename T1, typename T2>
+std::pair<std::pair<double,double>,bool>
+RayPath(const std::vector<T1> &r, const std::vector<T2> &v,
+        const double &rayp, const double &MinDepth, const double &MaxDepth,
+        std::vector<double> &degree, std::size_t &radius, const double &TurningAngle=89.9){
 
     // check inputs.
     double RE=6371.0;
@@ -56,7 +56,7 @@ std::pair<std::pair<double,double>,bool> RayPath(const std::vector<T1> &r, const
 
     // locate our start Layer and end Layer.
     // because the grid could be unevenly spaced, this is a bit lengthy;
-    size_t P1;
+    std::size_t P1;
     double CurMin=std::numeric_limits<double>::max();
     for (P1=0;P1<r.size();++P1) {
         double NewMin=fabs(RE-MinDepth-r[P1]);
@@ -64,7 +64,7 @@ std::pair<std::pair<double,double>,bool> RayPath(const std::vector<T1> &r, const
         CurMin=NewMin;
     }
 
-    size_t P2;
+    std::size_t P2;
     CurMin=std::numeric_limits<double>::max();
     for (P2=0;P2<r.size();++P2) {
         double NewMin=fabs(RE-MaxDepth-r[P2]);
@@ -86,7 +86,7 @@ std::pair<std::pair<double,double>,bool> RayPath(const std::vector<T1> &r, const
 
     double deg=0,MaxAngle=sin(TurningAngle*M_PI/180),Rayp=rayp*180/M_PI;
     std::pair<std::pair<double,double>,bool> ans{{0,0},false};
-    for (size_t i=P1;i<P2;++i){
+    for (std::size_t i=P1;i<P2;++i){
 
         double B,C,D;
 

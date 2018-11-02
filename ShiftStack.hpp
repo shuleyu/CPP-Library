@@ -30,7 +30,7 @@
  * Key words: shift and stack, mean, standard deviation.
 *********************************************************/
 
-template <class T1, class T2=double>
+template <typename T1, typename T2=double>
 std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<std::pair<T1,T1>> &P, 
                                                               const std::vector<int> &s=std::vector<int>(),
                                                               const std::vector<T2> &w=std::vector<T2>()){
@@ -86,7 +86,7 @@ std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<
     return {Stack,STD};
 }
 
-template <class T1, class T2=double>
+template <typename T1, typename T2=double>
 std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<std::vector<T1>> &p, const std::vector<int> &s=std::vector<int>(), const std::vector<T2> &w=std::vector<T2>()){
 
     // Call ShiftStack.

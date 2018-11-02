@@ -9,7 +9,7 @@
  * certain number of bits.
  *
  * input(s):
- * const T &n  ----  Number of bits. T should be size_t
+ * const std::size_t &n  ----  Number of bits.
  *
  * return(s):
  * vector<vector<bool>> ans  ----  a 2D 0/1 array of gray code sequence.
@@ -20,8 +20,7 @@
  * Key words: gray code.
 ***************************************************/
 
-template<class T>
-std::vector<std::vector<bool>> GrayCode(const T &n){
+std::vector<std::vector<bool>> GrayCode(const std::size_t &n){
 
     // Check array size.
     if (n<=0) {

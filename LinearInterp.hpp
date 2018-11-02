@@ -68,7 +68,7 @@
  * Key words: interpolation, linear.
 ***************************************************************/
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 double LinearInterp_Recur(const std::vector<T1> &p, const std::vector<T2> &pp, const int &l, const int &r, const int &P) {
     if (P==0) return p[l]*(1-pp[P])+p[r]*pp[P];
     else {
@@ -78,7 +78,7 @@ double LinearInterp_Recur(const std::vector<T1> &p, const std::vector<T2> &pp, c
     }
 }
 
-template<class T1, class T2>
+template<typename T1, typename T2>
 double LinearInterp(const std::vector<T1> &p, const std::vector<T2> &pp){
 
     int m=p.size(),n=pp.size();

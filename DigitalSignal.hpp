@@ -180,7 +180,7 @@ void DigitalSignal::FindPeakAround(const double &t, const double &w){
     if (w<0) return;
     if (t+w<BeginTime() || t-w>EndTime()) return;
 
-    size_t X=0,Y=Size()-1;
+    std::size_t X=0,Y=Size()-1;
     if (t-w>=BeginTime()) X=LocateTime(t-w);
     if (t+w<=EndTime()) Y=LocateTime(t+w);
     if (Y!=Size()) ++Y;
@@ -293,9 +293,9 @@ std::istream &operator>>(std::istream &is, DigitalSignal &item){
     auto cmp=[](const double &a, const double &b){return a<=b;};     // strict ascending comparator.
     if (!std::is_sorted(item.GetTime().begin(),item.GetTime().end(),cmp)) {        // if not strict.
         // choose to change the time values at the repeated positions.
-        size_t i=0;
+        std::size_t i=0;
         while (i+1<item.Size()){
-            size_t j=i+1;
+            std::size_t j=i+1;
             while (j<item.Size() && item.GetTime()[j]==item.GetTime()[i]) ++j;
             if (j!=i+1) {
                 if (i==0 && j==item.Size())
@@ -303,7 +303,7 @@ std::istream &operator>>(std::istream &is, DigitalSignal &item){
                 double bt=(i==0?item.GetTime()[i]:item.GetTime()[i-1]);
                 double et=(j==item.Size()?item.GetTime()[i]:item.GetTime()[j]);
                 double dt=(et-bt)/(j-i+((i!=0 && j!=item.Size())?1:0));
-                for (size_t k=(i==0?i+1:i);k<j;++k) item.time[k]=item.GetTime()[k-1]+dt;
+                for (std::size_t k=(i==0?i+1:i);k<j;++k) item.time[k]=item.GetTime()[k-1]+dt;
             }
             i=j;
         }

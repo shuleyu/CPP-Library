@@ -35,7 +35,7 @@
  * Key words: polygon, union set, gift wrapping.
 *****************************************************************/
 
-template<class T1, class T2, class T3, class T4>
+template<typename T1, typename T2, typename T3, typename T4>
 std::pair<bool,std::vector<std::pair<double,double>>> CombineTwoPolygons(const std::vector<std::pair<T1,T2>> &p1,
                                                                          const std::vector<std::pair<T3,T4>> &p2){
 

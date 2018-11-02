@@ -15,11 +15,11 @@ extern "C"{
  * output the result.
  *
  * input(s):
- * const vector<T1> &x      ----  1-D input signal.
- * const T2         &shift  ----  Constant phase shift value. (in deg.)
+ * const vector<T> &x      ----  1-D input signal.
+ * const double    &shift  ----  Constant phase shift value. (in deg.)
  *
  * return(s):
- * vector<double> y         ----  Phase-shifted signal. (same length as x)
+ * vector<double> y ----  Phase-shifted signal. (same length as x)
  *
  * Shule Yu
  * Jan 19 2018
@@ -29,8 +29,8 @@ extern "C"{
  * Key words : fast fourier transform. phase shift.
 *********************************************************************/
 
-template<class T1, class T2>
-std::vector<double> ShiftPhase(const std::vector<T1> &x,const T2 &shift){
+template<typename T>
+std::vector<double> ShiftPhase(const std::vector<T> &x,const double &shift){
 
     if (x.empty()) return {};
 

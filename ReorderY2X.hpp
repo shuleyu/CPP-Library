@@ -34,7 +34,7 @@
  * Key words: reorder, y2x
 *************************************************/
 
-template <class T>
+template <typename T>
 std::vector<std::vector<T>> ReorderY2X(const std::vector<std::vector<T>> &p){
 
     std::vector<std::vector<T>> ans;

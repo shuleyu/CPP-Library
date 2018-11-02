@@ -51,7 +51,7 @@ double klqwejrlkjqwe(const std::vector<std::pair<double,double>> &P,const std::p
     return x/(x+y);
 }
 
-template<class T1, class T2, class T3, class T4>
+template<typename T1, typename T2, typename T3, typename T4>
 std::pair<double,double> GridStretch(const std::vector<std::pair<T1,T2>> &Polygon, const std::pair<T3,T4> &P){
 
     // Check the polygon has four corners.

@@ -36,7 +36,7 @@
  * Key words: normalize
 ******************************************************/
 
-template<class T>
+template<typename T>
 T Normalize(std::vector<T> &p, std::pair<int,int> W={0,std::numeric_limits<int>::max()}){
 
     // Check array size.

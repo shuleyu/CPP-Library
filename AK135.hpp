@@ -12,15 +12,15 @@
  * Will linear interpolate between layers.
  *
  * input(s):
- * const T   &depth  ----  Given depth (in km)
- * double    &rho    ----  density (g/cm^3)
- * double    &vp     ----  P wave velcoity (in km/s)
- * double    &vs     ----  S wave velcoity (in km/s)
- * double    &qu     ----  Dissipation of shear energy.
- * double    &qk     ----  Dissipation of compressional energy.
- * const bool &tt    ----  (optional) default if true. Controls the value above 120km.
- *                         return whether velocity model for travel times (true)
- *                         or spherical average velocity model (false)
+ * const double &depth  ----  Given depth (in km)
+ * double       &rho    ----  density (g/cm^3)
+ * double       &vp     ----  P wave velcoity (in km/s)
+ * double       &vs     ----  S wave velcoity (in km/s)
+ * double       &qu     ----  Dissipation of shear energy.
+ * double       &qk     ----  Dissipation of compressional energy.
+ * const bool   &tt     ----  (optional) default if true. Controls the value above 120km.
+ *                            return whether velocity model for travel times (true)
+ *                            or spherical average velocity model (false)
  *
  * output(s):
  * double    &rho  (in-place)
@@ -38,8 +38,7 @@
  *      http://rses.anu.edu.au/seismology/ak135/ak135f.html
 ***********************************************************/
 
-template<class T>
-void AK135(const T &depth, double &rho, double &vp, double &vs,
+void AK135(const double &depth, double &rho, double &vp, double &vs,
            double &qu, double &qk, const bool &tt=true){
 
     std::vector<double> d,r,p,s,k,u;
@@ -77,7 +76,7 @@ void AK135(const T &depth, double &rho, double &vp, double &vs,
         rho=r[0];vp=p[0],vs=s[0],qu=u[0],qk=k[0];
     }
     else {
-        size_t index=std::distance(d.begin(),it);
+        std::size_t index=std::distance(d.begin(),it);
         double x=(depth-d[index-1])/(d[index]-d[index-1]);
         rho=r[index-1]+(r[index]-r[index-1])*x;
         vp=p[index-1]+(p[index]-p[index-1])*x;
@@ -88,39 +87,33 @@ void AK135(const T &depth, double &rho, double &vp, double &vs,
     return ;
 }
 
-template<class T>
-double Dvs_ak135(const T &depth, const bool &tt=true){
+double Dvs_ak135(const double &depth, const bool &tt=true){
     double rho,vp,vs,qu,qk;
     AK135(depth,rho,vp,vs,qu,qk,tt);
     return vs;
 }
 
-template<class T>
-double Dvp_ak135(const T &depth, const bool &tt=true){
+double Dvp_ak135(const double &depth, const bool &tt=true){
     double rho,vp,vs,qu,qk;
     AK135(depth,rho,vp,vs,qu,qk, tt);
     return vp;
 }
 
-template<class T>
-double Drho_ak135(const T &depth, const bool &tt=true){
+double Drho_ak135(const double &depth, const bool &tt=true){
     double rho,vp,vs,qu,qk;
     AK135(depth,rho,vp,vs,qu,qk,tt);
     return rho;
 }
 
-template<class T>
-double Rvs_ak135(const T &radius, const bool &tt=true){
+double Rvs_ak135(const double &radius, const bool &tt=true){
     return Dvs_ak135(6371.0-radius,tt);
 }
 
-template<class T>
-double Rvp_ak135(const T &radius, const bool &tt=true){
+double Rvp_ak135(const double &radius, const bool &tt=true){
     return Dvp_ak135(6371.0-radius,tt);
 }
 
-template<class T>
-double Rrho_ak135(const T &radius, const bool &tt=true){
+double Rrho_ak135(const double &radius, const bool &tt=true){
     return Drho_ak135(6371.0-radius,tt);
 }
 

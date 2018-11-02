@@ -61,15 +61,15 @@
  *
  * F. input(s):
  *
- *     const T1     &rho1      ----  Density of media 1.
- *     const T2     &vp1       ----  P-wave velocity of media 1.
- *     const T3     &vs1       ----  S-wave velocity of media 1.
- *     const T4     &rho2      ----  Density of media 2.
- *     const T5     &vp2       ----  P-wave velocity of media 2.
- *     const T6     &vs2       ----  S-wave velocity of media 2.
+ *     const double &rho1      ----  Density of media 1.
+ *     const double &vp1       ----  P-wave velocity of media 1.
+ *     const double &vs1       ----  S-wave velocity of media 1.
+ *     const double &rho2      ----  Density of media 2.
+ *     const double &vp2       ----  P-wave velocity of media 2.
+ *     const double &vs2       ----  S-wave velocity of media 2.
  *     (If media2 is liquid or air, rho2, vp2, vs2 sometimes are ignored)
  *
- *     const T7     &inc       ----  Incident angle(in deg) in media 1.
+ *     const double &inc       ----  Incident angle(in deg) in media 1.
  *     const string &cmp       ----  Component. "PSV" or "SH".
  *     const string &mode      ----  Structure mode. "SS", "SL", "SA", "LS", "LL", "LA".
  *     const int    &FreqSign  ----  (Optional, physics convention) Default value is -1, sign of frequencies.
@@ -90,12 +90,11 @@
  *            Page 134,136,139,144,145 - results for "PSV-SA", "SH-SS", "PSV-SS"
 ****************************************************************************************************/
 
-template <class T1, class T2, class T3, class T4, class T5, class T6, class T7>
-std::vector<std::complex<double>> PlaneWaveCoefficients(const T1 &rho1,const T2 &vp1 ,const T3 &vs1,
-                                                        const T4 &rho2,const T5 &vp2 ,const T6 &vs2,
-                                                        const T7 &inc,const std::string &cmp,
-                                                        const std::string &mode,
-                                                        const int &FreqSign=-1){
+std::vector<std::complex<double>>
+PlaneWaveCoefficients(const double &rho1,const double &vp1 ,const double &vs1,
+                      const double &rho2,const double &vp2 ,const double &vs2,
+                      const double &inc,const std::string &cmp,
+                      const std::string &mode, const int &FreqSign=-1){
 
     double sini=sin(inc/180*M_PI),cosi=sqrt(1-sini*sini);
 

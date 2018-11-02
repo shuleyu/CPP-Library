@@ -8,8 +8,8 @@ using namespace std;
 
 int main(){
 
-    int N=2000;
-    double dt=0.01,sigma=1.27398;
+    int N=80;
+    double dt=0.025,sigma=0.25;
     
     // Use function.
     vector<double> A=GaussianSignal(N,dt,sigma);

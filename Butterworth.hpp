@@ -38,7 +38,7 @@ extern "C"{
  * Key words: sac, filter, butterworth.
 *****************************************************/
 
-template<class T>
+template<typename T>
 void Butterworth(std::vector<T> &p, const double &delta, const double &f1, const double &f2,
                  const int &order=2, const int passes=2){
 

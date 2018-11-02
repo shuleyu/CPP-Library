@@ -17,7 +17,7 @@
  *
  * input(s):
  * const vector<T1> &p      ----  Measurements.
- * const T2         &Level  ----  Request confidence level. ( 95% use 95 )
+ * const double     &Level  ----  Request confidence level. ( 95% use 95 )
  *
  * return(s):
  * double ans  ----  Level% confidence interval.
@@ -31,8 +31,8 @@
  *     https://en.wikipedia.org/wiki/Student%27s_t-distribution#Confidence_intervals
 *****************************************************************/
 
-template<class T1,class T2>
-inline double ConfidenceInterval(std::vector<T1> &p,const T2 &Level){
+template<typename T1>
+inline double ConfidenceInterval(std::vector<T1> &p,const double &Level){
 
     if (p.size()<=1) return 0;
 

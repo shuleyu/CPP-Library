@@ -10,9 +10,9 @@
  *
  * input(s):
  * const pair<T1,T2> &p1  ----  first point.
- * const T3          &s1  ----  slope through the first point.
- * const pair<T4,T5> &p2  ----  second point.
- * const T6          &s2  ----  slope through the second point.
+ * const double      &s1  ----  slope through the first point.
+ * const pair<T3,T4> &p2  ----  second point.
+ * const double      &s2  ----  slope through the second point.
  *
  * return(s):
  * std::pair<bool,pair<double,double>>  ans
@@ -25,9 +25,9 @@
  * Key words: line junction, intercept, cross.
 ****************************************************************/
 
-template<class T1,class T2,class T3,class T4,class T5,class T6>
-std::pair<bool,std::pair<double,double>> LineJunction(const std::pair<T1,T2> &p1,const T3 &s1,
-                                                      const std::pair<T4,T5> &p2,const T6 &s2){
+template<typename T1,typename T2,typename T3,typename T4>
+std::pair<bool,std::pair<double,double>> LineJunction(const std::pair<T1,T2> &p1,const double &s1,
+                                                      const std::pair<T3,T4> &p2,const double &s2){
 
     std::pair<double,double> ans{std::numeric_limits<double>::max(),std::numeric_limits<double>::max()};
 

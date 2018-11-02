@@ -27,8 +27,11 @@
  * Key words: geographic bin, circle, update.
 ***********************************************************/
 
-template <class T1, class T2, class T3, class T4, class T5>
-std::pair<std::vector<std::pair<double,double>>,std::vector<std::vector<bool>>> CircleBin(const std::vector<std::pair<T1,T2>> &p, const std::vector<std::pair<T3,T4>> &b, const std::vector<T5> &r){
+template <typename T1, typename T2, typename T3, typename T4, typename T5>
+std::pair<std::vector<std::pair<double,double>>,std::vector<std::vector<bool>>> CircleBin(
+    const std::vector<std::pair<T1,T2>> &p,
+    const std::vector<std::pair<T3,T4>> &b,
+    const std::vector<T5> &r){
 
     // Check array size.
     if (b.size()!=r.size()) {
@@ -37,18 +40,18 @@ std::pair<std::vector<std::pair<double,double>>,std::vector<std::vector<bool>>> 
     }
 
     // Prepare output.
-    size_t Np=p.size(),Nb=b.size();
+    std::size_t Np=p.size(),Nb=b.size();
     std::vector<std::pair<double,double>> B(Nb);
     std::vector<std::vector<bool>> ans(Np,std::vector<bool>(Nb,false));
 
     // For each bin, search which points are inside them.
     // Then update the bin center.
-    for (size_t i=0;i<Nb;++i){
+    for (std::size_t i=0;i<Nb;++i){
 
         T2 NewLon=0,NewLat=0;
         int Cnt=0;
 
-        for (size_t j=0;j<Np;++j){
+        for (std::size_t j=0;j<Np;++j){
             if (GcpDistance(b[i].first,b[i].second,p[j].first,p[j].second)<=r[i]){
                 ans[j][i]=true;
                 NewLon+=p[j].first;

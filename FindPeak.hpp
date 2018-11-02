@@ -15,7 +15,7 @@
  * const int       &WL    ----  Window length.
  *
  * return(s):
- * size_t ans  ----  correct peak position.
+ * std::size_t ans  ----  correct peak position.
  *
  *
  * Shule Yu
@@ -24,8 +24,8 @@
  * Key words: peak position
 **************************************************************/
 
-template <class T>
-size_t FindPeak(const std::vector<T> &p, const int &Peak, const int &WB, const int &WL){
+template <typename T>
+std::size_t FindPeak(const std::vector<T> &p, const int &Peak, const int &WB, const int &WL){
 
     int n=p.size();
 
@@ -35,7 +35,7 @@ size_t FindPeak(const std::vector<T> &p, const int &Peak, const int &WB, const i
         return -1;
     }
 
-    size_t ans=Peak;
+    std::size_t ans=Peak;
     T MaxAmp=p[Peak]>0?p[Peak]:-p[Peak],Amp;
     for (int i=Peak+WB;i<Peak+WB+WL;++i){
         Amp=p[i]>0?p[i]:-p[i];

@@ -1,19 +1,25 @@
-# Related directories.
-SACHOME  := /opt/sac-101.6
-SACHOME2 := /opt/sac
+# Usage:
+# 1. Compile all example codes:
+#    $ make SAC=${SACHOME}
+# 2. Compile certain code:
+#    $ make Code=Amplitdue.cpp SAC=${SACHOME}
+
+# Directories.
+SAC      := ${SACHOME}
 Code     := UniQUEcoDeName
 
-# Compile parameters & dirs.
-COMP     := c++ -std=c++14 -Wall -fPIC
-INCDIR   := -I.. -I/opt/local/include -I$(SACHOME)/include -I$(SACHOME2)/include
-LIBDIR   :=                           -L$(SACHOME)/lib     -L$(SACHOME2)/lib
-
+# Compile flags & library dirs.
+COMP     := c++ -std=c++17 -Wall -fPIC
+INCDIR   := -I/opt/local/include -I$(SAC)/include -I..
+LIBDIR   := -L/opt/local/lib -L$(SAC)/lib
 LIBS     := -lsac -lsacio -lmlpack -lgmt -lmariadb -larmadillo -lgsl -lgslcblas -lnetcdf -lfftw3 -lm
 
-# example program files & its dependency files.
+# by default, compile all cpp files.
 EGFILES  := $(wildcard *.cpp)
 EGDEPS   := $(patsubst %.cpp, %.d, $(EGFILES))
 EGEXECS  := $(patsubst %.cpp, %.out, $(EGFILES))
+
+# if called with "Code=SomeCode.cpp", only compile this code:
 ifneq ($(Code),UniQUEcoDeName)
 EGEXECS  := $(Code).out
 endif

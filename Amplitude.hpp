@@ -11,9 +11,12 @@
  *
  * input(s):
  * const vector<T> &p  ----  Input array.
+ * or ..
+ * const vector<T>::iterator &PBegin  ----  Array begin.
+ * const vector<T>::iterator &PEnd    ----  Array end.
  *
  * output(s):
- * pair<T,vector<size_t>> ans
+ * pair<T,vector<std::size_t>> ans
  *                     ----  ans.first is the ampiltude.
  *                           ans.second is the position(s)
  *                           this amplitude occurs in p.
@@ -24,8 +27,8 @@
  * Key words: amplitude
 *************************************************/
 
-template <class T>
-std::pair<class std::iterator_traits<T>::value_type,std::vector<T>> Amplitude(const T PBegin, const T PEnd){
+template <typename T>
+std::pair<typename std::iterator_traits<T>::value_type,std::vector<T>> Amplitude(const T PBegin, const T PEnd){
 
     // Check array size.
     if (PBegin==PEnd) {
@@ -51,7 +54,7 @@ std::pair<class std::iterator_traits<T>::value_type,std::vector<T>> Amplitude(co
     return ans;
 }
 
-template <class T>
+template <typename T>
 std::pair<T,std::vector<std::size_t>> Amplitude(const std::vector<T> &p){
     auto res=Amplitude(p.begin(),p.end());
     std::vector<std::size_t> ans;

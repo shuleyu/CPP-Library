@@ -26,10 +26,11 @@
  * Key words: segment junction, intercept, cross.
 **************************************************************************************************/
 
-template<class T1,class T2,class T3,class T4,class T5,class T6,class T7,class T8>
-std::pair<bool,std::pair<double,double>> SegmentJunction(const std::pair<T1,T2> &p1,const std::pair<T3,T4> &q1,
-                                                         const std::pair<T5,T6> &p2,const std::pair<T7,T8> &q2,
-                                                         const bool &EndPoint=true){
+template<typename T1,typename T2,typename T3,typename T4,
+         typename T5,typename T6,typename T7,typename T8>
+std::pair<bool,std::pair<double,double>>
+SegmentJunction(const std::pair<T1,T2> &p1, const std::pair<T3,T4> &q1,
+                const std::pair<T5,T6> &p2, const std::pair<T7,T8> &q2, const bool &EndPoint=true){
 
     // Check end points.
     if (PointOnSegment(p1,q1,p2)) return {EndPoint,p2};

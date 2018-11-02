@@ -10,12 +10,12 @@
  * between two geographic points.
  *
  * input(s):
- * const T1 &lon1   ----  p1's longitude.
- * const T2 &lat1   ----  p1's latitude.
- * const T3 &r1     ----  p1's distance to Earth's center.
- * const T4 &lon2   ----  p2's longitude.
- * const T5 &lat2   ----  p2's latitude.
- * const T6 &r2     ----  p2's distance to Earth's center.
+ * const double &lon1   ----  p1's longitude.
+ * const double &lat1   ----  p1's latitude.
+ * const double &r1     ----  p1's distance to Earth's center.
+ * const double &lon2   ----  p2's longitude.
+ * const double &lat2   ----  p2's latitude.
+ * const double &r2     ----  p2's distance to Earth's center.
  *
  * return(s):
  * double ans  ----  Straight line distance between these two points.
@@ -26,8 +26,8 @@
  * Key words: geography, coordinates, distance.
 ***********************************************************/
 
-template <class T1,class T2,class T3,class T4,class T5,class T6>
-double LocDist(const T1 &lon1, const T2 &lat1, const T3 &r1, const T4 &lon2, const T5 &lat2, const T6 &r2){
+double LocDist(const double &lon1, const double &lat1, const double &r1,
+               const double &lon2, const double &lat2, const double &r2){
 
     auto res1=LL2TP(lon1,lat1);
     auto res2=LL2TP(lon2,lat2);

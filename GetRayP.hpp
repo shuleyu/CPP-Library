@@ -16,8 +16,8 @@
  * first arrival.
  *
  * input(s):
- * const T1     &Dist   ----  gcp distance (in deg.)
- * const T2     &EVDP   ----  source depth (in km.)
+ * const double &Dist   ----  gcp distance (in deg.)
+ * const double &EVDP   ----  source depth (in km.)
  * const string &Phase  ----  seismic phase.
  *
  * return(s):
@@ -32,8 +32,7 @@
  * Key words: ray parameters.
 *****************************************************/
 
-template<class T1, class T2>
-double GetRayP(const T1 &Dist,const T2 &EVDP,const std::string &Phase){
+double GetRayP(const double &Dist,const double &EVDP,const std::string &Phase){
 
     std::string command="taup_time -mod prem -h "+std::to_string(EVDP)
                         + " -deg " + std::to_string(Dist) + " -ph " + Phase
