@@ -23,7 +23,7 @@
  * Shule Yu
  * Jun 23 2018
  *
- * Key words: moving average. 
+ * Key words: moving average.
 *************************************************/
 
 template <typename T>

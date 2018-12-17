@@ -9,9 +9,18 @@ using namespace std;
 
 int main(){
 
-//     SACSignals A("/home/shule/x");
-    SACSignals A("data/SACSignals_in");
-//     EvenSampledSignal B("data/ShiftPhase_in");
+//     SACSignals A("data/SACSignals_in");
+    vector<string> infiles{
+        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.109C.BHT.sac",
+        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.115A.BHT.sac",
+        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.116A.BHT.sac",
+        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A03T.BHT.sac",
+        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A04T.BHT.sac",
+        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A09T.BHT.sac",
+        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A15T.BHT.sac"
+    };
+    SACSignals A(infiles);
+
 
 //     A.SortByGcarc();
 //     auto res=A.FindByNetwork("TA");
@@ -24,6 +33,7 @@ int main(){
 
 //     A.HannTaper(3);
 //     cout << A.dt() << endl;
+//     EvenSampledSignal B("data/ShiftPhase_in");
 //     B.Interpolate(A.dt());
 
 
@@ -55,7 +65,7 @@ int main(){
 //         cout << st[i] << " " << ans.first[i].first*A.dt() << " " << ans.first[i].second << endl;
 
 //     A.NormalizeToSignal();
-//     A.PrintInfo();
+    A.PrintInfo();
 //     A.WaterLevelDecon(A);
 //     A.WaterLevelDecon(B);
 //     A.GaussianBlur(1.3);
@@ -73,8 +83,8 @@ int main(){
 //     auto S=A.MakeNeatStack();
 //     cout << S << endl;
 
-    cout << A.GetFileList()[0] << endl;
-    A.OutputToSAC(vector<size_t> {0});
+//     cout << A.GetFileList()[0] << endl;
+//     A.OutputToSAC(vector<size_t> {0});
 
     return 0;
 }

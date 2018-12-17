@@ -10,7 +10,7 @@ int main(){
 
     int N=80;
     double dt=0.025,sigma=0.25;
-    
+
     // Use function.
     vector<double> A=GaussianSignal(N,dt,sigma);
 

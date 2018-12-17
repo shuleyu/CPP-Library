@@ -14,5 +14,5 @@ int main(){
     if (!ans.first) cout << "Lines don't cross paths..." << endl;
     else cout << ans.second.first << " " << ans.second.second << endl;
 
-    return 0;    
+    return 0;
 }

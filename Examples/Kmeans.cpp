@@ -26,7 +26,7 @@ int main(){
 
     for (size_t i=0;i<data.size();++i) {
         cout << "Catergory: " << res[i] << ": ";
-        for (size_t j=0;j<data[j].size();++j) 
+        for (size_t j=0;j<data[j].size();++j)
             cout << data[i][j] << " ";
         cout << endl;
     }

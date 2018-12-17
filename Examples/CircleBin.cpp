@@ -14,7 +14,7 @@ int main(){
     for (int i=0;i<Nb;++i)
         b.push_back({0,-20+i*BinInc});
     vector<double> r(b.size(),2);
-    
+
 
     // Make points.
     double PIncx=0.5,PIncy=0.5;

@@ -32,25 +32,25 @@ int main(int argc, char **argv){
 
 //     double StartDepth=500,EndDepth=2891,TakeOff=37;
 //     double rayp=(RE-StartDepth)*sin(TakeOff*M_PI/180)/Dvs(StartDepth)/180*M_PI;
-// 
+//
 //     // Use function.
 //     vector<double> degree1{-1e6},degree2{-1e6};
 //     size_t radius1,radius2;
 //     auto ans1=RayPath(r,v,rayp,StartDepth,EndDepth,degree1,radius1,89.999);
 //     auto ans2=RayPath(r,v,rayp,0,EndDepth,degree2,radius2,89.999);
-// 
+//
 //     // outputs.
 //     ofstream fpout("data/RayPath_out");
 //     for (size_t i=0;i<degree1.size();++i)
 //         fpout << degree1[i] << " " << r[i+(radius1+1-degree1.size())] << '\n';
 //     fpout << endl;
-// 
+//
 //     for (size_t i=degree2.size();i>0;--i)
 //         fpout << degree1.back()+degree2.back()-degree2[i-1] << " " << r[radius2+(i-degree2.size())] << '\n';
 //     fpout.close();
-// 
+//
 //     if (ans1.second || ans2.second) cout << "Ray turns !\n";
-// 
+//
 //     cout << "Rayp      : " << rayp << " sec/deg. (" << rayp/111.195 << " sec/km.)"  << endl;
 //     cout << "Theta(deg): " << (degree1.back()+degree2.back()) << " deg." << endl;
 //     cout << "Max Depth : " << RE-r[radius1] << " " << RE-r[radius2] << " km." << endl;

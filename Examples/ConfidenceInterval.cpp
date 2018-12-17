@@ -14,5 +14,5 @@ int main(){
     cout << ConfidenceInterval(p,95) << endl;
     cout << AvrStd(p).second << endl;
 
-    return 0;    
+    return 0;
 }

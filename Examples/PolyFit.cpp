@@ -20,7 +20,7 @@ int main(){
     for (auto &item:res)
         cout << item << " ";
     cout << endl;
-    
+
     return 0;
 }
 

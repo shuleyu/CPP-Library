@@ -13,5 +13,5 @@ int main(){
     if (!ans.first) cout << "Segments don't cross paths ..." << endl;
     else printf("%.15lf,%.15lf\n",ans.second.first,ans.second.second);
 
-    return 0;    
+    return 0;
 }

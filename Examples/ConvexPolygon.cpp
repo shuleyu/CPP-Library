@@ -13,5 +13,5 @@ int main(){
     auto res=ConvexPolygon(Polygons);
     cout << (res?"Yes":"No") << endl;
 
-    return 0;    
+    return 0;
 }

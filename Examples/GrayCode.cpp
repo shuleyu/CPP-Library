@@ -11,11 +11,11 @@ int main(int argc, char **argv){
     int n=ans.size();
 
     for (int i=0;i<n;++i) {
-        for (auto item:ans[i]) 
+        for (auto item:ans[i])
             cout << (item?1:0);
         cout << " --> ";
         if (i%8==7) cout << '\n';
     }
-    
+
     return 0;
 }

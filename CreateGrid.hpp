@@ -16,41 +16,41 @@
  *
  * const int    &mode         ----  select mode.
  *                                  Define the meaning of Para and return vector.
- *              
+ *
  *                                  0: Para means number of gird points.
  *                                     Return a vector (ans) of size Para:
- *              
+ *
  *                                     ans.size()=Para;
  *                                     ans[0]=lowerbound;
  *                                     ans[Para-1]=upperbound;
- *              
+ *
  *                                  1: Para means grid increment.
  *                                     Last grid point is less equal to higherbound.
  *                                     Return a vector (ans) of calculated size:
- *              
+ *
  *                                     ans[0]=lowerbound;
  *                                     ans[1]-ans[0]=Para;
  *                                     upperbound-Para<ans.back();
  *                                     ans.back()<=upperbound;
- *              
+ *
  *                                 -1: Same as 1. Will only return the grid property:
- *              
+ *
  *                                     ans.size()=2;
  *                                     ans[0] = calculated grid size.
  *                                     ans[1] = adjusted upperbound.
- *              
- *              
+ *
+ *
  *                                  2: Para means an estimation of grid increment.
  *                                     The calculated grid increment (Para*) is (possibly)
  *                                     sightly decreased such that the higherbound is meet.
  *                                     Return a vector (ans) of calculated size:
- *              
+ *
  *                                     ans[0]=lowerbound;
  *                                     ans[1]-ans[0]=Para* (<=Para);
  *                                     ans.back()=upperbound;
- *              
+ *
  *                                 -2: Same as 2. Will only return the grid property:
- *              
+ *
  *                                     ans.size()=2;
  *                                     ans[0] = calculated grid size.
  *                                     ans[1] = adjusted Para (Para*).

@@ -58,11 +58,11 @@ public:
         FloatCnt=atoi(argv[3]);
 
         // Check argument number and number of parameter names.
-        if (FLAG1!=IntCnt) 
+        if (FLAG1!=IntCnt)
             throw std::runtime_error("Integers naming error!");
-        if (FLAG2!=StringCnt) 
+        if (FLAG2!=StringCnt)
             throw std::runtime_error("String naming error!");
-        if (FLAG3!=FloatCnt) 
+        if (FLAG3!=FloatCnt)
             throw std::runtime_error("Float naming error!");
 
 

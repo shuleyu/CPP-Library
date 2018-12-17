@@ -85,6 +85,16 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         GMT_Destroy_Session(API);
     }
 
+    // gmt psimage.
+    void psimage(const std::string &outfile, const std::string &image, const std::string &cmd){
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
+        char *command=strdup((image+" "+cmd+" ->>"+outfile).c_str());
+        GMT_Call_Module(API,"psimage",GMT_MODULE_CMD,command);
+
+        delete [] command;
+        GMT_Destroy_Session(API);
+    }
+
 
     // gmt pstext.
     class Text {
@@ -284,6 +294,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         return;
     }
 
+
     // gmt grdimage.
 
     template<typename T>
@@ -333,7 +344,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         for (const auto &item:G) {
             std::size_t X=(std::size_t)round((item[0]-wesn[0])/xinc);
             std::size_t Y=(std::size_t)round((item[1]-wesn[2])/yinc);
-            // swap X,Y position and flip along y-axis. 
+            // swap X,Y position and flip along y-axis.
             aux_data[(n-3-Y)*m+X+2]=item[2];
         }
         grid->data=aux_data;
@@ -366,6 +377,98 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         // Plot.
         char *command=strdup(("-<"+std::string(filename)+" "+cmd+" ->>"+outfile).c_str());
         GMT_Call_Module(API,"grdimage",GMT_MODULE_CMD,command);
+
+        // Free spaces.
+        delete [] command;
+        GMT_Close_VirtualFile(API,filename);
+        GMT_Destroy_Data(API,grid);
+        GMT_Destroy_Session(API);
+
+        return;
+    }
+
+    // gmt grdcontour.
+
+    template<typename T>
+    void grdcontour(const std::string &outfile, const std::vector<std::vector<T>> &G,
+                    const double &xinc, const double &yinc, const std::string &cmd){
+
+        if (G.empty()) return;
+
+        // Check array size.
+        for (const auto &item:G)
+            if (item.size()!=3)
+                throw std::runtime_error("In "+std::string(__func__)+", input is not x,y,z data");
+
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
+
+        // Set grid limits.
+        double MinVal=std::numeric_limits<double>::max(),MaxVal=-MinVal;
+        double wesn[]={MinVal,MaxVal,MinVal,MaxVal};
+        for (const auto &item:G) {
+            wesn[0]=std::min(wesn[0],item[0]);
+            wesn[1]=std::max(wesn[1],item[0]);
+            wesn[2]=std::min(wesn[2],item[1]);
+            wesn[3]=std::max(wesn[3],item[1]);
+            MinVal=std::min(MinVal,item[2]);
+            MaxVal=std::max(MaxVal,item[2]);
+        }
+
+
+        // Set grid increments.
+        double inc[]={xinc,yinc};
+
+        // Set up grid size.
+        auto res=CreateGrid(wesn[0],wesn[1],inc[0],-1);
+        std::size_t m=(std::size_t)res[0]+4;
+        res=CreateGrid(wesn[2],wesn[3],inc[1],-1);
+        std::size_t n=(std::size_t)res[0]+4;
+
+
+        // Create plot data.
+        GMT_GRID *grid=(GMT_GRID *)GMT_Create_Data(API,GMT_IS_GRID,GMT_IS_SURFACE,
+                                                   GMT_CONTAINER_ONLY,NULL,wesn,inc,
+                                                   GMT_GRID_NODE_REG,-1,NULL);
+
+        // Inject data.
+        float *aux_data = new float [m*n];
+        for (std::size_t i=0;i<m*n;++i) aux_data[i]=0.0/0.0;
+        for (const auto &item:G) {
+            std::size_t X=(std::size_t)round((item[0]-wesn[0])/xinc);
+            std::size_t Y=(std::size_t)round((item[1]-wesn[2])/yinc);
+            // swap X,Y position and flip along y-axis.
+            aux_data[(n-3-Y)*m+X+2]=item[2];
+        }
+        grid->data=aux_data;
+
+
+        // Adjust something in the header. (magic)
+        grid->header->z_min=MinVal;
+        grid->header->z_max=MaxVal;
+
+        grid->header->grdtype=3;
+        grid->header->gn=1;
+        grid->header->gs=1;
+        grid->header->BC[2]=3;
+        grid->header->BC[3]=3;
+
+        // periodic along longitude (x) direction.
+        grid->header->BC[0]=2;
+        grid->header->BC[1]=2;
+        for (std::size_t Y=0;Y<n;++Y) {
+            aux_data[(n-1-Y)*m+0]=aux_data[(n-1-Y)*m+m-4];
+            aux_data[(n-1-Y)*m+1]=aux_data[(n-1-Y)*m+m-3];
+            aux_data[(n-1-Y)*m+m-1]=aux_data[(n-1-Y)*m+3];
+            aux_data[(n-1-Y)*m+m-2]=aux_data[(n-1-Y)*m+2];
+        }
+
+        // Get the virtual file.
+        char filename[20];
+        GMT_Open_VirtualFile(API,GMT_IS_GRID,GMT_IS_SURFACE,GMT_IN,grid,filename);
+
+        // Plot.
+        char *command=strdup(("-<"+std::string(filename)+" "+cmd+" ->>"+outfile).c_str());
+        GMT_Call_Module(API,"grdcontour",GMT_MODULE_CMD,command);
 
         // Free spaces.
         delete [] command;

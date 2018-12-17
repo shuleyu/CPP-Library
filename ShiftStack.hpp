@@ -31,7 +31,7 @@
 *********************************************************/
 
 template <typename T1, typename T2=double>
-std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<std::pair<T1,T1>> &P, 
+std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<std::pair<T1,T1>> &P,
                                                               const std::vector<int> &s=std::vector<int>(),
                                                               const std::vector<T2> &w=std::vector<T2>()){
     int m=P.size();
@@ -41,7 +41,7 @@ std::pair<std::vector<double>,std::vector<double>> ShiftStack(const std::vector<
 
     // Check each trace length.
     int n=std::distance(P[0].first,P[0].second);
-    for (const auto &item:P) { 
+    for (const auto &item:P) {
         if (std::distance(item.first,item.second)!=n) {
             std::cerr <<  "Error in " << __func__ << ": input 2D array size error ..." << std::endl;
             return {};

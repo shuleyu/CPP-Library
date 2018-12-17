@@ -68,7 +68,7 @@ int main(){
     auto ans4=AvrStd(A,D);
     printf("Mean: %.12lf\n",ans4.first);
     printf("Std : %.12lf\n",ans4.second);
-    
+
     return 0;
 }
 

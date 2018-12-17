@@ -42,8 +42,8 @@ int main(){
 //     cout << A << endl << endl;
 //     cout << A << endl;
 //     cout << A.LocateTime(1.36) << endl;
-// 
-// 
+//
+//
 //     cout << A.GetDelta() << endl;
 //     cout << A.EndTime() << endl;
 //     A.FindPeakAround(25,2);
@@ -56,29 +56,29 @@ int main(){
 //     A.PrintInfo();
 //     auto res=A.RemoveTrend();
 //     cout << "RemoveTrend result: " << res.first << " " << res.second << endl;
-// 
-// 
+//
+//
 //     cout << A.GetFileName() << endl;
 //     cout << A.GetPeak() << endl;
 //     cout << A.Size() << endl;
-// 
+//
 //     A.NormalizeToSignal();
 //     cout << A.GetAmpMultiplier() << endl;
-// 
+//
 //     cout << A.PeakTime() << endl;
 //     A.ShiftTimeReferenceToPeak();
 //     cout << A.PeakTime() << endl;
-// 
+//
 //     cout << A.GetAmpMultiplier() << endl;
 //     A.NormalizeToPeak();
 //     cout << A.GetAmpMultiplier() << endl;
-// 
+//
 //     cout << A.GetDelta() << endl;
-// 
+//
 //     A.WaterLevelDecon(A);
 //     A.GaussianBlur(1.3);
 //     A.Butterworth(0.033,1.0/A.GetDelta());
-// 
+//
 //     A.Interpolate(0.02);
 //     cout << A.GetDelta() << endl;
 

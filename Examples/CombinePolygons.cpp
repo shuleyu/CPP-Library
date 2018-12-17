@@ -13,7 +13,7 @@ int main(){
     ifstream fpin("data/CombinePolygons.txt");
 
     // Read in.
-    
+
     vector<vector<pair<double,double>>> Polygons;
 
     string tmpstr;
@@ -44,6 +44,6 @@ int main(){
         }
         cout << ">" << endl;
     }
-    
-    return 0;    
+
+    return 0;
 }

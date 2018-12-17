@@ -9,7 +9,7 @@ using namespace std;
 
 int main(){
 
-    bool PlotGrid=true;
+    bool PlotGrid=false;
 
     string outfile="GMT.ps";
     size_t NRow=3,NCol=3;
@@ -78,11 +78,11 @@ int main(){
 
     // grdimage 1.
     row=2,col=1;
-    xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
+    xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len+1.1;
     GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
 
-    vector<vector<double>> grid; 
+    vector<vector<double>> grid;
 
     ifstream fpin("/home/shule/Research/Fun.Bash.c001/ritsema.2880");
     double la,lo,val,xinc=1,yinc=1,minval=numeric_limits<double>::max(),maxval=-minval;
@@ -94,17 +94,27 @@ int main(){
     fpin.close();
     minval=-2.5;maxval=2.5;
     GMT::makecpt("-Cpolar -T"+to_string(minval)+"/"+to_string(maxval)+"/0.5 -I -Z > tmp.cpt");
-    yp+=1.1;
-    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     GMT::grdimage(outfile,grid,xinc,yinc,"-JR180/"+to_string(Len*(1-SpaceRatio))+"i -Rg -Ctmp.cpt -O -K");
     // -D scale center position relative to last reference piont.
     GMT::psscale(outfile,"-Ctmp.cpt -D"+to_string(Len*(1-SpaceRatio)/2)+"i/-0.5i/2i/0.1ih -O -K -B0.5:dVs(%):");
-    remove("tmp.cpt");
     GMT::pscoast(outfile,"-JR180/"+to_string(Len*(1-SpaceRatio))+"i -Rg -Bxa60g60 -Bya60g60 -BWSne -W0.5p,black -A10000 -O -K");
 
 
-    // grdimage 2.
+    // Contour of previous grid.
     row=2,col=2;
+    xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len+1.1;
+    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
+    if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
+
+    double ContourVal=1.0;
+
+    GMT::grdimage(outfile,grid,xinc,yinc,"-JR180/"+to_string(Len*(1-SpaceRatio))+"i -Rg -Ctmp.cpt -O -K");
+    GMT::grdcontour(outfile,grid,xinc,yinc,"-J -R -C+"+to_string(ContourVal)+" -W2p,orange -O -K");
+    GMT::psscale(outfile,"-Ctmp.cpt -D"+to_string(Len*(1-SpaceRatio)/2)+"i/-0.5i/2i/0.1ih -O -K -B0.5:dVs(%):");
+    GMT::pscoast(outfile,"-JR180/"+to_string(Len*(1-SpaceRatio))+"i -Rg -Bxa60g60 -Bya60g60 -BWSne -W0.5p,black -A10000 -O -K");
+
+    // grdimage 2.
+    row=2,col=3;
     xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
     GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
@@ -119,7 +129,7 @@ int main(){
 
 
     // pshistogram.
-    row=2,col=3;
+    row=3,col=1;
     xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
     GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
@@ -133,14 +143,14 @@ int main(){
                                           "-Z1 -W1 -L0.5p -G50/50/250 -Bxa5f1 -Bya10f2+u\"%\" -BWS -O -K");
 
     // psxy with different colors.
-    row=3,col=1;
+    row=3,col=2;
     xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
     GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
 
     vector<vector<double>> data={{1.0,1.0,2.0},{3,-6,9.0},{0.3,0.6,0.9}};
     GMT::makecpt("-Cgray -T0/1 -I > tmp.cpt");
-    GMT::psxy(outfile,data,"-J -R -Sc0.1i -Ctmp.cpt -W1p,black -N -O -K");
+    GMT::psxy(outfile,data,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Sc0.1i -Ctmp.cpt -W1p,black -N -O -K");
     remove("tmp.cpt");
 
 

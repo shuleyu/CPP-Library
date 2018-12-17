@@ -14,5 +14,5 @@ int main(){
 
     cout << "TakeOff: " << RayP2TakeOff(rayp,depth,'S') << endl;
 
-    return 0;    
+    return 0;
 }

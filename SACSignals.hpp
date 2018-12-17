@@ -7,6 +7,7 @@
 #include<string>
 #include<cstring>
 #include<fstream>
+#include<sstream>
 #include<map>
 #include<cstdio>
 #include<fcntl.h>
@@ -56,7 +57,9 @@ public:
 
     // Constructor/Destructors.
     SACSignals ();
+    SACSignals (const SACSignals &item) = default;
     SACSignals (const std::string &infile);
+    SACSignals (const std::vector<std::string> &infiles);
     ~SACSignals () = default;
 
     // Member function declarations.
@@ -123,8 +126,14 @@ public:
     XCorrStack(const std::vector<T> &center_time,
                const double &t1, const double &t2, const int loopN=5) const;
 
+    SACSignals &operator*=(const double &a){
+        for (std::size_t i=0;i<Size();++i) data[i]*=a;
+        return *this;
+    }
+
     // friends (non-member) declarations.
     friend std::istream &operator>>(std::istream &is, SACSignals &item);
+    friend SACSignals operator*(const SACSignals &item,const double &a);
 };
 
 
@@ -140,6 +149,15 @@ SACSignals::SACSignals (const std::string &infile){
     fpin >> *this;
     fpin.close();
     file_list_name=infile;
+    sorted_by="None";
+}
+
+SACSignals::SACSignals (const std::vector<std::string> &infiles){
+    std::stringstream ss;
+    std::copy(infiles.begin(),infiles.end(),std::ostream_iterator<std::string>(ss,"\n"));
+    ss >> *this;
+    ss.str(std::string());
+    file_list_name="None";
     sorted_by="None";
 }
 
@@ -516,7 +534,7 @@ void SACSignals::SortByStnm() {
 }
 
 std::vector<double> SACSignals::SNR(const double &nt1, const double &nt2,
-                                    const double &st1, const double &st2, 
+                                    const double &st1, const double &st2,
                                     const std::vector<double> &na,
                                     const std::vector<double> &sa) const{
     std::vector<double> ans;
@@ -721,6 +739,15 @@ std::istream &operator>>(std::istream &is, SACSignals &item){
     }
 
     return is;
+}
+
+SACSignals operator*(const SACSignals &input,const double &a){
+    SACSignals ans(input);
+    for (auto &item:ans.data) item*=a;
+    return ans;
+}
+SACSignals operator*(const double &a, const SACSignals &input){
+    return input*a;
 }
 
 void DumpWaveforms(const SACSignals &item,const std::string &dir){

@@ -18,5 +18,5 @@ int main(){
     auto ans=GridStretch(G,make_pair(0.5,1.5));
     cout << ans.first << " " << ans.second << endl;
 
-    return 0;    
+    return 0;
 }

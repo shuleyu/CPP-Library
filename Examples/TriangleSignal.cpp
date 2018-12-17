@@ -7,7 +7,7 @@ using namespace std;
 
 int main(){
 
-    
+
     // Use function.
 //     auto A=TriangleSignal(20,0.2);
     auto A=TriangleSignal(20,2.0);

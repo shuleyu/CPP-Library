@@ -12,5 +12,5 @@ int main(){
     cout << "C_" << n << "^" << k << endl;
     cout << Combination(n,k) << endl;
 
-    return 0;    
+    return 0;
 }

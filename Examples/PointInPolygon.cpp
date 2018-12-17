@@ -51,5 +51,5 @@ int main(){
     res=PointInPolygon(Polygon,Point);
     cout << Point.first << " " <<  Point.second << (res?" In":" Out") << endl;
 
-    return 0;    
+    return 0;
 }

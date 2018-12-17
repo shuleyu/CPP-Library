@@ -16,5 +16,5 @@ int main(){
         cout << item << " ";
     cout << endl;
 
-    return 0;    
+    return 0;
 }

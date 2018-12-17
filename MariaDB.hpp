@@ -268,7 +268,7 @@ namespace MariaDB {
             cmd2+=(t1+"."+item+",");
             if (std::find(NeedUpdate.begin(),NeedUpdate.end(),item)==NeedUpdate.end())
                 cmd+=(t1+"."+item+",");
-            else 
+            else
                 cmd+=(t2+"."+item+",");
         }
         for (const auto &item:NeedAdd) {
