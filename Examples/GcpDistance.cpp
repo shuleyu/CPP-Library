@@ -6,16 +6,10 @@ using namespace std;
 
 int main(){
 
-    double lo1,la1,lo2,la2;
-
-    lo1=-15.47;
-    la1=64.13;
-
-    lo2=-21.96;
-    la2=65.55;
-
+    pair<double,double> p1{179.919, -24.799},p2{-138.829, 59.4924};
+    
     // Use function.
-    cout << GcpDistance(lo1,la1,lo2,la2) << endl;
+    cout << GcpDistance(p1.first,p1.second,p2.first,p2.second) << endl;
     return 0;
 }
 // matlab benchmark:

@@ -62,12 +62,18 @@ std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> 
         epsi+=fabs((y[i]-y[i-1])/(x[i]-x[i-1]));
     epsi*=(1e-4/(n-1));
 
-    if (epsi==0) return std::vector<double> (xx.size(),y[0]);
+    std::vector<double> yy(xx.size(),0);
+    double Min=std::min(x[0],x.back()),Max=std::max(x[0],x.back());
+
+    if (epsi==0) {
+        for (std::size_t i=0;i<xx.size();++i)
+            if (xx[i]<Min || xx[i]>Max) yy[i]=0.0/0.0;
+            else yy[i]=y[0];
+        return yy;
+    }
 
     // modified from sac source code wigint.c
 
-    std::vector<double> yy(xx.size(),0);
-    double Min=std::min(x[0],x.back()),Max=std::max(x[0],x.back());
 
     for (std::size_t i=0;i<xx.size();++i) {
 

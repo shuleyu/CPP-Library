@@ -106,6 +106,7 @@ public:
     void Convolve(const EvenSampledSignal &item);
     void Diff();
     std::pair<EvenSampledSignal,EvenSampledSignal> FFT(const bool &ReturnAmpAndPhase=true) const;
+    void FlipReverseSum(const double &t);
     void GaussianBlur(const double &sigma=1);
     void Integrate();
     void Interpolate(const double &dt);
@@ -335,6 +336,29 @@ EvenSampledSignal::FFT(const bool &ReturnAmpAndPhase) const {
     auto res=::FFT(GetAmp(),GetDelta(),ReturnAmpAndPhase);
     return {EvenSampledSignal(res.first,1.0/2/GetDelta()/(res.first.size()-1),0),
             EvenSampledSignal(res.second,1.0/2/GetDelta()/(res.second.size()-1),0)};
+}
+
+
+// FRS at the given time.
+// If the given time is outside of the signal, do nothing.
+// Cut the signal at the given time, then
+// flip the first part, reverse the first part and sum it to the second part.
+// (as a result the given time becomes the begin time.)
+// Will maintain the maximum valid length.
+// Will do a time shift such that the FRS traces starts at t=0.
+void EvenSampledSignal::FlipReverseSum(const double &t) {
+    if (t<BeginTime() || t>EndTime()) {
+        std::cerr << "In FRS, the given time is invalid." << std::endl;
+        return;
+    }
+    std::size_t l=LocateTime(t),new_npts=std::min(l+1,Size()-l);
+    std::vector<double> new_amp(new_npts,0);
+    for (std::size_t i=0;i<new_npts;++i)
+        new_amp[i]=GetAmp()[l+i]-GetAmp()[l-i];
+
+    EvenSampledSignal new_signal(new_amp,GetDelta());
+    std::swap(*this,new_signal);
+    return;
 }
 
 // gaussian blur.

@@ -7,6 +7,7 @@
 #include<algorithm>
 #include<vector>
 #include<map>
+#include<string>
 #include<unistd.h>
 
 extern "C" {
@@ -169,8 +170,9 @@ namespace MariaDB {
      *    b. if t1 have the column(s) in t2, update the values in t1 using the values from t2.
      *        -- for rows in t1 doesn't appear in t2, do nothing.
     ***********************************************************************************************/
-    void UpdateTable(const std::string &t1, const std::string &t2, const std::string &fieldname) {
+    void UpdateTable(const std::string &t1, const std::string &t2, std::string fieldname) {
 
+        std::transform(fieldname.begin(),fieldname.end(),fieldname.begin(),::tolower);
 
         auto ID=mysql_init(NULL);
 
@@ -211,17 +213,24 @@ namespace MariaDB {
 
         // 3. check fieldname exists and not repeated.
         auto res1=Select("column_name from information_schema.columns where table_schema='"+t1db+"' and table_name='"+t1table+"'");
+        auto res2=Select("column_name,column_type,column_comment from information_schema.columns where table_schema='"+t2db+"' and table_name='"+t2table+"'");
+        auto T1N=res1.GetString("column_name");
+        auto T2N=res2.GetString("column_name");
+
+        // convert to lower case field naems.
+        for (auto &item:T1N) std::transform(item.begin(),item.end(),item.begin(),::tolower);
+        for (auto &item:T2N) std::transform(item.begin(),item.end(),item.begin(),::tolower);
+
         int Cnt=0;
-        for (const auto &item: res1.GetString("column_name"))
+        for (const auto &item: T1N)
             if (item==fieldname) ++Cnt;
         if (Cnt==0)
             throw std::runtime_error("Table "+t1+" doesn't have field called "+fieldname+"...");
         if (Cnt>1)
             throw std::runtime_error("Table "+t1+" have multiple fields called "+fieldname+"...");
 
-        auto res2=Select("column_name,column_type,column_comment from information_schema.columns where table_schema='"+t2db+"' and table_name='"+t2table+"'");
         Cnt=0;
-        for (const auto &item: res2.GetString("column_name"))
+        for (const auto &item: T2N)
             if (item==fieldname) ++Cnt;
         if (Cnt==0)
             throw std::runtime_error("Table "+t2+" doesn't have field called "+fieldname+"...");
@@ -230,11 +239,12 @@ namespace MariaDB {
 
 
         // 4. update.
-        auto T1N=res1.GetString("column_name"),T2N=res2.GetString("column_name");
         sort(T1N.begin(),T1N.end());
         auto id=SortWithIndex(T2N.begin(),T2N.end());
+        auto T2NN=res2.GetString("column_name");
         auto T2TP=res2.GetString("column_type");
         auto T2CM=res2.GetString("column_comment");
+        ReorderUseIndex(T2NN.begin(),T2NN.end(),id);
         ReorderUseIndex(T2TP.begin(),T2TP.end(),id);
         ReorderUseIndex(T2CM.begin(),T2CM.end(),id);
 
@@ -248,14 +258,15 @@ namespace MariaDB {
         NeedAdd.resize(it2-NeedAdd.begin());
 
         // create a tmp table.
-        std::string tmptable=t1db+".tmptable"+std::to_string(getpid());
+        std::string tmptable=t1db+".tMptAble"+std::to_string(getpid());
         Query("create table "+tmptable+" like "+t1);
+
 
         // add new columns to tmp table.
         for (const auto &item:NeedAdd) {
             for (std::size_t i=0;i<T2N.size();++i) {
                 if (T2N[i]==item){
-                    Query("alter table "+tmptable+" add column "+item+" "+T2TP[i]+(T2CM[i].empty()?"":(" comment \""+T2CM[i]+"\"")));
+                    Query("alter table "+tmptable+" add column "+T2NN[i]+" "+T2TP[i]+(T2CM[i].empty()?"":(" comment \""+T2CM[i]+"\"")));
                     break;
                 }
             }
@@ -266,7 +277,9 @@ namespace MariaDB {
         std::string cmd2="";
         for (const auto &item:res1.GetString("column_name")) {
             cmd2+=(t1+"."+item+",");
-            if (std::find(NeedUpdate.begin(),NeedUpdate.end(),item)==NeedUpdate.end())
+            auto item2=item;
+            std::transform(item2.begin(),item2.end(),item2.begin(),::tolower);
+            if (std::find(NeedUpdate.begin(),NeedUpdate.end(),item2)==NeedUpdate.end())
                 cmd+=(t1+"."+item+",");
             else
                 cmd+=(t2+"."+item+",");
@@ -278,7 +291,7 @@ namespace MariaDB {
         cmd.pop_back();
         cmd2.pop_back();
 
-        Query("insert "+tmptable+" select "+cmd+" from "+t1+" join "+t2+" on "+t1+"."+fieldname+"="+t2+"."+fieldname);
+        Query("insert "+tmptable+" select "+cmd+" from "+t1+" inner join "+t2+" on "+t1+"."+fieldname+"="+t2+"."+fieldname);
         Query("insert "+tmptable+" select "+cmd2+" from "+t1+" left join "+t2+" on "+t1+"."+fieldname+"="+t2+"."+fieldname+" where "+t2+"."+fieldname+" is null");
 
         // rename tmp table to t1.

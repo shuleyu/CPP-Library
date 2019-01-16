@@ -7,6 +7,7 @@
 #include<vector>
 #include<cstdlib>
 #include<cstring>
+#include<string>
 #include<chrono>
 #include<algorithm>
 
@@ -16,6 +17,9 @@ extern "C" {
 }
 
 #include<CreateGrid.hpp>
+#include<SACSignals.hpp>
+#include<EvenSampledSignal.hpp>
+#include<DigitalSignal.hpp>
 
 /*************************************************
  * This is a wrapper for GMT API.
@@ -506,6 +510,21 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         return;
     }
 
+    void psxy(const std::string &outfile,
+              const SACSignals &item, const std::size_t index,
+              const std::string &cmd){
+        if (item.Size()==0 || item.Size()<=index) return;
+
+        auto data=item.GetTimeAndWaveforms(std::vector<std::size_t> {index});
+        psxy(outfile,data[0].first,data[0].second,cmd);
+        return;
+    }
+    void psxy(const std::string &outfile,
+              const DigitalSignal &item, const std::string &cmd){
+        psxy(outfile,item.GetTime(),item.GetAmp(),cmd);
+        return;
+    }
+
     template<typename T>
     void pshistogram(const std::string &outfile, const std::vector<T> &X, const std::string &cmd){
         GMT::pshistogram(outfile,X.begin(),X.end(),cmd);
@@ -525,6 +544,25 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         remove("gmt.history");
         return;
     }
+
+    std::string BeginEasyPlot() {
+
+        char a[]="tmpfile_XXXXXX";
+        mkstemp(a);
+        std::string outfile(a);
+
+        GMT::set("PS_MEDIA 15ix15i");
+        GMT::set("FONT_ANNOT 8p");
+        GMT::set("FONT_LABEL 12p");
+        GMT::set("MAP_ANNOT_OFFSET_PRIMARY 6p");
+        GMT::set("MAP_FRAME_PEN 0.4p,black");
+        GMT::set("MAP_TICK_PEN_PRIMARY 0.4p,black");
+
+        GMT::BeginPlot(outfile);
+
+        return outfile;
+    }
+
 }
 
 #endif

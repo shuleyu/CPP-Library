@@ -7,7 +7,7 @@ using namespace std;
 int main(){
 
     MariaDB::Query("drop table if exists playground.T1_BU");
-    MariaDB::Query("create table playground.T1_BU(pairname varchar(30) primary key, lat double, lon double)");
+    MariaDB::Query("create table playground.T1_BU(PairName varchar(30) primary key, Lat double comment \"Capital field name?\", lon double)");
     MariaDB::Query("insert into playground.T1_BU values('2015_R32A',11,333)");
     MariaDB::Query("insert into playground.T1_BU values('2014_R32A',21,333)");
     MariaDB::Query("insert into playground.T1_BU values('2013_R32A',31,333)");
@@ -15,7 +15,7 @@ int main(){
 
 
     MariaDB::Query("drop table if exists playground.T2");
-    MariaDB::Query("create table playground.T2(pairname varchar(20) primary key, netwk varchar (20), gcarc double, lat double)");
+    MariaDB::Query("create table playground.T2(Pairname varchar(20) primary key, neTwk varchar (20), Gcarc double, lat double)");
     MariaDB::Query("insert into playground.T2 values('2015_R32A','ST',43.22,NULL)");
     MariaDB::Query("insert into playground.T2 values('2014_R32A','QT',123.1,22)");
     MariaDB::Query("insert into playground.T2 values('2013_R32A','CT',21.5,22)");
@@ -29,6 +29,7 @@ int main(){
 
     MariaDB::UpdateTable("playground.T1","playground.T2","pairname");
 
+    return 0;
 
     auto res=MariaDB::Select("pairname as pn,abs(lat) as x from playground.T1");
     for (size_t i=0;i<res.NRow();++i)
