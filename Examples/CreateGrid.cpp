@@ -20,11 +20,11 @@ int main(){
 
 
     // Use function mode 1.
-    mode=1;
-    auto res=CreateGrid(Lowerbound,Upperbound,Inc,mode);
-    if (!res.empty()) Inc=res[1]-res[0];
-    NPTS=res.size();
-    U=res.back();
+//     mode=1;
+//     auto res=CreateGrid(Lowerbound,Upperbound,Inc,mode);
+//     if (!res.empty()) Inc=res[1]-res[0];
+//     NPTS=res.size();
+//     U=res.back();
 
     // Use function mode -1.
 //     mode=-1;
@@ -33,11 +33,11 @@ int main(){
 //     U=res[1];
 
     // Use function mode 2.
-//     mode=2;
-//     auto res=CreateGrid(Lowerbound,Upperbound,Inc,mode);
-//     if (!res.empty()) Inc=res[1]-res[0];
-//     NPTS=res.size();
-//     U=res.back();
+    mode=2;
+    auto res=CreateGrid(Lowerbound,Upperbound,Inc,mode);
+    if (!res.empty()) Inc=res[1]-res[0];
+    NPTS=res.size();
+    U=res.back();
 
 //     // Use function mode -1.
 //     mode=-2;

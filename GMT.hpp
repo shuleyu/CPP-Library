@@ -211,9 +211,9 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
         // Check array size.
         if (Data.empty()) return;
-        std::size_t n=Data.size(),m=Data[0].size(); // m rows, n columns
-        for (std::size_t i=0;i<n;++i)
-            if (Data[i].size()!=m)
+        std::size_t m=Data.size(),n=Data[0].size(); // m rows, n columns
+        for (std::size_t i=0;i<m;++i)
+            if (Data[i].size()!=n)
                 throw std::runtime_error("In "+std::string(__func__)
                                          +", input data column size don't match.");
 
@@ -232,7 +232,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         for (std::size_t i=0;i<n;++i) {
             double *X = (double *)malloc(m*sizeof(double));
             for (std::size_t j=0;j<m;++j)
-                X[j]=Data[i][j];
+                X[j]=Data[j][i];
             GMT_Put_Vector(API,vec,i,GMT_DOUBLE,X);
         }
 

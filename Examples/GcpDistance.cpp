@@ -6,7 +6,7 @@ using namespace std;
 
 int main(){
 
-    pair<double,double> p1{179.919, -24.799},p2{-138.829, 59.4924};
+    pair<double,double> p1{-68.54,-18.88},p2{-80.6,7.61};
     
     // Use function.
     cout << GcpDistance(p1.first,p1.second,p2.first,p2.second) << endl;

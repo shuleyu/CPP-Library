@@ -9,7 +9,7 @@ using namespace std;
 
 int main(){
 
-    bool PlotGrid=false;
+    bool PlotGrid=true;
 
     string outfile="GMT.ps";
     size_t NRow=3,NCol=3;
@@ -148,7 +148,7 @@ int main(){
     GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
 
-    vector<vector<double>> data={{1.0,1.0,2.0},{3,-6,9.0},{0.3,0.6,0.9}};
+    vector<vector<double>> data={{1.0,1.0,0.2},{3,-6,0.5},{0.3,0.6,0.7},{2,1,1.0}};
     GMT::makecpt("-Cgray -T0/1 -I > tmp.cpt");
     GMT::psxy(outfile,data,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Sc0.1i -Ctmp.cpt -W1p,black -N -O -K");
     remove("tmp.cpt");

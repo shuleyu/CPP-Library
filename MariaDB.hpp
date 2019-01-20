@@ -300,6 +300,11 @@ namespace MariaDB {
 
         return;
     }
+
+    bool CheckTableExists(const std::string &DB, const std::string &Table){
+        auto res=Select("* from information_schema.tables where table_schema='"+DB+"' and table_name='"+Table+"'");
+        return (res.NRow()==1);
+    }
 }
 
 #endif

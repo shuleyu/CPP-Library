@@ -5,6 +5,7 @@
 #include<vector>
 
 #include<CreateGrid.hpp>
+#include<Enumerate.hpp>
 
 /***********************************************************
  * This C++ template mesh input ingredients.
@@ -53,6 +54,7 @@
 template<typename T>
 std::vector<std::vector<double>> MeshGrid(const std::vector<std::vector<T>> &p, const int &mode){
 
+
     // check mode.
     if (abs(mode)>2){
         std::cerr <<  "Error in " << __func__ << ": mode error ..." << std::endl;
@@ -61,6 +63,7 @@ std::vector<std::vector<double>> MeshGrid(const std::vector<std::vector<T>> &p, 
 
     // check input parameters.
     int n=p.size();
+    if (n==0) return {};
 
     for (int i=0;i<n;++i) {
         if (p[i].size()!=3) {
@@ -69,26 +72,11 @@ std::vector<std::vector<double>> MeshGrid(const std::vector<std::vector<T>> &p, 
         }
     }
 
-    std::vector<std::vector<double>> ans;
 
-    for (int i=0;i<n;++i) {
-
-        int N=ans.size();
-        auto grid=CreateGrid(p[i][0],p[i][1],p[i][2],abs(mode));
-
-        for (auto &item:grid){
-            if (N==0) ans.push_back({item});
-            else {
-                for (int j=0;j<N;++j){
-                    ans.push_back(ans[j]);
-                    ans.back().push_back(item);
-                }
-            }
-        }
-        ans.erase(ans.begin(),ans.begin()+N);
-    }
-
-    return ans;
+    std::vector<std::vector<T>> grids;
+    for (int i=0;i<n;++i)
+        grids.push_back(CreateGrid(p[i][0],p[i][1],p[i][2],abs(mode)));
+    return Enumerate(grids);
 }
 
 #endif

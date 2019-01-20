@@ -7,9 +7,9 @@ using namespace std;
 int main(){
 
     vector<vector<double>> p={
-        {1,5,5},
-        {6,10,5},
-        {0.1,0.2,3}
+        {0,10,5},
+        {2,4,5},
+        {1,5,2}
     };
 
     // Use function.

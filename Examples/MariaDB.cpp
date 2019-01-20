@@ -7,11 +7,12 @@ using namespace std;
 int main(){
 
     MariaDB::Query("drop table if exists playground.T1_BU");
-    MariaDB::Query("create table playground.T1_BU(PairName varchar(30) primary key, Lat double comment \"Capital field name?\", lon double)");
-    MariaDB::Query("insert into playground.T1_BU values('2015_R32A',11,333)");
-    MariaDB::Query("insert into playground.T1_BU values('2014_R32A',21,333)");
-    MariaDB::Query("insert into playground.T1_BU values('2013_R32A',31,333)");
-    MariaDB::Query("insert into playground.T1_BU values('2012_R32A',41,333)");
+    MariaDB::Query("create table playground.T1_BU(PairName varchar(30) primary key, Lat double comment \"Capital field name?\", lon double, flag boolean)");
+    MariaDB::Query("insert into playground.T1_BU values('2015_R32A',11,333,false)");
+    MariaDB::Query("insert into playground.T1_BU values('2014_R32A',21,333,false)");
+    MariaDB::Query("insert into playground.T1_BU values('2013_R32A',31,333,true)");
+    MariaDB::Query("insert into playground.T1_BU values('2012_R32A',41,333,true)");
+    MariaDB::Query("insert into playground.T1_BU values('2012_R34A',41,333,true)");
 
 
     MariaDB::Query("drop table if exists playground.T2");
@@ -29,11 +30,11 @@ int main(){
 
     MariaDB::UpdateTable("playground.T1","playground.T2","pairname");
 
-    return 0;
+    cout << (MariaDB::CheckTableExists("playground","T1")?"Yes":"No") << endl;
 
-    auto res=MariaDB::Select("pairname as pn,abs(lat) as x from playground.T1");
+    auto res=MariaDB::Select("pairname as pn,abs(lat) as x,flag from playground.T1");
     for (size_t i=0;i<res.NRow();++i)
-        cout << res.GetString("pn")[i] << " " << res.GetDouble("x")[i] << endl;
+        cout << res.GetString("pn")[i] << " " << res.GetDouble("x")[i] << " " << res.GetInt("flag")[i] << endl;
 
     return 0;
 }
