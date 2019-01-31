@@ -8,6 +8,7 @@
 #include<vector>
 #include<map>
 #include<string>
+#include<tuple>
 #include<unistd.h>
 
 extern "C" {
@@ -29,26 +30,10 @@ extern "C" {
 
 namespace MariaDB {
 
-    void Query(const std::string &cmd){
-        auto ID=mysql_init(NULL);
-
-        if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
-            std::cerr << mysql_error(ID) << std::endl;
-            throw std::runtime_error("Connet failed...");
-        }
-
-        if (mysql_query(ID,cmd.c_str())!=0) {
-            std::cerr << mysql_error(ID) << std::endl;
-            throw std::runtime_error("Query failed...");
-        }
-        mysql_close(ID);
-        return;
-    }
-
 
     class Select {
 
-        std::size_t ICnt=0,SCnt=0,DCnt=0,m,n;
+        std::size_t m,n;
         std::map<std::string,int> NameToIndex,TypeCheck;
         std::vector<std::vector<int>> PI;
         std::vector<std::vector<std::string>> PS;
@@ -95,6 +80,7 @@ namespace MariaDB {
         Select()=default;
         Select(const std::string &cmd) {
 
+            std::size_t ICnt=0,SCnt=0,DCnt=0;
             auto ID=mysql_init(NULL);
 
             if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
@@ -154,7 +140,161 @@ namespace MariaDB {
             }
             mysql_free_result(res);
         }
+
+        Select &operator+=(const Select &rhs);
+
     };
+
+    Select &Select::operator+=(const Select &rhs){
+
+        // Edge cases.
+        if (rhs.NCol()==0) return *this;
+        if (NCol()==0) {
+            *this=rhs;
+            return *this;
+        }
+
+        // Edge cases.
+        if (rhs.NRow()==0) return *this;
+        if (NRow()==0) {
+            *this=rhs;
+            return *this;
+        }
+
+        // Check field names, do they match?
+        for (const auto &item:NameToIndex) {
+            if (rhs.NameToIndex.find(item.first)==rhs.NameToIndex.end())
+                throw std::runtime_error("Can't find field name: "+item.first+" in rhs ...");
+            if (rhs.TypeCheck.at(item.first)!=TypeCheck.at(item.first))
+                throw std::runtime_error("Can't find same type field : "+item.first+" in rhs ...");
+        }
+
+
+        m+=rhs.m;
+        for (const auto &item:rhs.NameToIndex) {
+
+            std::size_t index=item.second;
+            std::size_t lhs_index=NameToIndex.at(item.first);
+            if (TypeCheck.at(item.first)==0)
+                PI[lhs_index].insert(PI[lhs_index].end(),rhs.PI[index].begin(),rhs.PI[index].end());
+            else if (TypeCheck.at(item.first)==1)
+                PS[lhs_index].insert(PS[lhs_index].end(),rhs.PS[index].begin(),rhs.PS[index].end());
+            else
+                PF[lhs_index].insert(PF[lhs_index].end(),rhs.PF[index].begin(),rhs.PF[index].end());
+        }
+
+        return *this;
+    }
+
+    void Query(const std::string &cmd){
+        auto ID=mysql_init(NULL);
+
+        if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
+            std::cerr << mysql_error(ID) << std::endl;
+            throw std::runtime_error("Connet failed...");
+        }
+
+        if (mysql_query(ID,cmd.c_str())!=0) {
+            std::cerr << mysql_error(ID) << std::endl;
+            throw std::runtime_error("Query failed...");
+        }
+        mysql_close(ID);
+        return;
+    }
+
+
+    bool CheckTableExists(const std::string &DB, const std::string &Table){
+        auto res=Select("* from information_schema.tables where table_schema='"+DB+"' and table_name='"+Table+"'");
+        return (res.NRow()==1);
+    }
+
+    std::vector<bool> IsString(const std::string &DB, const std::string &Table,
+                                const std::vector<std::string> &fieldnames) {
+        auto res=Select("lower(COLUMN_NAME) as names,NUMERIC_PRECISION as precisions from information_schema.columns where table_schema='"+DB+"' and table_name='"+Table+"'");
+
+        std::vector<bool> ans;
+
+        for (auto item:fieldnames) {
+            std::transform(item.begin(),item.end(),item.begin(),::tolower);
+
+            bool flag=false;
+            for (std::size_t i=0;i<res.NRow();++i) {
+                if (item==res.GetString("names")[i]) {
+                    // Use the fact string precision is numeric_limits<int>::max()
+                    // to distinguish character string.
+                    if (res.GetInt("precisions")[i]>1e5) ans.push_back(true);
+                    else ans.push_back(false);
+                    flag=true;
+                    break;
+                }
+            }
+            if (!flag)
+                throw std::runtime_error("Can't find column: "+item+" ...");
+        }
+
+        return ans;
+    }
+
+
+    // number of rows in the table will change.
+    // Use NULL as the key word for double data.
+    void LoadData(const std::string &DB, const std::string &Table,
+                  const std::vector<std::string> &fieldnames,
+                  const std::vector<std::vector<std::string>> &values,
+                  const std::size_t &Batch=10000){
+
+        std::size_t n=fieldnames.size();
+        if (n!=values.size())
+            throw std::runtime_error("Values column count != fieldname column count ...");
+        if (n==0) return;
+
+        std::size_t m=values[0].size();
+        for (std::size_t i=1;i<n;++i)
+            if (m!=values[i].size())
+                throw std::runtime_error("Values row counts are inconsistant...");
+
+        auto ID=mysql_init(NULL);
+
+        if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
+            std::cerr << mysql_error(ID) << std::endl;
+            throw std::runtime_error("Connet failed...");
+        }
+
+        auto types=IsString(DB,Table,fieldnames);
+
+        size_t p=0,q=Batch;
+        while (true) {
+
+            if (p>=m) break;
+
+            std::string cmd="insert into "+DB+"."+Table+" (";
+            for (std::size_t j=0;j<n;++j) cmd+=fieldnames[j]+",";
+            cmd.back()=')';
+            cmd+=" values ";
+
+            for (std::size_t i=p;i<std::min(m,q);++i) {
+                cmd+='(';
+                for (std::size_t j=0;j<n;++j)
+                    if (types[j]) cmd+="'"+values[j][i]+"',";
+                    else cmd+=values[j][i]+",";
+                cmd.pop_back();
+                cmd+="),";
+            }
+            cmd.pop_back();
+
+            if (mysql_query(ID,cmd.c_str())!=0) {
+                std::cerr << mysql_error(ID) << std::endl;
+                throw std::runtime_error("Insert failed ... Too many rows?");
+            }
+
+            p=q;
+            q+=Batch;
+        }
+
+
+        mysql_close(ID);
+        return;
+    }
 
 
     /***********************************************************************************************
@@ -299,11 +439,6 @@ namespace MariaDB {
         Query("rename table "+tmptable+" to "+t1);
 
         return;
-    }
-
-    bool CheckTableExists(const std::string &DB, const std::string &Table){
-        auto res=Select("* from information_schema.tables where table_schema='"+DB+"' and table_name='"+Table+"'");
-        return (res.NRow()==1);
     }
 }
 

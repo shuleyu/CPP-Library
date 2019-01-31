@@ -103,6 +103,8 @@ public:    // inherit mode is "private"   --> "private".
     void ShiftTimeReferenceToPeak() {ShiftTime(-PeakTime());}
     std::size_t Size() const {return GetAmp().size();}
 
+    std::pair<std::size_t,std::size_t> FindAmplevel(const double &level=0.5);
+
     DigitalSignal &operator+=(const double &a){
         for (std::size_t i=0;i<Size();++i) amp[i]+=a;
         return *this;
@@ -115,8 +117,8 @@ public:    // inherit mode is "private"   --> "private".
     }
     DigitalSignal &operator-=(const double &a){*this+=(-a);return *this;}
     DigitalSignal &operator/=(const double &a){
-        if (a==0) throw std::runtime_error("Dividing amplitudes with zero.");
-        *this*=(1.0/a);
+//         if (a==0) throw std::runtime_error("Dividing amplitudes with zero.");
+        if (a>0) *this*=(1.0/a);
         return *this;
     }
 
@@ -263,6 +265,29 @@ void DigitalSignal::ZeroOutHannTaper(const double &wl, const double &zl){
         if (len<zl) amp[i]=0;
         else if (len<zl+wl) amp[i]*=0.5-0.5*cos((len-zl)/wl*M_PI);
     }
+}
+
+// Find the amplitude level width move away from peak.
+// Need to define peak.
+std::pair<std::size_t,std::size_t> DigitalSignal::FindAmplevel(const double &level){
+
+    if (level<0 || level>=1)
+        throw std::runtime_error("Amplitude level is not in [0,1) ...");
+
+    std::pair<std::size_t,std::size_t> ans{0,Size()-1};
+    double AmpThreshold=level*fabs(amp[GetPeak()]);
+    for (std::size_t i=GetPeak();i<Size();++i)
+        if (fabs(amp[i])<AmpThreshold) {
+            ans.second=i-1;
+            break;
+        }
+
+    for (int i=GetPeak();i>=0;--i)
+        if (fabs(amp[i])<AmpThreshold) {
+            ans.first=i+1;
+            break;
+        }
+    return ans;
 }
 
 

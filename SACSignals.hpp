@@ -71,19 +71,21 @@ public:
     std::string GetFileListName() const {return file_list_name;}
 
     void Butterworth(const double &f1, const double &f2, const int &order=2, const int &passes=2);
-    std::vector<double> BeginTime() const;
+    std::vector<double> BeginTime(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     void CheckDist(const double &d1=-1, const double &d2=181);
     void CheckPhase(const std::string &phase, const double &t1=0,
                     const double &t2=std::numeric_limits<double>::max());
+    void Diff();
     std::vector<std::size_t> FindByGcarc(const double &gc, const bool &bulk=false);
     std::vector<std::size_t> FindByStnm(const std::string &st, const bool &bulk=false);
     std::vector<std::size_t> FindByNetwork(const std::string &nt, const bool &bulk=false);
     void GaussianBlur(const double &sigma=1);
-    std::vector<double> GetDistance() const;
+    std::vector<double> GetDistance(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     std::vector<std::string> GetFileList() const;
     std::vector<std::string> GetNetworkNames() const;
     std::vector<std::string> GetStationNames() const;
-    std::vector<double> GetTravelTimes(const std::string &phase) const;
+    std::vector<double> GetTravelTimes(const std::string &phase,
+                                       const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     std::vector<std::pair<std::vector<double>,std::vector<double>>>
     GetTimeAndWaveforms(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     std::vector<std::vector<double>>
@@ -97,7 +99,7 @@ public:
     void NormalizeToSignal();
     void OutputToSAC(const std::vector<std::size_t> &indices=std::vector<std::size_t> (),
                      const std::string &prefix="") const;
-    std::vector<double> PeakTime() const;
+    std::vector<double> PeakTime(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     void PrintInfo() const;
     void PrintListInfo() const;
     void RemoveRecords(const std::vector<std::size_t> &indices);
@@ -170,9 +172,15 @@ void SACSignals::Butterworth(const double &f1, const double &f2,
         data[i].Butterworth(f1,f2,order,passes);
 }
 
-std::vector<double> SACSignals::BeginTime() const {
+std::vector<double> SACSignals::BeginTime(const std::vector<std::size_t> &indices) const {
     std::vector<double> ans;
-    for (std::size_t i=0;i<Size();++i) ans.push_back(data[i].BeginTime());
+    if (indices.empty())
+        for (std::size_t i=0;i<Size();++i) ans.push_back(data[i].BeginTime());
+    else
+        for (const auto &i:indices) {
+            if (i>=Size()) continue;
+            ans.push_back(data[i].BeginTime());
+        }
     return ans;
 }
 
@@ -191,6 +199,11 @@ void SACSignals::CheckPhase(const std::string &phase, const double &t1, const do
             BadIndices.push_back(i);
     }
     RemoveRecords(BadIndices);
+}
+
+void SACSignals::Diff() {
+    for (std::size_t i=0;i<Size();++i)
+        data[i].Diff();
 }
 
 std::vector<std::size_t> SACSignals::FindByGcarc(const double &gc, const bool &bulk) {
@@ -298,10 +311,17 @@ void SACSignals::GaussianBlur(const double &sigma){
         data[i].GaussianBlur(sigma);
 }
 
-std::vector<double> SACSignals::GetDistance() const{
+std::vector<double> SACSignals::GetDistance(const std::vector<std::size_t> &indices) const{
     std::vector<double> ans;
-    for (const auto &item:mdata)
-        ans.push_back(item.gcarc);
+    if (indices.empty())
+        for (const auto &item:mdata)
+            ans.push_back(item.gcarc);
+    else {
+        for (const auto &i:indices) {
+            if (i>=Size()) continue;
+            ans.push_back(mdata[i].gcarc);
+        }
+    }
     return ans;
 }
 
@@ -328,13 +348,22 @@ std::vector<std::string> SACSignals::GetStationNames() const{
 }
 
 
-std::vector<double> SACSignals::GetTravelTimes(const std::string &phase) const{
+std::vector<double> SACSignals::GetTravelTimes(const std::string &phase,
+                                               const std::vector<std::size_t> &indices) const {
     std::vector<double> ans;
-    for (const auto &item:mdata) {
-        auto it=item.tt.find(phase);
-        if (it==item.tt.end()) ans.push_back(-1);
-        else ans.push_back(it->second);
-    }
+    if (indices.empty())
+        for (const auto &item:mdata) {
+            auto it=item.tt.find(phase);
+            if (it==item.tt.end()) ans.push_back(-1);
+            else ans.push_back(it->second);
+        }
+    else 
+        for (const auto &i:indices){
+            if (i>=Size()) continue;
+            auto it=mdata[i].tt.find(phase);
+            if (it==mdata[i].tt.end()) ans.push_back(-1);
+            else ans.push_back(it->second);
+        }
     return ans;
 }
 
@@ -445,13 +474,19 @@ void SACSignals::OutputToSAC(const std::vector<std::size_t> &indices,
     delete [] amp;
 }
 
-std::vector<double> SACSignals::PeakTime() const{
+std::vector<double> SACSignals::PeakTime(const std::vector<std::size_t> &indices) const{
     std::vector<double> ans;
-    for (std::size_t i=0;i<Size();++i)
-        ans.push_back(data[i].PeakTime());
+    if (indices.empty())
+        for (std::size_t i=0;i<Size();++i)
+            ans.push_back(data[i].PeakTime());
+    else {
+        for (const auto &i:indices) {
+            if (i>=Size()) continue;
+            ans.push_back(data[i].PeakTime());
+        }
+    }
     return ans;
 }
-
 
 void SACSignals::PrintInfo() const {
     PrintListInfo();

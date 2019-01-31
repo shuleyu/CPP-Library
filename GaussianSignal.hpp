@@ -31,7 +31,7 @@
  * Key words: gaussian function.
 ***********************************************************/
 
-std::vector<double> GaussianSignal(const int &N, const double &dt, const double &sigma){
+std::vector<double> GaussianSignal(const int &N, const double &dt, const double &sigma, const bool &normalize=false){
 
     // Check parameters.
 
@@ -52,13 +52,22 @@ std::vector<double> GaussianSignal(const int &N, const double &dt, const double 
 
     ans[N/2]=GaussianFunction(0,sigma,0);
 
-    if (sigma==0) return ans;
+
+    if (sigma==0) {
+        if (normalize) ans[N/2]=1;
+        return ans;
+    }
 
     for (int i=N/2+1;i<N;++i){
         ans[i]=GaussianFunction((i-N/2)*dt,sigma,0);
         ans[(N&(~1))-i]=ans[i];
     }
     if (N%2==0) ans[0]=GaussianFunction(N/2*dt,sigma,0);
+
+    double amp=ans[N/2];
+    if (normalize)
+        for (auto &item:ans)
+            item/=amp;
 
     return ans;
 }

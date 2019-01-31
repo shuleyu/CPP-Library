@@ -8,11 +8,11 @@ using namespace std;
 
 int main(){
 
-    int N=80;
-    double dt=0.025,sigma=0.25;
+    int N=4000;
+    double dt=0.025,sigma=42.91;
 
     // Use function.
-    vector<double> A=GaussianSignal(N,dt,sigma);
+    vector<double> A=GaussianSignal(N,dt,sigma,true);
 
     ofstream fpout("data/GaussianSignal_out.txt");
     for (int i=0;i<N;++i)

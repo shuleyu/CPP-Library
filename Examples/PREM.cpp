@@ -8,7 +8,7 @@ using namespace std;
 
 int main(){
 
-    cout << Dvs(2891) << endl;
+    cout << Dvs(-1,false) << endl;
 
 //     ofstream fpout;
 //     double RE,Depth,dr;

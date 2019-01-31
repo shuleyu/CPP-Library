@@ -33,6 +33,9 @@ std::vector<std::string> ShellExecVec(const std::string &cmd) {
         if (fgets(buffer.data(), 128, pipe.get()) != NULL)
             ans.push_back(std::string(buffer.data()));
     }
+    for (auto &s:ans)
+        if (s.back()=='\n')
+            s.pop_back();
     return ans;
 }
 

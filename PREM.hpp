@@ -51,7 +51,8 @@
 
 void PREM(const double &Depth,const int &iso, const int &ocean,
           double &rho, double &vpv, double &vph, double &vsv,
-          double &vsh, double &qu, double &qk, double &yita){
+          double &vsh, double &qu, double &qk, double &yita,
+          const bool &PrintWarning=true){
 
     double R=6371.0;
     double r=R-Depth;
@@ -196,7 +197,8 @@ void PREM(const double &Depth,const int &iso, const int &ocean,
 
     else { // space
 
-        std::cerr <<  "Error in " << __func__ << ": negative depth value: " << R-r << " ..." << std::endl;
+        if (PrintWarning)
+            std::cerr <<  "Error in " << __func__ << ": negative depth value: " << R-r << " ..." << std::endl;
 
         rho=0;
         vpv=0;
@@ -247,34 +249,34 @@ void PREM(const double &Depth,const int &iso, const int &ocean,
     return ;
 }
 
-double Dvs(const double &Depth){
+double Dvs(const double &Depth, const bool &PrintWarning=true) {
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
-    PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
+    PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita,PrintWarning);
     return vsv;
 }
 
-double Dvp(const double &Depth){
+double Dvp(const double &Depth, const bool &PrintWarning=true) {
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
-    PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
+    PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita,PrintWarning);
     return vpv;
 }
 
-double Drho(const double &Depth){
+double Drho(const double &Depth, const bool &PrintWarning=true) {
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
-    PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
+    PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita,PrintWarning);
     return rho;
 }
 
-double Rvs(const double &Radius){
-    return Dvs(6371.0-Radius);
+double Rvs(const double &Radius, const bool &PrintWarning=true) {
+    return Dvs(6371.0-Radius,PrintWarning);
 }
 
-double Rvp(const double &Radius){
-    return Dvp(6371.0-Radius);
+double Rvp(const double &Radius, const bool &PrintWarning=true) {
+    return Dvp(6371.0-Radius,PrintWarning);
 }
 
-double Rrho(const double &Radius){
-    return Drho(6371.0-Radius);
+double Rrho(const double &Radius, const bool &PrintWarning=true) {
+    return Drho(6371.0-Radius,PrintWarning);
 }
 
 // PREMSmoothed
@@ -282,14 +284,15 @@ double Rrho(const double &Radius){
 void PREMSmoothed(const double &Depth, double &rho,double &vpv,double &vph,
                   double &vsv,double &vsh,double &qu,double &qk,double &yita,
                   const int &RemoveCrust,const int &Remove220,
-                  const int &Remove400, const int &Remove670){
+                  const int &Remove400, const int &Remove670,
+                  const bool &PrintWarning=true){
 
 // Inspired from Mike Thorne.
 // By default, no ocean (0), no anisotropy (1).
 // Linear interpolate between +- 30km around each discontinuity.
 
     double r=6371.0-Depth;
-    PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
+    PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita,PrintWarning);
 
     // Remove Crust.
     if ( RemoveCrust==1 && 6346.6<=r ) {
@@ -326,47 +329,48 @@ void PREMSmoothed(const double &Depth, double &rho,double &vpv,double &vph,
 }
 
 double DvsS(const double &Depth,const int &RemoveCrust, const int &Remove220,
-            const int &Remove400, const int &Remove670){
+            const int &Remove400, const int &Remove670, const bool &PrintWarning=true) {
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
-    PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670);
+    PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670,PrintWarning);
     return vsv;
 }
 
 double DvpS(const double &Depth,const int &RemoveCrust, const int &Remove220,
-            const int &Remove400, const int &Remove670){
+            const int &Remove400, const int &Remove670, const bool &PrintWarning=true) {
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
-    PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670);
+    PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670,PrintWarning);
     return vpv;
 }
 
 double DrhoS(const double &Depth,const int &RemoveCrust, const int &Remove220,
-            const int &Remove400, const int &Remove670){
+            const int &Remove400, const int &Remove670, const bool &PrintWarning=true) {
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
-    PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670);
+    PREMSmoothed(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,RemoveCrust,Remove220,Remove400,Remove670,PrintWarning);
     return rho;
 }
 
 double RvsS(const double &Radius,const int &RemoveCrust, const int &Remove220,
-            const int &Remove400, const int &Remove670){
-    return DvsS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
+            const int &Remove400, const int &Remove670, const bool &PrintWarning=true) {
+    return DvsS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670,PrintWarning);
 }
 
 double RvpS(const double &Radius,const int &RemoveCrust, const int &Remove220,
-            const int &Remove400, const int &Remove670){
-    return DvpS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
+            const int &Remove400, const int &Remove670, const bool &PrintWarning=true) {
+    return DvpS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670,PrintWarning);
 }
 
 double RrhoS(const double &Radius,const int &RemoveCrust, const int &Remove220,
-            const int &Remove400, const int &Remove670){
-    return DrhoS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670);
+            const int &Remove400, const int &Remove670, const bool &PrintWarning=true) {
+    return DrhoS(6371.0-Radius,RemoveCrust,Remove220,Remove400,Remove670,PrintWarning);
 }
 
 // PREMX
 
 void PREMX(const double &Depth, double &rho,double &vpv,double &vph,
-           double &vsv,double &vsh,double &qu,double &qk,double &yita){
+           double &vsv,double &vsh,double &qu,double &qk,double &yita,
+           const bool &PrintWarning=true) {
 
-    PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita);
+    PREM(Depth,1,0,rho,vpv,vph,vsv,vsh,qu,qk,yita,PrintWarning);
 
     double R=6371.0;
     double r=R-Depth;
@@ -396,34 +400,34 @@ void PREMX(const double &Depth, double &rho,double &vpv,double &vph,
     return;
 }
 
-double DvsX(const double &Depth){
+double DvsX(const double &Depth, const bool &PrintWarning=true) {
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
-    PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita);
+    PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,PrintWarning);
     return vsv;
 }
 
-double DvpX(const double &Depth){
+double DvpX(const double &Depth, const bool &PrintWarning=true) {
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
-    PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita);
+    PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,PrintWarning);
     return vpv;
 }
 
-double DrhoX(const double &Depth){
+double DrhoX(const double &Depth, const bool &PrintWarning=true) {
     double rho=0,vpv=0,vph=0,vsv=0,vsh=0,qu=0,qk=0,yita=0;
-    PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita);
+    PREMX(Depth,rho,vpv,vph,vsv,vsh,qu,qk,yita,PrintWarning);
     return rho;
 }
 
-double RvsX(const double &Radius){
-    return DvsX(6371.0-Radius);
+double RvsX(const double &Radius, const bool &PrintWarning=true) {
+    return DvsX(6371.0-Radius,PrintWarning);
 }
 
-double RvpX(const double &Radius){
-    return DvpX(6371.0-Radius);
+double RvpX(const double &Radius, const bool &PrintWarning=true) {
+    return DvpX(6371.0-Radius,PrintWarning);
 }
 
-double RrhoX(const double &Radius){
-    return DrhoX(6371.0-Radius);
+double RrhoX(const double &Radius, const bool &PrintWarning=true) {
+    return DrhoX(6371.0-Radius,PrintWarning);
 }
 
 #endif
