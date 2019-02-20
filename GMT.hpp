@@ -475,7 +475,6 @@ std::cout << std::endl;
 
     // Move reference point.
     void MoveReferencePoint(const std::string &outfile, const std::string &cmd){
-//         psbasemap(outfile,"-J -R -B -O -K "+cmd);
         psxy(outfile,std::vector<double> {0},std::vector<double> {0},"-J -R -O -K "+cmd);
         return;
     }
