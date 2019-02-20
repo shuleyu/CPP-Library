@@ -17,9 +17,6 @@ extern "C" {
 }
 
 #include<CreateGrid.hpp>
-#include<SACSignals.hpp>
-#include<EvenSampledSignal.hpp>
-#include<DigitalSignal.hpp>
 
 /*************************************************
  * This is a c++ wrapper for GMT C API.
@@ -62,17 +59,22 @@ namespace GMT { // the order of the function definition matters: dependencies sh
                 MaxVal=std::max(MaxVal,item[2]);
             }
 
+
             // Set grid increments.
             double inc[]={xinc,yinc};
 
-            // Set up grid size.
-            auto res=CreateGrid(wesn[0],wesn[1],inc[0],-2);
-            std::size_t m=(std::size_t)res[0]+4;
-            inc[0]=res[1];
 
-            res=CreateGrid(wesn[2],wesn[3],inc[1],-2);
+            // Set up grid size.
+
+            // South to North. Row numbers. Y direction.
+            auto res=CreateGrid(wesn[2],wesn[3],inc[1],-2);
+            std::size_t m=(std::size_t)res[0]+4;
+            inc[1]=res[1]; // Y increment.
+
+            // West to East. Column numbers. X direction.
+            res=CreateGrid(wesn[0],wesn[1],inc[0],-2);
             std::size_t n=(std::size_t)res[0]+4;
-            inc[1]=res[1];
+            inc[0]=res[1]; // X increment.
 
 
             // Create plot data.
@@ -86,35 +88,80 @@ namespace GMT { // the order of the function definition matters: dependencies sh
             for (const auto &item:G) {
                 std::size_t X=(std::size_t)round((item[0]-wesn[0])/inc[0]);
                 std::size_t Y=(std::size_t)round((item[1]-wesn[2])/inc[1]);
+
                 // swap X,Y position and flip along y-axis.
-                aux_data[(n-3-Y)*m+X+2]=item[2];
+                aux_data[(m-3-Y)*n+X+2]=item[2];
             }
             grid->data=aux_data;
 
 
-            // Adjust something in the header. (magic values)
+            // Adjust some value in the header. (magic happens here)
             grid->header->z_min=MinVal;
             grid->header->z_max=MaxVal;
 
             grid->header->grdtype=3;
             grid->header->gn=1;
             grid->header->gs=1;
+
+            grid->header->BC[0]=2;
+            grid->header->BC[1]=2;
             grid->header->BC[2]=2;
             grid->header->BC[3]=2;
 
+
             // periodic along longitude (x) direction.
-            grid->header->BC[0]=2;
-            grid->header->BC[1]=2;
-            for (std::size_t Y=0;Y<n;++Y) {
-                aux_data[(n-1-Y)*m+0]=aux_data[(n-1-Y)*m+m-4];
-                aux_data[(n-1-Y)*m+1]=aux_data[(n-1-Y)*m+m-3];
-                aux_data[(n-1-Y)*m+m-1]=aux_data[(n-1-Y)*m+3];
-                aux_data[(n-1-Y)*m+m-2]=aux_data[(n-1-Y)*m+2];
+            for (std::size_t Y=0;Y<m;++Y) {
+                aux_data[(m-1-Y)*n+0]=aux_data[(m-1-Y)*n+n-4];
+                aux_data[(m-1-Y)*n+1]=aux_data[(m-1-Y)*n+n-3];
+                aux_data[(m-1-Y)*n+n-1]=aux_data[(m-1-Y)*n+3];
+                aux_data[(m-1-Y)*n+n-2]=aux_data[(m-1-Y)*n+2];
             }
 
             // Get the virtual file.
             char filename[20];
             GMT_Open_VirtualFile(API,GMT_IS_GRID,GMT_IS_SURFACE,GMT_IN,grid,filename);
+
+/*
+std::cout << "1. " << m << " " << n << std::endl;
+std::cout << "2. " << grid->header->n_rows << " " << grid->header->n_columns << " " << grid->header->registration << std::endl;
+std::cout << "3. " << grid->header->wesn[0] << " " << grid->header->wesn[1] << " " << grid->header->wesn[2] << " " << grid->header->wesn[3] << " " << std::endl;
+std::cout << "4. " << grid->header->inc[0] << " " << grid->header->inc[1] << std::endl;
+std::cout << "5. " << grid->header->z_scale_factor << " " << grid->header->z_add_offset << std::endl;
+std::cout << "6. " << std::string(grid->header->x_units) << " " << std::string(grid->header->y_units) << " " << std::string(grid->header->z_units) << " " << std::string(grid->header->title) << std::endl;
+std::cout << "7. " << std::string(grid->header->command) << std::endl;
+std::cout << "8. " << std::string(grid->header->remark) << std::endl;
+std::cout << "9.z_minmax " << grid->header->z_min << " " << grid->header->z_max << std::endl;
+std::cout << "10. " << grid->header->type << " " << grid->header->bits << " " << grid->header->complex_mode << " " << grid->header->n_alloc << std::endl;
+std::cout << "11. " << grid->header->mx << " " << grid->header->my << " " << grid->header->nm << " " << grid->header->size << std::endl;
+std::cout << "12. " << grid->header->trendmode << " " << grid->header->arrangement << " " << grid->header->n_bands << " " << grid->header->grdtype<< std::endl;
+std::cout << "13.pad " << grid->header->pad[0] << " " << grid->header->pad[1] << " " << grid->header->pad[2] << " " << grid->header->pad[3] << " " << std::endl;
+std::cout << "14.BC " << grid->header->BC[0] << " " << grid->header->BC[1] << " " << grid->header->BC[2] << " " << grid->header->BC[3] << " " << std::endl;
+std::cout << "15. " << std::string(grid->header->name) << " " << std::endl;
+std::cout << "16. " << std::string(grid->header->varname) << " " << std::endl;
+// std::cout << "17. " << std::string(grid->header->ProjRefPROJ4) << " " << std::endl;
+// std::cout << "18. " << std::string(grid->header->ProjRefWKT) << " " << std::endl;
+std::cout << "19.netcdf " << grid->header->row_order << " " << grid->header->z_id << " " << grid->header->ncid << " " << std::endl;
+std::cout << "20.netcdf_dim " << grid->header->xy_dim[0] << " " << grid->header->xy_dim[1] << std::endl;
+std::cout << "21.netcdf_index " << grid->header->t_index[0] << " " << grid->header->t_index[1] << " " << grid->header->t_index[2] << std::endl;
+std::cout << "22.netcdf " << grid->header->data_offset << " " << grid->header->stride << std::endl;
+std::cout << "23. " << grid->header->nan_value << " " << grid->header->xy_off << std::endl;
+std::cout << "24. " << grid->header->r_inc[0] << " " << grid->header->r_inc[1] << std::endl;
+std::cout << "25.ESRI "<< grid->header->flags[0] << " " << grid->header->flags[1] << " " << grid->header->flags[2] << " " << grid->header->flags[3] << std::endl;
+// std::cout << "26. GDAL"<< std::string(grid->header->pocket) << std::endl;
+std::cout << "27. "<< grid->header->mem_layout[0] << " " << grid->header->mem_layout[1] << " " << grid->header->mem_layout[2] << " " << grid->header->mem_layout[3] << std::endl;
+std::cout << "28. " << grid->header->bcr_threshold << " " << grid->header->bcr_interpolant << " " << grid->header->bcr_n << std::endl;
+std::cout << "29. " << grid->header->nxp << " " << grid->header->nyp << " " << grid->header->no_BC << std::endl;
+std::cout << "30. " << grid->header->gn << " " << grid->header->gs << std::endl;
+std::cout << "31. " << grid->header->is_netcdf4 << std::endl;
+std::cout << "32. " << grid->header->z_chunksize[0] << " " << grid->header->z_chunksize[1] << std::endl;
+std::cout << "33. " << grid->header->z_shuffle << " " << grid->header->z_deflate_level << " " << grid->header-> z_scale_autoadjust << " " << grid->header->z_offset_autoadjust << std::endl;
+std::cout << "34. " << grid->header->xy_adjust[0] << " " << grid->header->xy_adjust[1] << std::endl;
+std::cout << "35. " << grid->header->xy_mode[0] << " " << grid->header->xy_mode[1] << std::endl;
+std::cout << "36. " << grid->header->xy_unit[0] << " " << grid->header->xy_unit[1] << std::endl;
+std::cout << "37. " << grid->header->xy_unit_to_meter[0] << " " << grid->header->xy_unit_to_meter[1] << std::endl;
+std::cout << std::endl;
+*/
+
 
             // Plot.
             char *command=strdup(("-<"+std::string(filename)+" "+cmd+" ->>"+outfile).c_str());
@@ -123,7 +170,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
             else if (WhichJob=="grdcontour")
                 GMT_Call_Module(API,"grdcontour",GMT_MODULE_CMD,command);
 
-            // Free spaces.
+            // Free spaces (aux_data seem to be deleted by GMT_Destroy_Session?).
             delete [] command;
             GMT_Close_VirtualFile(API,filename);
             GMT_Destroy_Data(API,grid);
@@ -248,6 +295,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
             GMT_Close_VirtualFile(API,filename);
         }
 
+        // Free spaces (txt seem to be deleted by GMT_Destroy_Session?).
         GMT_Destroy_Data(API,txt);
         GMT_Destroy_Session(API);
         return;
@@ -295,7 +343,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         char *command=strdup(("-<"+std::string(filename)+" "+cmd+" ->>"+outfile).c_str());
         GMT_Call_Module(API,"psxy",GMT_MODULE_CMD,command);
 
-        // free spaces (X,Y seem to be deleted by GMT_Destroy_Session? very confusing).
+        // Free spaces (X,Y seem to be deleted by GMT_Destroy_Session?).
         delete [] command;
         GMT_Close_VirtualFile(API,filename);
         GMT_Destroy_Data(API,vec);
@@ -331,7 +379,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
         // Inject data.
         for (std::size_t i=0;i<n;++i) {
-            double *X = (double *)malloc(m*sizeof(double));
+            double *X = new double [m];
             for (std::size_t j=0;j<m;++j)
                 X[j]=Data[j][i];
             GMT_Put_Vector(API,vec,i,GMT_DOUBLE,X);
@@ -345,7 +393,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         char *command=strdup(("-<"+std::string(filename)+" "+cmd+" ->>"+outfile).c_str());
         GMT_Call_Module(API,"psxy",GMT_MODULE_CMD,command);
 
-        // free spaces (X's seem to be deleted by GMT_Destroy_Session? very confusing).
+        // Free spaces (Xs seem to be deleted by GMT_Destroy_Session?).
         delete [] command;
         GMT_Close_VirtualFile(API,filename);
         GMT_Destroy_Data(API,vec);
@@ -390,7 +438,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         char *command=strdup(("-<"+std::string(filename)+" "+cmd+" ->>"+outfile).c_str());
         GMT_Call_Module(API,"pshistogram",GMT_MODULE_CMD,command);
 
-        // free spaces.
+        // Free spaces (X seem to be deleted by GMT_Destroy_Session?).
         delete [] command;
         GMT_Close_VirtualFile(API,filename);
         GMT_Destroy_Data(API,vec);
@@ -398,8 +446,6 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
         return;
     }
-
-
 
     // gmt grdcontour.
     template<typename T>
@@ -446,42 +492,56 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         return;
     }
 
-
-    void psxy(const std::string &outfile,
-              const SACSignals &item, const std::size_t index,
-              const std::string &cmd){
-        if (item.Size()==0 || item.Size()<=index) return;
-
-        auto data=item.GetTimeAndWaveforms(std::vector<std::size_t> {index});
-        psxy(outfile,data[0].first,data[0].second,cmd);
-        return;
-    }
-
-    void psxy(const std::string &outfile,
-              const DigitalSignal &item, const std::string &cmd){
-        psxy(outfile,item.GetTime(),item.GetAmp(),cmd);
-        return;
-    }
-
     template<typename T>
     void pshistogram(const std::string &outfile, const std::vector<T> &X, const std::string &cmd){
         pshistogram(outfile,X.begin(),X.end(),cmd);
         return;
     }
 
-    void BeginPlot(const std::string &outfile, const std::string cmd=""){
+    void BeginPlot(const std::string &outfile, const std::string cmd="-P"){
         remove(outfile.c_str());
-//         psbasemap(outfile,"-JX1i/1i -R-1/1/-1/1 -Bwens -P -K");
         psxy(outfile,std::vector<double> {0},std::vector<double> {0},"-JX1i/1i -R-1/1/-1/1 -K "+cmd);
         timestamp(outfile);
         return;
     }
 
-    void SealPlot(const std::string &outfile){
-//         psbasemap(outfile,"-JX1i/1i -R-1/1/-1/1 -Bwens -O");
+    void SealPlot(std::string &outfile, const double &XSIZE=-1, const double YSIZE=-1){
+        // new sizes are in inch, will converted to pts by multipling it by 72.
+
         psxy(outfile,std::vector<double> {0},std::vector<double> {0},"-JX1i/1i -R-1/1/-1/1 -O");
         remove("gmt.conf");
         remove("gmt.history");
+        if (XSIZE>0 && YSIZE>0) {
+            int newXSIZE=(int)(XSIZE*72),newYSIZE=(int)(YSIZE*72);
+            char a[]="tmpfile_XXXXXX";
+            mkstemp(a);
+            std::string newfile(a),oneline;
+
+            std::ifstream fpin(outfile);
+            std::ofstream fpout(newfile);
+
+            while (getline(fpin,oneline)){
+                if (oneline.find("%%BoundingBox:")!=std::string::npos)
+                    fpout << "%%BoundingBox: 0 0 " << newXSIZE << " " << newYSIZE << '\n';
+                else if (oneline.find("%%HiResBoundingBox:")!=std::string::npos)
+                    fpout << "%%HiResBoundingBox: 0 0 " << newXSIZE << " " << newYSIZE << '\n';
+                else if (oneline.find("PageSize")!=std::string::npos) {
+
+                    auto it=oneline.find("PageSize");
+                    it+=oneline.substr(it).find("[");
+                    auto it2=it+oneline.substr(it).find("]");
+                    oneline=oneline.substr(0,it+1)+std::to_string(newXSIZE)+" "+std::to_string(newYSIZE)+oneline.substr(it2);
+
+                    fpout << oneline << '\n';
+                }
+                else fpout << oneline << '\n';
+            }
+
+            fpin.close();
+            fpout.close();
+            swap(outfile,newfile);
+            remove(newfile.c_str());
+        }
         return;
     }
 
@@ -492,13 +552,16 @@ namespace GMT { // the order of the function definition matters: dependencies sh
         std::string outfile(a);
 
         set("PS_MEDIA "+std::to_string(XSIZE)+"ix"+std::to_string(YSIZE)+"i");
-        set("FONT_ANNOT 8p");
-        set("FONT_LABEL 12p");
-        set("MAP_ANNOT_OFFSET_PRIMARY 6p");
         set("MAP_FRAME_PEN 0.4p,black");
+        set("MAP_GRID_PEN_PRIMARY 0.4p,gray");
+        set("FONT_ANNOT 8p");
+        set("MAP_ANNOT_OFFSET_PRIMARY 6p");
+        set("FONT_LABEL 12p");
         set("MAP_TICK_PEN_PRIMARY 0.4p,black");
+        set("MAP_TICK_LENGTH_PRIMARY 0.007i");
+        set("MAP_TICK_LENGTH_SECONDARY 0.004i");
 
-        BeginPlot(outfile,"-P");
+        BeginPlot(outfile);
 
         return outfile;
     }

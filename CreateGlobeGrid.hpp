@@ -13,7 +13,7 @@
  * input(s):
  * const double &LonInc          ----  Longitude increment (roughly).
  * const double &LatInc          ----  Latitude increment (roughly).
- * const bool &ValueOnGridPoint  ----  (default is false)
+ * const bool &ValueOnGridPoint  ----  (default is true)
  *                                     true:  will produce longitude grid points start at -180.
  *                                     false: will produce longitude grid points start at -180+LonInc/2.
  *
@@ -39,20 +39,20 @@
 ******************************************************************/
 
 std::pair<std::vector<std::vector<double>>, std::pair<double,double>>
-CreateGlobeGrid(const double &LonInc, const double &LatInc, const bool &ValueOnGridPoint=false) {
+CreateGlobeGrid(const double &LonInc, const double &LatInc, const bool &ValueOnGridPoint=true) {
 
     std::pair<std::vector<std::vector<double>>,std::pair<double,double>> ans;
 
-    auto ParaLon=CreateGrid(-180,180,LonInc,-2);
+    auto ParaLon=CreateGrid(0,360,LonInc,-2);
     auto ParaLat=CreateGrid(-90,90,LatInc,-2);
-    std::size_t M=ParaLat[0],N=ParaLon[0]-1;
+    std::size_t M=ParaLat[0],N=ParaLon[0];
 
     ans.second.first=ParaLon[1];
     ans.second.second=ParaLat[1];
 
     ans.first=std::vector<std::vector<double>> (M*N,std::vector<double> (3,0));
 
-    double LonBegin=-180,LatBegin=-90;
+    double LonBegin=0,LatBegin=-90;
     if (!ValueOnGridPoint) LonBegin+=ans.second.first/2;
     for (std::size_t i=0;i<M*N;++i) {
         ans.first[i][0]=LonBegin+ans.second.first*(i/M);

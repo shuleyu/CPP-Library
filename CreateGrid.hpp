@@ -42,7 +42,7 @@
  *
  *                                  2: Para means an estimation of grid increment.
  *                                     The calculated grid increment (Para*) is (possibly)
- *                                     sightly decreased such that the higherbound is meet.
+ *                                     sightly adjusted such that the higherbound is meet.
  *                                     Return a vector (ans) of calculated size:
  *
  *                                     ans[0]=lowerbound;
@@ -106,7 +106,7 @@ std::vector<double> CreateGrid(const double &lowerbound, const double &upperboun
     if (mode==2 || mode==-2){
 
         double Inc=Para;
-        int N=1+(int)ceil((upperbound-lowerbound)/Inc);
+        int N=1+(int)round((upperbound-lowerbound)/Inc);
         Inc=1.0*(upperbound-lowerbound)/(N-1);
 
         if (mode==-2) {

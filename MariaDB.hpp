@@ -78,6 +78,7 @@ namespace MariaDB {
         const std::size_t &NRow() const {return m;}
 
         Select()=default;
+        Select (const Select &item) = default;
         Select(const std::string &cmd) {
 
             std::size_t ICnt=0,SCnt=0,DCnt=0;
@@ -144,6 +145,13 @@ namespace MariaDB {
         Select &operator+=(const Select &rhs);
 
     };
+
+    // Overload operator "+".
+    Select operator+(const Select &item1,const Select &item2){
+        Select ans(item1);
+        ans+=item2;
+        return ans;
+    }
 
     Select &Select::operator+=(const Select &rhs){
 

@@ -3,7 +3,10 @@
 #include<random>
 
 #include<GMT.hpp>
+#include<CreateGlobeGrid.hpp>
 #include<Lon2360.hpp>
+#include<Lon2180.hpp>
+#include<ShellExec.hpp>
 
 using namespace std;
 
@@ -128,8 +131,25 @@ int main(){
     GMT::grdimage(outfile,grid,xinc,yinc,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Chot -O -K");
 
 
-    // pshistogram.
+    // Try plot grids.
     row=3,col=1;
+    xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len+1.1;
+    GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
+    if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
+
+    xinc=13.232323,yinc=18.23213445;
+    auto res=CreateGlobeGrid(xinc,yinc);
+    for (size_t i=0;i<res.first.size();++i)
+        res.first[i][2]=Lon2180(res.first[i][0])+res.first[i][1];
+
+    GMT::makecpt("-Cpolar -T-270/270/0.5 -Z > tmp.cpt");
+    GMT::grdimage(outfile,res.first,res.second.first,res.second.second,"-JR0/"+to_string(Len*(1-SpaceRatio))+"i -Rg -nn -E300 -Ctmp.cpt -O -K");
+    // -D scale center position relative to last reference piont.
+    GMT::psscale(outfile,"-Ctmp.cpt -D"+to_string(Len*(1-SpaceRatio)/2)+"i/-0.5i/2i/0.1ih -O -K -Bxa30 -Bx+lValue");
+    GMT::pscoast(outfile,"-J -R -Bxa60g60 -Bya60g60 -BWSne -W0.5p,black -A10000 -O -K");
+
+    // pshistogram.
+    row=3,col=2;
     xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
     GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
@@ -143,19 +163,24 @@ int main(){
                                           "-Z1 -W1 -L0.5p -G50/50/250 -Bxa5f1 -Bya10f2+u\"%\" -BWS -O -K");
 
     // psxy with different colors.
-    row=3,col=2;
+    row=3,col=3;
     xp=(col-1+SpaceRatio)*Len,yp=YSIZE-1-row*Len;
     GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
 
-    vector<vector<double>> data={{1.0,1.0,0.2},{3,-6,0.5},{0.3,0.6,0.7},{2,1,1.0}};
+    vector<vector<double>> data={{1.0,1.0,0.2,0.25},{3,-6,0.5,0.2},{0.3,0.6,0.7,0.15},{2,1,1.0,0.1}};
     GMT::makecpt("-Cgray -T0/1 -I > tmp.cpt");
-    GMT::psxy(outfile,data,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Sc0.1i -Ctmp.cpt -W1p,black -N -O -K");
+    GMT::psxy(outfile,data,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Sc -Ctmp.cpt -W1p,black -N -O -K");
     remove("tmp.cpt");
 
 
     // Seal the page.
-    GMT::SealPlot(outfile);
+    GMT::SealPlot(outfile,XSIZE,YSIZE);
+
+    string pdffile=__FILE__;
+    pdffile=pdffile.substr(0,pdffile.find(".cpp"))+".pdf";
+    ShellExec("ps2pdf "+outfile+" "+pdffile);
+    remove(outfile.c_str());
 
     return 0;
 }
