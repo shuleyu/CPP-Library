@@ -168,8 +168,10 @@ int main(){
     GMT::MoveReferencePoint(outfile,"-Xf"+to_string(xp)+"i -Yf"+to_string(yp)+"i");
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
 
-    vector<vector<double>> data={{1.0,1.0,0.2,0.25},{3,-6,0.5,0.2},{0.3,0.6,0.7,0.15},{2,1,1.0,0.1}};
+//     vector<vector<double>> data={{1.0,1.0},{3,-6},{0.5,0.5},{2,1}};
+//     GMT::psxy(outfile,data,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Sc0.15i -W1p,black -N -O -K");
     GMT::makecpt("-Cgray -T0/1 -I > tmp.cpt");
+    vector<vector<double>> data={{1.0,1.0,0.2,0.25},{3,-6,0.5,0.2},{0.3,0.6,0.7,0.15},{2,1,1.0,0.1}};
     GMT::psxy(outfile,data,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Sc -Ctmp.cpt -W1p,black -N -O -K");
     remove("tmp.cpt");
 

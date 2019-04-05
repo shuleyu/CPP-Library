@@ -34,7 +34,6 @@ int main(){
 //     A.HannTaper(3);
 //     cout << A.dt() << endl;
 //     EvenSampledSignal B("data/ShiftPhase_in");
-//     B.Interpolate(A.dt());
 
 
 //     A.PrintListInfo();
@@ -44,33 +43,36 @@ int main(){
 //     cout << "RemoveTrend first trace result: " << res[0].first << " " << res[0].second << endl;
 
 //     A.CheckPhase("S");
-//     cout << A.size() << endl;
+//     cout << A.Size() << endl;
+
+//     A.CheckAndCutToWindow(A.TravelTime("ScP"),-20,20);
+//     cout << A.Size() << endl;
+
+//     A.SetBeginTime(-20);
+//     A.FindPeakAround(vector<double> (A.Size(),0),5);
+//     A.NormalizeToSignal();
+
+
 
 //     A.Interpolate(0.025);
 //     A.Butterworth(0.033,0.3);
-
-//     A.CheckAndCutToWindow(A.TravelTime("ScP"),-20,20);
-//     cout << A.size() << endl;
-
-//     A.SetBeginTime(-20);
-//     A.FindPeakAround(vector<double> (A.size(),0),5);
-//     A.NormalizeToSignal();
-
-//     auto ans=A.XCorrStack(vector<double> (A.size(),0),-5,15,5);
-//     auto st=A.StationName();
-//     auto ESW=ans.second;
-//     cout << ESW << endl;
-//     cout << ESW.pt() << endl;
-//     for (size_t i=0;i<A.size();++i)
-//         cout << st[i] << " " << ans.first[i].first*A.dt() << " " << ans.first[i].second << endl;
+//     A.FindPeakAround(A.GetTravelTimes("S"));
+//     A.NormalizeToPeak();
+//     auto ans=A.XCorrStack(A.GetTravelTimes("S"),-15,15,5);
+//     auto st=A.GetStationNames();
+//     auto ESW=ans.second.first;
+//     for (size_t i=0;i<A.Size();++i)
+//         cout << st[i] << " " << ans.first.first[i] << " " << ans.first.second[i] << endl;
+//     A.CheckAndCutToWindow(A.GetTravelTimes("S"),-50,50);
+//     A.ShiftTime(A.GetTravelTimes("S"));
+    A.DumpWaveforms("/home/shule/new","StationName","201500","_","frs");
 
 //     A.NormalizeToSignal();
-    A.PrintInfo();
+//     A.PrintInfo();
 //     A.WaterLevelDecon(A);
 //     A.WaterLevelDecon(B);
 //     A.GaussianBlur(1.3);
 
-//     DumpWaveforms(A,"/home/shule/xx");
 //     auto amp=A.GetWaveforms(vector<size_t> {0});
 //     auto shifted=ShiftPhase(amp[0],95.140819153);
 //     for (size_t i=0;i<shifted.size();++i) {
@@ -79,6 +81,7 @@ int main(){
 //     }
 
 
+//     A*=2;
 
 //     auto S=A.MakeNeatStack();
 //     cout << S << endl;

@@ -54,11 +54,13 @@ public:    // inherit mode is "private"   --> "private".
     virtual void Clear() {*this=DigitalSignal ();}
     virtual double EndTime() const {return (GetTime().empty()?0.0/0.0:GetTime().back());}
     virtual const std::vector<double> &GetTime() const {return time;}
+    virtual double PeakAmp() const {return (GetAmp().empty()?0.0/0.0:GetAmp()[GetPeak()]);}
     virtual double PeakTime() const {return (GetTime().empty()?0.0/0.0:GetTime()[GetPeak()]);}
     virtual double SignalDuration() const {return EndTime()-BeginTime();}
 
     virtual bool CheckAndCutToWindow(const double &t1, const double &t2);          // t1, t2 in sec.
-    virtual void FindPeakAround(const double &t,const double &w=5);                // t, w   in sec.
+    virtual void FindPeakAround(const double &t,const double &w=5,
+                                const bool &positiveOnly=false);                 // t, w   in sec.
     virtual void HannTaper(const double &wl);                                      // wl is  in sec.
     virtual std::size_t LocateTime(const double &t) const;                         // t      in sec.
     virtual void OutputToFile(const std::string &s) const;
@@ -177,7 +179,7 @@ bool DigitalSignal::CheckAndCutToWindow(const double &t1, const double &t2){
 }
 
 // Find the position of max|amp| around given time.
-void DigitalSignal::FindPeakAround(const double &t, const double &w){
+void DigitalSignal::FindPeakAround(const double &t, const double &w, const bool &positiveOnly){
 
     if (w<0) return;
     if (t+w<BeginTime() || t-w>EndTime()) return;
@@ -187,12 +189,17 @@ void DigitalSignal::FindPeakAround(const double &t, const double &w){
     if (t+w<=EndTime()) Y=LocateTime(t+w);
     if (Y!=Size()) ++Y;
 
-    auto it=std::max_element(GetAmp().begin()+X,GetAmp().begin()+Y,
-        [](const double &a, const double &b){
-            return fabs(a)<fabs(b);
-        }
-    );
-    peak=X+std::distance(GetAmp().begin(),it);
+    if (positiveOnly) {
+        peak=X+std::distance(GetAmp().begin(),std::max_element(GetAmp().begin()+X,GetAmp().begin()+Y));
+    }
+    else {
+        auto it=std::max_element(GetAmp().begin()+X,GetAmp().begin()+Y,
+            [](const double &a, const double &b){
+                return fabs(a)<fabs(b);
+            }
+        );
+        peak=X+std::distance(GetAmp().begin(),it);
+    }
 }
 
 // cos (-pi,pi) shaped taper at two ends.

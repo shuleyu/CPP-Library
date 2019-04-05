@@ -20,8 +20,6 @@ extern "C"{
 
 #include<SortWithIndex.hpp>
 #include<ReorderUseIndex.hpp>
-#include<WaterLevelDecon.hpp>
-#include<Interpolate.hpp>
 #include<EvenSampledSignal.hpp>
 
 // Todos:
@@ -70,26 +68,41 @@ public:
     std::size_t Size() const {return data.size();}
     std::string GetFileListName() const {return file_list_name;}
 
+    void AddSignal(const EvenSampledSignal &s2, const std::vector<double> &dt={});
+    void AmplitudeDivision(const std::vector<double> &scales);
     void Butterworth(const double &f1, const double &f2, const int &order=2, const int &passes=2);
     std::vector<double> BeginTime(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     void CheckDist(const double &d1=-1, const double &d2=181);
     void CheckPhase(const std::string &phase, const double &t1=0,
                     const double &t2=std::numeric_limits<double>::max());
+    std::pair<std::vector<double>,std::vector<double>>
+        CrossCorrelation(const std::vector<double> &t1, const std::vector<double> &t2,
+                         const EvenSampledSignal &item, const double &h1, const double &h2,
+                         const int &Flip=0, const std::pair<int,int> &ShiftLimit=
+                         {std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}) const;
+    std::pair<std::vector<double>,std::vector<double>>
+        CrossCorrelation(const double &t1, const double &t2,
+                         const EvenSampledSignal &item, const double &h1, const double &h2,
+                         const int &Flip=0, const std::pair<int,int> &ShiftLimit=
+                         {std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}) const;
     void Diff();
+    void DumpWaveforms(const std::string &dir=".", const std::string &namingConvention="",
+                       const std::string &prefix="", const std::string &seperator="_", const std::string &extension="txt") const;
+    void FlipPeakUp();
     std::vector<std::size_t> FindByGcarc(const double &gc, const bool &bulk=false);
     std::vector<std::size_t> FindByStnm(const std::string &st, const bool &bulk=false);
     std::vector<std::size_t> FindByNetwork(const std::string &nt, const bool &bulk=false);
     void GaussianBlur(const double &sigma=1);
-    std::vector<double> GetDistance(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
+    std::vector<double> GetDistances(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     std::vector<std::string> GetFileList() const;
     std::vector<std::string> GetNetworkNames() const;
     std::vector<std::string> GetStationNames() const;
     std::vector<double> GetTravelTimes(const std::string &phase,
                                        const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     std::vector<std::pair<std::vector<double>,std::vector<double>>>
-    GetTimeAndWaveforms(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
+        GetTimeAndWaveforms(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     std::vector<std::vector<double>>
-    GetWaveforms(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
+        GetWaveforms(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     void HannTaper(const double &wl=10);
     void Integrate();
     void Interpolate(const double &dt);
@@ -99,6 +112,7 @@ public:
     void NormalizeToSignal();
     void OutputToSAC(const std::vector<std::size_t> &indices=std::vector<std::size_t> (),
                      const std::string &prefix="") const;
+    std::vector<double> PeakAmp(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     std::vector<double> PeakTime(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     void PrintInfo() const;
     void PrintListInfo() const;
@@ -114,28 +128,38 @@ public:
                             const double &st1, const double &st2,
                             const std::vector<double> &na=std::vector<double> (),
                             const std::vector<double> &sa=std::vector<double> ()) const;
+    void StripSignal(const EvenSampledSignal &s2, const std::vector<double> &dt={});
     void WaterLevelDecon(const EvenSampledSignal &s, const double &wl=0.1);
     void WaterLevelDecon(SACSignals &D, const double &wl=0.1);
 
     // Member function template declarations.
     template<typename T> void CheckAndCutToWindow(const std::vector<T> &center_time,
                                                   const double &t1, const double &t2);
-    template<typename T> void FindPeakAround(const std::vector<T> &center_time, const double &wl=5);
+    void CheckAndCutToWindow(const double &t1, const double &t2);
+    template<typename T> void FindPeakAround(const std::vector<T> &center_time, const double &wl=5, const bool &positiveOnly=false);
+    void FindPeakAround(const double &center_time, const double &wl=5, const bool &positiveOnly=false);
+    template<typename T> void FlipReverseSum(const std::vector<T> &t);
+    void FlipReverseSum(const double &t);
     template<typename T> void ShiftTime(const std::vector<T> &t);
-    template<typename T>
-    std::pair<std::pair<std::vector<int>,std::vector<double>>,
-              std::pair<EvenSampledSignal,EvenSampledSignal>>
-    XCorrStack(const std::vector<T> &center_time,
-               const double &t1, const double &t2, const int loopN=5) const;
+    std::pair<std::pair<std::vector<double>,std::vector<double>>,std::pair<EvenSampledSignal,EvenSampledSignal>>
+        XCorrStack(const double &center_time, const double &t1, const double &t2, const int loopN=5) const;
+    std::pair<std::pair<std::vector<double>,std::vector<double>>,std::pair<EvenSampledSignal,EvenSampledSignal>>
+        XCorrStack(const std::vector<double> &center_time, const double &t1, const double &t2, const int loopN=5) const;
 
     SACSignals &operator*=(const double &a){
         for (std::size_t i=0;i<Size();++i) data[i]*=a;
         return *this;
     }
 
+    SACSignals &operator-=(const EvenSampledSignal &item){
+        for (std::size_t i=0;i<Size();++i) data[i]-=item;
+        return *this;
+    }
+
     // friends (non-member) declarations.
     friend std::istream &operator>>(std::istream &is, SACSignals &item);
     friend SACSignals operator*(const SACSignals &item,const double &a);
+    friend SACSignals operator-(const SACSignals &input,const EvenSampledSignal &item);
 };
 
 
@@ -165,6 +189,28 @@ SACSignals::SACSignals (const std::vector<std::string> &infiles){
 
 
 // Member function definitions.
+
+void SACSignals::AddSignal(const EvenSampledSignal &s2, const std::vector<double> &dt){
+
+    if (!dt.empty() && Size()!=dt.size())
+        throw std::runtime_error("Add signal time shift have different size.");
+
+    if (dt.empty())
+        for (std::size_t i=0;i<Size();++i)
+            data[i].AddSignal(s2);
+    else
+        for (std::size_t i=0;i<Size();++i)
+            data[i].AddSignal(s2,dt[i]);
+    return;
+}
+
+void SACSignals::AmplitudeDivision(const std::vector<double> &scales){
+    if (scales.size()!=Size())
+        throw std::runtime_error("Scales size doesn't match.");
+
+    for (std::size_t i=0;i<Size();++i)
+        data[i]/=scales[i];
+}
 
 void SACSignals::Butterworth(const double &f1, const double &f2,
                              const int &order, const int &passes){
@@ -201,9 +247,61 @@ void SACSignals::CheckPhase(const std::string &phase, const double &t1, const do
     RemoveRecords(BadIndices);
 }
 
+std::pair<std::vector<double>,std::vector<double>>
+SACSignals::CrossCorrelation(const std::vector<double> &t1, const std::vector<double> &t2,
+                             const EvenSampledSignal &item, const double &h1, const double &h2,
+                             const int &Flip, const std::pair<int,int> &ShiftLimit) const {
+    std::pair<std::vector<double>,std::vector<double>> ans;
+    for (std::size_t i=0;i<Size();++i) {
+        auto res=data[i].CrossCorrelation(t1[i],t2[i],item,h1,h2,Flip,ShiftLimit);
+        ans.first.push_back(res.first);
+        ans.second.push_back(res.second);
+    }
+    return ans;
+}
+
+std::pair<std::vector<double>,std::vector<double>>
+SACSignals::CrossCorrelation(const double &t1, const double &t2,
+                             const EvenSampledSignal &item, const double &h1, const double &h2,
+                             const int &Flip, const std::pair<int,int> &ShiftLimit) const {
+    return CrossCorrelation(std::vector<double> (Size(),t1),std::vector<double> (Size(),t2),item,h1,h2,Flip,ShiftLimit);
+}
+
 void SACSignals::Diff() {
     for (std::size_t i=0;i<Size();++i)
         data[i].Diff();
+}
+
+void SACSignals::DumpWaveforms(const std::string &dir, const std::string &namingConvention,
+                               const std::string &prefix, const std::string &seperator, const std::string &extension) const{
+    if (seperator.find("/")!=std::string::npos)
+        throw std::runtime_error("In DumpWaveforms, seperator has sub directory.");
+
+    std::string c=(dir.back()=='/'?"":"/");
+    if (namingConvention=="StationName") {
+        auto stationNames=GetStationNames();
+        for (std::size_t i=0;i<Size();++i){
+            std::ofstream fpout(dir+c+prefix+seperator+stationNames[i]+"."+extension);
+            fpout << GetData()[i];
+            fpout.close();
+        }
+    }
+    else {
+        for (std::size_t i=0;i<Size();++i){
+
+            auto s=GetData()[i].GetFileName();
+            s=s.substr(s.find_last_of('/')+1);
+
+            std::ofstream fpout(dir+c+s+".txt");
+            fpout << GetData()[i];
+            fpout.close();
+        }
+    }
+}
+
+void SACSignals::FlipPeakUp() {
+    for (std::size_t i=0;i<Size();++i)
+        data[i].FlipPeakUp();
 }
 
 std::vector<std::size_t> SACSignals::FindByGcarc(const double &gc, const bool &bulk) {
@@ -311,7 +409,7 @@ void SACSignals::GaussianBlur(const double &sigma){
         data[i].GaussianBlur(sigma);
 }
 
-std::vector<double> SACSignals::GetDistance(const std::vector<std::size_t> &indices) const{
+std::vector<double> SACSignals::GetDistances(const std::vector<std::size_t> &indices) const{
     std::vector<double> ans;
     if (indices.empty())
         for (const auto &item:mdata)
@@ -357,7 +455,7 @@ std::vector<double> SACSignals::GetTravelTimes(const std::string &phase,
             if (it==item.tt.end()) ans.push_back(-1);
             else ans.push_back(it->second);
         }
-    else 
+    else
         for (const auto &i:indices){
             if (i>=Size()) continue;
             auto it=mdata[i].tt.find(phase);
@@ -431,7 +529,7 @@ void SACSignals::NormalizeToGlobal(){
     }
 }
 
-// Notice this could flip the polarity of some of the signals.
+// Only normalize to the magnitude of the peak.
 void SACSignals::NormalizeToPeak(){
     for (std::size_t i=0;i<Size();++i)
         data[i].NormalizeToPeak();
@@ -472,6 +570,20 @@ void SACSignals::OutputToSAC(const std::vector<std::size_t> &indices,
         wsac1(tmpfilename,amp,&npts,&bt,&dt,&nerr,outfile.size());
     }
     delete [] amp;
+}
+
+std::vector<double> SACSignals::PeakAmp(const std::vector<std::size_t> &indices) const{
+    std::vector<double> ans;
+    if (indices.empty())
+        for (std::size_t i=0;i<Size();++i)
+            ans.push_back(data[i].PeakAmp());
+    else {
+        for (const auto &i:indices) {
+            if (i>=Size()) continue;
+            ans.push_back(data[i].PeakAmp());
+        }
+    }
+    return ans;
 }
 
 std::vector<double> SACSignals::PeakTime(const std::vector<std::size_t> &indices) const{
@@ -579,6 +691,20 @@ std::vector<double> SACSignals::SNR(const double &nt1, const double &nt2,
     return ans;
 }
 
+void SACSignals::StripSignal(const EvenSampledSignal &s2, const std::vector<double> &dt){
+
+    if (!dt.empty() && Size()!=dt.size())
+        throw std::runtime_error("Strip signal time shift have different size.");
+
+    if (dt.empty())
+        for (std::size_t i=0;i<Size();++i)
+            data[i].StripSignal(s2);
+    else
+        for (std::size_t i=0;i<Size();++i)
+            data[i].StripSignal(s2,dt[i]);
+    return;
+}
+
 void SACSignals::WaterLevelDecon(const EvenSampledSignal &s, const double &wl){
     for (std::size_t i=0;i<Size();++i)
         data[i].WaterLevelDecon(s,wl);
@@ -606,14 +732,32 @@ void SACSignals::CheckAndCutToWindow(const std::vector<T> &center_time,
             BadIndices.push_back(i);
     RemoveRecords(BadIndices);
 }
+void SACSignals::CheckAndCutToWindow(const double &t1, const double &t2){
+    CheckAndCutToWindow(std::vector<double> (Size(),0),t1,t2);
+}
 
 template<typename T>
-void SACSignals::FindPeakAround(const std::vector<T> &center_time, const double &wl){
+void SACSignals::FindPeakAround(const std::vector<T> &center_time, const double &wl, const bool &positiveOnly){
     //check size;
     if (Size()!=center_time.size())
         throw std::runtime_error("FindPeak time array size doesn't match.");
     for (std::size_t i=0;i<Size();++i)
-        data[i].FindPeakAround(center_time[i],wl);
+        data[i].FindPeakAround(center_time[i],wl,positiveOnly);
+}
+
+void SACSignals::FindPeakAround(const double &center_time, const double &wl, const bool &positiveOnly){
+    FindPeakAround(std::vector<double> (Size(),center_time),wl,positiveOnly);
+}
+
+template<typename T>
+void SACSignals::FlipReverseSum(const std::vector<T> &t){
+    if (Size()!=t.size())
+        throw std::runtime_error("FRS center time point array size doesn't match.");
+    for (std::size_t i=0;i<Size();++i)
+        data[i].FlipReverseSum(t[i]);
+}
+void SACSignals::FlipReverseSum(const double &t){
+    FlipReverseSum(std::vector<double> (Size(),t));
 }
 
 // Set the given time to zero.
@@ -629,22 +773,24 @@ void SACSignals::ShiftTime(const std::vector<T> &t){
     }
 }
 
-template<typename T>
-std::pair<std::pair<std::vector<int>,std::vector<double>>,
-          std::pair<EvenSampledSignal,EvenSampledSignal>>
-SACSignals::XCorrStack(const std::vector<T> &center_time,
-                       const double &t1, const double &t2, const int loopN) const{
+std::pair<std::pair<std::vector<double>,std::vector<double>>,std::pair<EvenSampledSignal,EvenSampledSignal>>
+SACSignals::XCorrStack(const double &center_time, const double &t1, const double &t2, const int loopN) const {
+    return XCorrStack(std::vector<double> (Size(),center_time),t1,t2,loopN);
+}
+
+std::pair<std::pair<std::vector<double>,std::vector<double>>,std::pair<EvenSampledSignal,EvenSampledSignal>>
+SACSignals::XCorrStack(const std::vector<double> &center_time, const double &t1, const double &t2, const int loopN) const{
 
     if (!SameSamplingRate())
-        throw std::runtime_error("Tried to XCorrStack differently sampled signals.");
+        throw std::runtime_error("Tried to XCorrStack signals with different sample rate.");
     if (center_time.size()!=Size())
         throw std::runtime_error("In XCorrStack, # of signals doesn't agree with # of windows.");
     if (t1>=t2) throw std::runtime_error("XCorrStack window length <=0.");
 
-    // will return {shift points, ccc} and the stack (duration is t2-t1), stdandard deviation.
+    // will return {shift time, ccc}, {stack(averaged) of valid overlapping part of shifted orignal signal, stack stdandard deviation}
     // If the trace is not used in the satck, ccc will be zero (use ccc as weights).
 
-    std::pair<std::vector<int>, std::vector<double>> ans;
+    std::pair<std::vector<double>, std::vector<double>> ans;
     if (Size()==0) return {ans,{EvenSampledSignal(),EvenSampledSignal()}};
 
 
@@ -667,8 +813,7 @@ SACSignals::XCorrStack(const std::vector<T> &center_time,
 
 
     // prepare output.
-    std::vector<int> shift(GoodIndex.size(),0);
-    std::vector<double> ccc(GoodIndex.size(),0);
+    std::vector<double> ccc(GoodIndex.size(),0),shift(GoodIndex.size(),0);
 
     // Do the cross-correlation loop.
     EvenSampledSignal S=S0,STD;
@@ -679,13 +824,12 @@ SACSignals::XCorrStack(const std::vector<T> &center_time,
 
             std::size_t j=GoodIndex[i];
 
-            auto res=CrossCorrelation(S,t1,t2,data[j],center_time[j]+t1,center_time[j]+t2);
-            shift[i]=-res.first.first;
-            ccc[i]=res.first.second;
-            double shift_time=shift[i]*GetDelta();
+            auto res=S.CrossCorrelation(t1,t2,data[j],center_time[j]+t1,center_time[j]+t2);
+            shift[i]=-res.first;
+            ccc[i]=res.second;
 
             auto Tmp=EvenSampledSignal(data[j]);
-            Tmp.CheckAndCutToWindow(center_time[j]+shift_time+t1,center_time[j]+shift_time+t2);
+            Tmp.CheckAndCutToWindow(center_time[j]+shift[i]+t1,center_time[j]+shift[i]+t2);
             Tmp.SetBeginTime(t1);
             Tmp.NormalizeToSignal();
 
@@ -694,8 +838,7 @@ SACSignals::XCorrStack(const std::vector<T> &center_time,
         std::tie(S,STD)=StackSignals(TmpData,ccc);
     }
 
-    std::vector<int> Shift(Size(),0);
-    std::vector<double> CCC(Size(),0);
+    std::vector<double> CCC(Size(),0),Shift(Size(),0);
 
     for (std::size_t i=0;i<GoodIndex.size();++i) {
         std::size_t j=GoodIndex[i];
@@ -784,18 +927,10 @@ SACSignals operator*(const SACSignals &input,const double &a){
 SACSignals operator*(const double &a, const SACSignals &input){
     return input*a;
 }
-
-void DumpWaveforms(const SACSignals &item,const std::string &dir){
-    std::string c=(dir.back()=='/'?"":"/");
-    for (std::size_t i=0;i<item.Size();++i){
-
-        auto s=item.GetData()[i].GetFileName();
-        s=s.substr(s.find_last_of('/')+1);
-
-        std::ofstream fpout(dir+c+s+".txt");
-        fpout << item.GetData()[i];
-        fpout.close();
-    }
+SACSignals operator-(const SACSignals &input,const EvenSampledSignal &item){
+    SACSignals ans(input);
+    for (std::size_t i=0;i<ans.Size();++i) ans.data[i]-=item;
+    return ans;
 }
 
 #endif

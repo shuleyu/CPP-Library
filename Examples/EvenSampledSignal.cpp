@@ -9,10 +9,10 @@ using namespace std;
 int main(){
 
 //     EvenSampledSignal A("data/Signal.txt");
-    EvenSampledSignal A("data/ShiftPhase_in");
+//     EvenSampledSignal A("data/ShiftPhase_in");
 //     EvenSampledSignal A("data/Butterworth_infile",0.01,0);
-//     vector<double> a(10,1),b(10,2);
-//     EvenSampledSignal A(a,0.04,1),B(b,0.04,1);
+    vector<double> a(100,1),b(100,2);
+    EvenSampledSignal A(a,0.04,0),B(b,0.04,1);
 
 //     cout << A << endl;
 //     A.Clear();
@@ -84,7 +84,9 @@ int main(){
 
 //     cout << A.SNR(-2.5,-1,-0.5,0.5) << endl;
 //     cout << A.SNR(10,15,24,26) << endl;
-    A.Diff();
-    A.OutputToFile("xx");
+//     A.Diff();
+//     A.OutputToFile("xx");
+    A.AddSignal(B,-1.5);
+    cout << A << endl;
     return 0;
 }

@@ -38,13 +38,7 @@ private:
 
     */
 
-
 protected:
-
-    double delta=0,begin_time=0;
-
-    // An auxiliary data designed for GetTime();
-    std::vector<double> aux_time;
 
 
 /*     protected members inherited from DigitalSignal.
@@ -54,6 +48,12 @@ protected:
 //     std::string filename;
 //     double amp_multiplier;
                                               */
+    double delta=0,begin_time=0;
+
+    // An auxiliary data designed for GetTime();
+    std::vector<double> aux_time;
+
+    void AddStripSignal(const EvenSampledSignal &s2, const double &dt=0, const bool &flag=true);
 
 public:
 
@@ -76,12 +76,13 @@ public:
     double BeginTime() const override final {return begin_time;}
     void Clear() override {*this=EvenSampledSignal ();}
     double EndTime() const override final {return BeginTime()+SignalDuration();}
+    double PeakAmp() const override final {return GetAmp()[GetPeak()];}
     double PeakTime() const override final {return BeginTime()+GetPeak()*GetDelta();}
     void ShiftTime(const double &t) override final {begin_time+=t;}
     double SignalDuration() const override final {return (Size()<=1?0:GetDelta()*(Size()-1));}
 
     bool CheckAndCutToWindow(const double &t1, const double &t2) override final;
-    void FindPeakAround(const double &t, const double &w=5) override final;
+    void FindPeakAround(const double &t, const double &w=5, const bool &positiveOnly=false) override final;
     const std::vector<double> &GetTime() const override final;
     void HannTaper(const double &wl) override final;
     std::size_t LocateTime(const double &t) const override final;
@@ -102,7 +103,12 @@ public:
     double GetDelta() const {return delta;}
 
     double AbsIntegral() const;
+    void AddSignal(const EvenSampledSignal &s2, const double &dt=0);
     void Butterworth(const double &f1, const double &f2, const int &order=2, const int &passes=2);
+    std::pair<double,double> CrossCorrelation(const double &t1, const double &t2,
+                                           const EvenSampledSignal &S2, const double &h1, const double &h2,
+                                           const int &Flip=0, const std::pair<int,int> &ShiftLimit=
+                                           {std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}) const;
     void Convolve(const EvenSampledSignal &item);
     void Diff();
     std::pair<EvenSampledSignal,EvenSampledSignal> FFT(const bool &ReturnAmpAndPhase=true) const;
@@ -112,6 +118,7 @@ public:
     void Interpolate(const double &dt);
     double SNR(const double &nt1, const double &nt2, const double &st1, const double &st2) const;
     EvenSampledSignal Stretch(const double &h=1) const;
+    void StripSignal(const EvenSampledSignal &s2, const double &dt=0);
     EvenSampledSignal Tstar(const double &ts, const double &tol=1e-3) const;
     void WaterLevelDecon(const EvenSampledSignal &source, const double &wl=0.1);
     // notice operator+=, operator-= is overloaded,
@@ -231,16 +238,29 @@ bool EvenSampledSignal::CheckAndCutToWindow(const double &t1, const double &t2){
     return true;
 }
 
+
 // Find the position of max|amp| around given time.
-void EvenSampledSignal::FindPeakAround(const double &t, const double &w){
+void EvenSampledSignal::FindPeakAround(const double &t, const double &w, const bool &positiveOnly){
     std::size_t d1=LocateTime(t-w),d2=LocateTime(t+w);
     ++d2;
 
-    double AbsMax=-1;
-    for (std::size_t i=d1;i<d2;++i){
-        if (AbsMax<fabs(GetAmp()[i])) {
-            AbsMax=fabs(GetAmp()[i]);
-            peak=i;
+    if (positiveOnly) {
+        double Max=GetAmp()[0];
+        peak=d1;
+        for (std::size_t i=d1+1;i<d2;++i){
+            if (Max<GetAmp()[i]) {
+                Max=GetAmp()[i];
+                peak=i;
+            }
+        }
+    }
+    else {
+        double AbsMax=-1;
+        for (std::size_t i=d1;i<d2;++i){
+            if (AbsMax<fabs(GetAmp()[i])) {
+                AbsMax=fabs(GetAmp()[i]);
+                peak=i;
+            }
         }
     }
 }
@@ -303,11 +323,59 @@ double EvenSampledSignal::AbsIntegral() const {
     return ::SimpsonRule(GetAmp().begin(),GetAmp().end(),GetDelta(),f);
 }
 
+// Try to add the signal s2; shift s2 before the addition if dt is given.
+// Will only alter the overlapping part.
+// Sampling rate should be the same.
+// Difference from operator+ : not as strict as operator +, signal length/begin time can be different.
+void EvenSampledSignal::AddSignal(const EvenSampledSignal &s2, const double &dt) {
+    AddStripSignal(s2,dt,true);
+}
+
+void EvenSampledSignal::AddStripSignal(const EvenSampledSignal &s2, const double &dt, const bool &flag){
+    
+    if (fabs(GetDelta()-s2.GetDelta())>1e-5)
+        throw std::runtime_error("Tried to "+std::string(flag?"add":"strip")+" signal with different sampling rate.");
+    double t1=s2.BeginTime()+dt,t2=s2.EndTime()+dt;
+    if (EndTime()<t1 || t2<BeginTime())
+        return;
+    t1=std::max(t1,BeginTime());
+    t2=std::min(t2,EndTime());
+    std::size_t S2Begin=s2.LocateTime(t1-dt);
+    std::size_t S1Begin=LocateTime(t1);
+
+    int mul=(flag?1:-1);
+    for (std::size_t i=S1Begin;i<=LocateTime(t2);++i) {
+        size_t index=S2Begin+i-S1Begin;
+        if (0<=index && index<s2.Size())
+            amp[i]+=s2.amp[index]*mul;
+    }
+    return;
+}
+
 // butterworth filter.
 void EvenSampledSignal::Butterworth(const double &f1, const double &f2,
                                     const int &order, const int &passes){
     ::Butterworth(amp,GetDelta(),f1,f2,order,passes);
 }
+
+// Cross correlate current signal with input signal within their own window.
+// Notice we are returning the time shift (in second)
+std::pair<double,double> EvenSampledSignal::CrossCorrelation(const double &t1, const double &t2,
+                                                          const EvenSampledSignal &S2, const double &h1, const double &h2,
+                                                          const int &Flip, const std::pair<int,int> &ShiftLimit) const {
+    // Check window position.
+    if (!CheckWindow(t1,t2))
+        throw std::runtime_error("CrossCorrelation window on signal 1 is not proper.");
+    if (!S2.CheckWindow(h1,h2))
+        throw std::runtime_error("CrossCorrelation window on signal 2 is not proper.");
+
+    auto res=::CrossCorrelation(GetAmp().begin()+LocateTime(t1),
+                              GetAmp().begin()+LocateTime(t2)+1,
+                              S2.GetAmp().begin()+S2.LocateTime(h1),
+                              S2.GetAmp().begin()+S2.LocateTime(h2)+1,false,Flip,ShiftLimit);
+    return std::make_pair(res.first.first*GetDelta(),res.first.second);
+}
+
 
 // Convolve with another signal s2, truncated to keep s1's size.
 // The place to truncated depends on S2'peak position.
@@ -415,6 +483,14 @@ EvenSampledSignal EvenSampledSignal::Stretch(const double &h) const{
     ans.FindPeakAround(PeakTime(),0.5);
 
     return ans;
+}
+
+// Try to strip the signal s2; shift s2 before the strip if dt is given.
+// Will only alter the overlapping part.
+// Sampling rate should be the same.
+// Difference from operator- : not as strict as operator -, signal length/begin time can be different.
+void EvenSampledSignal::StripSignal(const EvenSampledSignal &s2, const double &dt) {
+    AddStripSignal(s2,dt,false);
 }
 
 // Make a t* operator-convolved waveform.
@@ -637,24 +713,6 @@ SignalCompareResults CompareSignal(const EvenSampledSignal &S1, const EvenSample
     auto s2=S2/fabs(S2.GetAmp()[S2.GetPeak()]);
     return ::CompareSignal(s1.GetAmp(),s1.GetPeak(),s2.GetAmp(),s2.GetPeak(),
                            s1.GetDelta(),t1,t2,AmpLevel);
-}
-
-std::pair<std::pair<int,double>,std::vector<double>>
-CrossCorrelation(const EvenSampledSignal &S1, const double &t1, const double &t2,
-                 const EvenSampledSignal &S2, const double &h1, const double &h2,
-                 const bool &Dump=false, const int &Flip=0,
-                 const std::pair<int,int> &ShiftLimit=
-                 {std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}){
-    // Check window position.
-    if (!S1.CheckWindow(t1,t2))
-        throw std::runtime_error("CrossCorrelation window on signal 1 is not proper.");
-    if (!S2.CheckWindow(h1,h2))
-        throw std::runtime_error("CrossCorrelation window on signal 2 is not proper.");
-
-    return ::CrossCorrelation(S1.GetAmp().begin()+S1.LocateTime(t1),
-                              S1.GetAmp().begin()+S1.LocateTime(t2)+1,
-                              S2.GetAmp().begin()+S2.LocateTime(h1),
-                              S2.GetAmp().begin()+S2.LocateTime(h2)+1,Dump,Flip,ShiftLimit);
 }
 
 std::pair<EvenSampledSignal,EvenSampledSignal>

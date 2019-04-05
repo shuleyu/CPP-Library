@@ -47,6 +47,7 @@ namespace GMT { // the order of the function definition matters: dependencies sh
 
             void *API=GMT_Create_Session(__func__,2,0,NULL);
 
+
             // Set grid limits.
             double MinVal=std::numeric_limits<double>::max(),MaxVal=-MinVal;
             double wesn[]={MinVal,MaxVal,MinVal,MaxVal};
@@ -473,6 +474,12 @@ std::cout << std::endl;
         return;
     }
 
+    template<typename T>
+    void psxy(const std::string &outfile, const T &X, const T &Y, const std::string &cmd){
+        psxy(outfile, std::vector<double> {X}, std::vector<double> {Y},cmd);
+        return;
+    }
+
     // Move reference point.
     void MoveReferencePoint(const std::string &outfile, const std::string &cmd){
         psxy(outfile,std::vector<double> {0},std::vector<double> {0},"-J -R -O -K "+cmd);
@@ -557,8 +564,8 @@ std::cout << std::endl;
         set("MAP_ANNOT_OFFSET_PRIMARY 6p");
         set("FONT_LABEL 12p");
         set("MAP_TICK_PEN_PRIMARY 0.4p,black");
-        set("MAP_TICK_LENGTH_PRIMARY 0.007i");
-        set("MAP_TICK_LENGTH_SECONDARY 0.004i");
+        set("MAP_TICK_LENGTH_PRIMARY 0.01i");
+        set("MAP_TICK_LENGTH_SECONDARY 0.005i");
 
         BeginPlot(outfile);
 

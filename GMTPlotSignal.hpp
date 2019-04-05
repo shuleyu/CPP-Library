@@ -30,7 +30,6 @@ namespace GMT {
         psxy(outfile,item.GetData()[index],cmd);
         return;
     }
-
 }
 
 #endif
