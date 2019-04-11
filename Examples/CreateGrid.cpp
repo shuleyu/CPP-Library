@@ -9,7 +9,7 @@ int main(){
     int NPTS=10,mode=1;
 //     double Lowerbound=1,Upperbound=20.000000000000001;
 //     double Lowerbound=1,Upperbound=19.999999999999996;
-    double Lowerbound=-30,Upperbound=-1;
+    double Lowerbound=1,Upperbound=30;
     double Inc=1,U;
 
     // Use function mode 0.
@@ -34,18 +34,18 @@ int main(){
 //     U=res[1];
 
     // Use function mode 2.
-//     mode=2;
-//     auto res=CreateGrid(Lowerbound,Upperbound,Inc,mode);
-//     if (!res.empty()) Inc=res[1]-res[0];
-//     NPTS=res.size();
-//     U=res.back();
+    mode=2;
+    auto res=CreateGrid(Lowerbound,Upperbound,Inc,mode);
+    if (!res.empty()) Inc=res[1]-res[0];
+    NPTS=res.size();
+    U=res.back();
 
 //     // Use function mode -2.
-    mode=-2;
-    auto res=CreateGrid(Lowerbound,Upperbound,Inc,mode);
-    NPTS=res[0];
-    Inc=res[1];
-    U=Upperbound;
+//     mode=-2;
+//     auto res=CreateGrid(Lowerbound,Upperbound,Inc,mode);
+//     NPTS=res[0];
+//     Inc=res[1];
+//     U=Upperbound;
 
 
     for (auto &item: res) cout << item << '\n';

@@ -46,7 +46,7 @@ public:
         if (i+1<=(int)P.size()) return P[i];
         throw std::runtime_error("Float use error!");
     };
-
+    ReadParameters()=default;
     ReadParameters(const int &argc, const char * const * const &argv, std::istream &is,
                    const T1 &FLAG1, const T2 &FLAG2, const T3 &FLAG3){
 

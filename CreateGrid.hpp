@@ -120,6 +120,9 @@ std::vector<double> CreateGrid(const double &lowerbound, const double &upperboun
             ans.push_back(Cur);
             Cur+=Inc;
         }
+
+        // Round-off errors eliminator!
+        ans.back()=upperbound;
         return ans;
     }
 

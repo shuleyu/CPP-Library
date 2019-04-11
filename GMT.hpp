@@ -17,6 +17,7 @@ extern "C" {
 }
 
 #include<CreateGrid.hpp>
+#include<ShellExec.hpp>
 
 /*************************************************
  * This is a c++ wrapper for GMT C API.
@@ -511,12 +512,14 @@ std::cout << std::endl;
         return;
     }
 
-    void SealPlot(std::string &outfile, const double &XSIZE=-1, const double YSIZE=-1){
+    void SealPlot(std::string &outfile, const bool &CleanUp=true, const double &XSIZE=-1, const double YSIZE=-1){
         // new sizes are in inch, will converted to pts by multipling it by 72.
 
         psxy(outfile,std::vector<double> {0},std::vector<double> {0},"-JX1i/1i -R-1/1/-1/1 -O");
-        remove("gmt.conf");
-        remove("gmt.history");
+        if (CleanUp) {
+            remove("gmt.conf");
+            remove("gmt.history");
+        }
         if (XSIZE>0 && YSIZE>0) {
             int newXSIZE=(int)(XSIZE*72),newYSIZE=(int)(YSIZE*72);
             char a[]="tmpfile_XXXXXX";
