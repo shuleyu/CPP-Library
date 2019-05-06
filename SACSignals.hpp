@@ -56,8 +56,8 @@ public:
     // Constructor/Destructors.
     SACSignals ();
     SACSignals (const SACSignals &item) = default;
-    SACSignals (const std::string &infile);
-    SACSignals (const std::vector<std::string> &infiles);
+    SACSignals (const std::string &infile);                 // a file contains path(s) to SAC file(s).
+    SACSignals (const std::vector<std::string> &infiles);   // a vector contains paths(s) to SAC file(s).
     ~SACSignals () = default;
 
     // Member function declarations.
@@ -141,6 +141,7 @@ public:
     template<typename T> void FlipReverseSum(const std::vector<T> &t);
     void FlipReverseSum(const double &t);
     template<typename T> void ShiftTime(const std::vector<T> &t);
+    void ShiftTimeReferenceToPeak();
     std::pair<std::pair<std::vector<double>,std::vector<double>>,std::pair<EvenSampledSignal,EvenSampledSignal>>
         XCorrStack(const double &center_time, const double &t1, const double &t2, const int loopN=5) const;
     std::pair<std::pair<std::vector<double>,std::vector<double>>,std::pair<EvenSampledSignal,EvenSampledSignal>>
@@ -149,6 +150,12 @@ public:
     SACSignals &operator*=(const double &a){
         for (std::size_t i=0;i<Size();++i) data[i]*=a;
         return *this;
+    }
+
+    SACSignals &operator/=(const double &a){
+        if (a==0)
+            throw std::runtime_error("Divided by zero ...");
+        return *this*=1/a;
     }
 
     SACSignals &operator-=(const EvenSampledSignal &item){
@@ -771,6 +778,9 @@ void SACSignals::ShiftTime(const std::vector<T> &t){
         for (auto it=mdata[i].tt.begin();it!=mdata[i].tt.end();++it)
             it->second-=t[i];
     }
+}
+void SACSignals::ShiftTimeReferenceToPeak(){
+    ShiftTime(PeakTime());
 }
 
 std::pair<std::pair<std::vector<double>,std::vector<double>>,std::pair<EvenSampledSignal,EvenSampledSignal>>
