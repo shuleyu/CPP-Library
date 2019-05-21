@@ -20,6 +20,8 @@
  * Jan 17 2018
  *
  * Key words: Shell, standard output.
+ * Notice:    Most command will have a trailing '\n' character
+ *            in the return string.
 *************************************************/
 
 std::string ShellExec(const std::string &cmd) {
