@@ -106,6 +106,7 @@ public:
     void HannTaper(const double &wl=10);
     void Integrate();
     void Interpolate(const double &dt);
+    void KeepRecords(const std::vector<std::size_t> &indices);
     EvenSampledSignal MakeNeatStack() const;
     void NormalizeToGlobal();
     void NormalizeToPeak();
@@ -141,6 +142,7 @@ public:
     template<typename T> void FlipReverseSum(const std::vector<T> &t);
     void FlipReverseSum(const double &t);
     template<typename T> void ShiftTime(const std::vector<T> &t);
+    template<typename T> void ShiftTime(const T &t);
     void ShiftTimeReferenceToPeak();
     std::pair<std::pair<std::vector<double>,std::vector<double>>,std::pair<EvenSampledSignal,EvenSampledSignal>>
         XCorrStack(const double &center_time, const double &t1, const double &t2, const int loopN=5) const;
@@ -518,6 +520,19 @@ void SACSignals::Interpolate(const double &dt) {
         data.push_back(EvenSampledSignal(item,dt));
 }
 
+void SACSignals::KeepRecords(const std::vector<std::size_t> &indices){
+    std::vector<size_t> BadIndices;
+    if (indices.empty())
+        for (std::size_t i=0;i<Size();++i)
+            BadIndices.push_back(i);
+    else
+        for (std::size_t i=0;i<Size();++i)
+            if (count(indices.begin(),indices.end(),i)==0)
+                BadIndices.push_back(i);
+    RemoveRecords(BadIndices);
+    return;
+}
+
 EvenSampledSignal SACSignals::MakeNeatStack() const {
     EvenSampledSignal ans;
     if (Size()==0) return ans;
@@ -779,6 +794,11 @@ void SACSignals::ShiftTime(const std::vector<T> &t){
             it->second-=t[i];
     }
 }
+template<typename T>
+void SACSignals::ShiftTime(const T &t){
+    ShiftTime(std::vector<T> (Size(),t));
+}
+
 void SACSignals::ShiftTimeReferenceToPeak(){
     ShiftTime(PeakTime());
 }
