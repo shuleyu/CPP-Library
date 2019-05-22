@@ -21,7 +21,9 @@
  *
  * Key words: Shell, standard output.
  * Notice:    Most command will have a trailing '\n' character
- *            in the return string.
+ *            in the return string. I didn't remove it here. When
+ *            using the return of this function, callers can
+ *            decide to remove them or not.
 *************************************************/
 
 std::string ShellExec(const std::string &cmd) {
