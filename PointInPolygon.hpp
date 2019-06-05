@@ -2,6 +2,7 @@
 #define ASU_POINTINPOLYGON
 
 #include<vector>
+#include<numeric>
 
 #include<CrossProduct.hpp>
 #include<PointOnSegment.hpp>
@@ -19,6 +20,8 @@
  *                                          right and top edges are decided to be outside.
  *                                       1: point on all boundaries are counted as inside.
  *                                      -1: point on all boundaries are counted as outside.
+ * const vector<double>              &PolygonBound    ----  (Optional), default is {DOUBLE_MIN,DOUBLE_MAX,DOUBLE_MIN,DOUBLE_MAX}
+ *                                                          The given polygon bounds (Xmin, Xmax, Ymin, Ymax).
  * return(s):
  * bool  ans  ----  true means the point is inside the polygon.
  *
@@ -33,10 +36,14 @@
 ****************************************************************/
 
 template<typename T1,typename T2,typename T3, typename T4>
-bool PointInPolygon(const std::vector<std::pair<T1,T2>> &Polygon,const std::pair<T3,T4> &Point,const int BoundaryMode=0){
+bool PointInPolygon(const std::vector<std::pair<T1,T2>> &Polygon,const std::pair<T3,T4> &Point, const int BoundaryMode=0,
+                    const std::vector<double> &PolygonBound={-std::numeric_limits<double>::max(),std::numeric_limits<double>::max(),
+                                                             -std::numeric_limits<double>::max(),std::numeric_limits<double>::max()}){
 
     int n=Polygon.size(),WN=0;
     double px=Point.first,py=Point.second;
+
+    if (px<PolygonBound[0] || px>PolygonBound[1] || py<PolygonBound[2] || py>PolygonBound[3]) return false;
 
     for (int i=0;i<n;++i){
 
