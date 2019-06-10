@@ -11,9 +11,14 @@
  * wig-interp. The only restriction on x is stric monotonic.
  *
  * input(s):
- * const vector<T1> &x       ----  Time of original signal.
- * const vector<T2> &y       ----  Amplitudes of original signal.
- * const vector<T3> &xx      ----  Time of interpolated signal.
+ * const vector<T1> &x         ----  Time of original signal.
+ * const vector<T2> &y         ----  Amplitudes of original signal.
+ * const vector<T3> &xx        ----  Time of interpolated signal.
+ * const bool       &edgeFlag  ----  Optional (default is false)
+ *                                   return what value when xx is outside the range of x?
+ *                                   true: return min(y) for xx<min(x)
+ *                                         return max(y) for xx>max(x)
+ *                                   false: return NaN for xx<min(x) or xx>max(x)
  *
  * return(s):
  * vector<double> yy  ----  Interpolated signal.
@@ -25,7 +30,7 @@
 ****************************************************************/
 
 template<typename T1, typename T2, typename T3>
-std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> &y, const std::vector<T3> &xx){
+std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> &y, const std::vector<T3> &xx, const bool &edgeFlag=false){
 
     // Check array size.
     int n=x.size();
@@ -63,7 +68,12 @@ std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> 
     epsi*=(1e-4/(n-1));
 
     std::vector<double> yy(xx.size(),0);
-    double Min=std::min(x[0],x.back()),Max=std::max(x[0],x.back());
+    double Min=x[0],Max=x.back(),MinVal=y[0],MaxVal=y.back();
+    if (x[0]>x.back()) {
+        std::swap(Min,Max);
+        std::swap(MinVal,MaxVal);
+    }
+
 
     if (epsi==0) {
         for (std::size_t i=0;i<xx.size();++i)
@@ -130,6 +140,14 @@ std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> 
         t4 = spu*lu*lds/hs;
         yy[i] = t1 + t2 + t3 + t4;
     }
+
+    if (edgeFlag){
+        for (std::size_t i=0;i<xx.size();++i) {
+            if (xx[i]<Min) yy[i]=MinVal;
+            if (xx[i]>Max) yy[i]=MaxVal;
+        }
+    }
+
     return yy;
 }
 

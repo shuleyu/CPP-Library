@@ -42,9 +42,12 @@ int main(){
 //     fpout.close();
 
     vector<double> x{1,2,3,4,5};
-    vector<double> y{1,1,1,1,1};
-    vector<double> xx{0,1,1.5,2,2.3,2.5,3,3.2,3.5,4.5,4.7,5,5.01};
+    vector<double> y{1,2,1,2,1};
+    vector<double> xx{0,1.5,1,1.5,2,2.3,2.5,3,3.2,3.5,4.5,4.7,5,5.01};
     auto yy=Interpolate(x,y,xx);
+    for (size_t i=0;i<xx.size();++i) cout  << xx[i] << " " << yy[i] << '\n';
+    cout << endl;
+    yy=Interpolate(x,y,xx,true);
     for (size_t i=0;i<xx.size();++i) cout  << xx[i] << " " << yy[i] << '\n';
     cout << endl;
 //
