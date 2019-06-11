@@ -12,9 +12,10 @@
  * point will be deemed as on the segment.
  *
  * input(s):
- * const pair<T1,T2> &p1  ----  {x1,y1} One end point of the line segment.
- * const pair<T3,T4> &p2  ----  {x2,y2} Another end point of the line segment.
- * const pair<T5,T6> &p   ----  Given point.
+ * const pair<T1,T2> &p1   ----  {x1,y1} One end point of the line segment.
+ * const pair<T3,T4> &p2   ----  {x2,y2} Another end point of the line segment.
+ * const pair<T5,T6> &p    ----  Given point.
+ * const double      &tol  ----  (Optional, default is 0) Tolerance.
  *
  * return(s):
  * bool  ans  ----  true means the point is on the line segment.
@@ -26,11 +27,13 @@
 ****************************************************************/
 
 template<typename T1,typename T2,typename T3,typename T4,typename T5,typename T6>
-bool PointOnSegment(const std::pair<T1,T2> &p1,const std::pair<T3,T4> &p2,const std::pair<T5,T6> &p){
+bool PointOnSegment(const std::pair<T1,T2> &p1,const std::pair<T3,T4> &p2,const std::pair<T5,T6> &p, const double &tol=0){
 
     double dx1=p1.first-p.first,dy1=p1.second-p.second,dx2=p2.first-p.first,dy2=p2.second-p.second;
-    double EPS=(dx1*dx2+dy1*dy2)/(sqrt(dx1*dx1+dy1*dy1)*sqrt(dx2*dx2+dy2*dy2));
-    return (EPS<-0.999999984769129 &&
+    double d1=sqrt(dx1*dx1+dy1*dy1),d2=sqrt(dx2*dx2+dy2*dy2);
+    if (d1<=tol || d2<=tol) return true;
+    double EPS=(dx1*dx2+dy1*dy2)/d1/d2;
+    return (EPS<=-1+tol &&
             ( (std::min(p1.first,p2.first)<=p.first && p.first<=std::max(p1.first,p2.first)) ||
               (std::min(p1.second,p2.second)<=p.second && p.second<=std::max(p1.second,p2.second)) )
            );
