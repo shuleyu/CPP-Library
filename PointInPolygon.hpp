@@ -54,7 +54,7 @@ bool PointInPolygon(const std::vector<std::pair<T1,T2>> &Polygon,const std::pair
         ex2=Polygon[(i+1)%n].first;
         ey2=Polygon[(i+1)%n].second;
 
-        auto flag=PointOnSegment(std::make_pair(ex1,ey1),std::make_pair(ex2,ey2),Point,1e-12);
+        auto flag=PointOnSegment(std::make_pair(ex1,ey1),std::make_pair(ex2,ey2),Point);
 
         if (BoundaryMode==1 && flag) {
             WN=1;
