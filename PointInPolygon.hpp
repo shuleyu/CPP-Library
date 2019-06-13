@@ -40,7 +40,7 @@ bool PointInPolygon(const std::vector<std::pair<T1,T2>> &Polygon,const std::pair
                     const std::vector<double> &PolygonBound={-std::numeric_limits<double>::max(),std::numeric_limits<double>::max(),
                                                              -std::numeric_limits<double>::max(),std::numeric_limits<double>::max()}){
 
-    int n=Polygon.size(),WN=0;
+    int n=(int)Polygon.size(),WN=0;
     double px=Point.first,py=Point.second;
 
     if (px<PolygonBound[0] || px>PolygonBound[1] || py<PolygonBound[2] || py>PolygonBound[3]) return false;
