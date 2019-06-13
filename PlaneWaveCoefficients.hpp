@@ -141,10 +141,10 @@ PlaneWaveCoefficients(const double &rho1,const double &vp1 ,const double &vs1,
 
 
             // SV as incident.
-            p=sini/vs1,sinj_r=p*vp1;
+            p=sini/vs1;sinj_r=p*vp1;
             double sinj_ss=p*vs2,sinj_sp=p*vp2;
 
-            ys1=cosi/vs1,ys2=0,yp1=0,yp2=0;
+            ys1=cosi/vs1;ys2=0;yp1=0;yp2=0;
 
             if (sinj_r<=1) yp1=sqrt(1-sinj_r*sinj_r)/vp1;
             else yp1.imag(FreqSign*sqrt(p*p-1.0/vp1/vp1));
