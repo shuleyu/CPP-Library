@@ -106,6 +106,7 @@ public:    // inherit mode is "private"   --> "private".
     std::size_t Size() const {return GetAmp().size();}
 
     std::pair<std::size_t,std::size_t> FindAmplevel(const double &level=0.5);
+    void Mask(const double &t1, const double &t2);
 
     DigitalSignal &operator+=(const double &a){
         for (std::size_t i=0;i<Size();++i) amp[i]+=a;
@@ -295,6 +296,13 @@ std::pair<std::size_t,std::size_t> DigitalSignal::FindAmplevel(const double &lev
             break;
         }
     return ans;
+}
+
+void DigitalSignal::Mask(const double &t1, const double &t2){
+    std::size_t p1=LocateTime(t1),p2=LocateTime(t2);
+    for (std::size_t i=p1;i<=p2;++i)
+        amp[i]=0;
+    return;
 }
 
 

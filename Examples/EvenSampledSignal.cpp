@@ -13,6 +13,7 @@ int main(){
 //     EvenSampledSignal A("data/Butterworth_infile",0.01,0);
     vector<double> a(100,1),b(100,2);
     EvenSampledSignal A(a,0.04,0),B(b,0.04,1);
+    A.Mask(2,3);
 
 //     cout << A << endl;
 //     A.Clear();
@@ -86,7 +87,7 @@ int main(){
 //     cout << A.SNR(10,15,24,26) << endl;
 //     A.Diff();
 //     A.OutputToFile("xx");
-    A.AddSignal(B,-1.5);
+//     A.AddSignal(B,-1.5);
     cout << A << endl;
     return 0;
 }

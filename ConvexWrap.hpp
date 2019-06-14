@@ -12,11 +12,14 @@
  * result of input points. (a series of coordinates)
  *
  * input(s):
- * const vector<vector<T>> &p  ----  Input array.
+ * const vector<vector<double>> &p  ----  Input array.
+ * const bool                   &mode  ----  (Optional, default is false)
+ *                                           false: no three points are on the same edge.
+ *                                           true: can have multiple points on the same edge.
  *
  * output(s):
- * vector<double> ans  ----  ans is also a series of points
- *                      (ans is a subset of input p)
+ * vector<vector<double>> ans  ----  ans is also a series of points
+ *                                   (ans is a subset of input p)
  *
  * Shule Yu
  * Mar 06 2019
@@ -25,7 +28,6 @@
  *************************************************/
 
 std::vector<std::vector<double>> ConvexWrap(const std::vector<std::vector<double>> &p) {
-
 
     if (p.size()<=2) return p;
 

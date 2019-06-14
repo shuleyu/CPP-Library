@@ -84,7 +84,8 @@ namespace MariaDB {
             std::size_t ICnt=0,SCnt=0,DCnt=0;
             auto ID=mysql_init(NULL);
 
-            if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
+//             if (!mysql_real_connect(ID,"localhost","","",NULL,0,NULL,0)) {
+            if (!mysql_real_connect(ID,"localhost","shule","",NULL,0,NULL,0)) {
                 std::cerr << mysql_error(ID) << std::endl;
                 throw std::runtime_error("Connet failed...");
             }
@@ -197,7 +198,8 @@ namespace MariaDB {
     void Query(const std::string &cmd){
         auto ID=mysql_init(NULL);
 
-        if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
+        if (!mysql_real_connect(ID,"localhost","shule","",NULL,0,NULL,0)) {
+//         if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
             std::cerr << mysql_error(ID) << std::endl;
             throw std::runtime_error("Connet failed...");
         }
@@ -263,7 +265,8 @@ namespace MariaDB {
 
         auto ID=mysql_init(NULL);
 
-        if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
+        if (!mysql_real_connect(ID,"localhost","shule","",NULL,0,NULL,0)) {
+//         if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
             std::cerr << mysql_error(ID) << std::endl;
             throw std::runtime_error("Connet failed...");
         }
@@ -324,7 +327,8 @@ namespace MariaDB {
 
         auto ID=mysql_init(NULL);
 
-        if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
+        if (!mysql_real_connect(ID,"localhost","shule","",NULL,0,NULL,0)) {
+//         if (!mysql_real_connect(ID,"127.0.0.1","","",NULL,0,NULL,0)) {
             std::cerr << mysql_error(ID) << std::endl;
             throw std::runtime_error("Connet failed...");
         }

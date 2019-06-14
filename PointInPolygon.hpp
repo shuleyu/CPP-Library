@@ -43,6 +43,7 @@ bool PointInPolygon(const std::vector<std::pair<T1,T2>> &Polygon,const std::pair
     int n=(int)Polygon.size(),WN=0;
     double px=Point.first,py=Point.second;
 
+    // Check bounds.
     if (px<PolygonBound[0] || px>PolygonBound[1] || py<PolygonBound[2] || py>PolygonBound[3]) return false;
 
     for (int i=0;i<n;++i){
@@ -56,14 +57,8 @@ bool PointInPolygon(const std::vector<std::pair<T1,T2>> &Polygon,const std::pair
 
         auto flag=PointOnSegment(std::make_pair(ex1,ey1),std::make_pair(ex2,ey2),Point);
 
-        if (BoundaryMode==1 && flag) {
-            WN=1;
-            break;
-        }
-        if (BoundaryMode==-1 && flag) {
-            WN=0;
-            break;
-        }
+        if (BoundaryMode==1 && flag) return true;
+        if (BoundaryMode==-1 && flag) return false;
 
         if (ey1<=py && py<ey2 && CrossProduct(ex1-px,ey1-py,0,ex2-px,ey2-py,0).back()>0) ++WN;
         else if (ey2<=py && py<ey1 && CrossProduct(ex1-px,ey1-py,0,ex2-px,ey2-py,0).back()<0) --WN;

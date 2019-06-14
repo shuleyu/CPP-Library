@@ -8,11 +8,17 @@
 
 /****************************************************************
  * This C++ template judge whether the input polygon is convex.
- * This is a very naive algorithm, and can't deal with complex
- * polygons.
  *
  * input(s):
  * const vector<pair<T1,T2>> &p  ----  Given polygon.
+ * const bool                &mode  ----  (Optional, default is true)
+ *                                        true: easy mode, assuming input polygon is simple:
+ *                                              that is, the sides do not intersect.
+ *                                              Time complexity: O(n).
+ *                                        false: hard mode, not guarantee correct.
+ *                                               do a convex wrapping, then decide if all points
+ *                                               are on the wrapping, and the points are not on a single line. O(nlogn)
+ *
  *
  * return(s):
  * bool ans  ----  true if it is a convex polygon.
@@ -27,7 +33,7 @@ template<typename T1,typename T2>
 bool ConvexPolygon(const std::vector<std::pair<T1,T2>> &p){
 
     if (p.size()<=2) {
-        std::cerr <<  "Error in " << __func__ << ": input polygon is array size is zero ..." << std::endl;
+        std::cerr <<  "Error in " << __func__ << ": input polygon's array size is zero ..." << std::endl;
         return false;
     }
 
