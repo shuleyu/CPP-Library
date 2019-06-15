@@ -138,12 +138,12 @@ int main(){
     if (PlotGrid) GMT::psbasemap(outfile,"-JX"+to_string(Len)+"i -R-10/10/-10/10 -Bxa5g1 -Bya10g1 -BWSne -O -K");
 
     xinc=13.232323,yinc=18.23213445;
-    auto res=CreateGlobeGrid(xinc,yinc);
+    auto res=CreateGlobeGrid(xinc,yinc,true,true);
     for (size_t i=0;i<res.first.size();++i)
         res.first[i][2]=Lon2180(res.first[i][0])+res.first[i][1];
 
     GMT::makecpt("-Cpolar -T-270/270/0.5 -Z > tmp.cpt");
-    GMT::grdimage(outfile,res.first,res.second.first,res.second.second,"-JR0/"+to_string(Len*(1-SpaceRatio))+"i -Rg -nn -E300 -Ctmp.cpt -O -K");
+    GMT::grdimage(outfile,res.first,res.second[2],res.second[3],"-JR0/"+to_string(Len*(1-SpaceRatio))+"i -Rg -nn -E300 -Ctmp.cpt -O -K");
     // -D scale center position relative to last reference piont.
     GMT::psscale(outfile,"-Ctmp.cpt -D"+to_string(Len*(1-SpaceRatio)/2)+"i/-0.5i/2i/0.1ih -O -K -Bxa30 -Bx+lValue");
     GMT::pscoast(outfile,"-J -R -Bxa60g60 -Bya60g60 -BWSne -W0.5p,black -A10000 -O -K");

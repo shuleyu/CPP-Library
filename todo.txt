@@ -1,0 +1,6 @@
+
+Fix issues in these computation geometry related :
+    CombinePolygons.hpp
+    CombineTwoPolygons.hpp
+    ConvexPolygon.hpp
+    ConvexWrap.hpp
