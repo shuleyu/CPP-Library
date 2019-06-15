@@ -13,9 +13,9 @@
  * input(s):
  * const double &LonInc             ----  Longitude increment (roughly).
  * const double &LatInc             ----  Latitude increment (roughly).
- * const bool &CenterValue          ----  (Optional, default is true)
- *                                           true:  will produce longitude grid points start at -180.
- *                                           false: will produce longitude grid points start at -180+LonInc/2.
+ * const bool &CenterValue          ----  (Optional, default is false)
+ *                                           true:  will produce longitude grid points start at -180+LonInc/2.
+ *                                           false: will produce longitude grid points start at -180.
  * const bool &LongitudeWrapAround  ----  (Optional, default is false)
  *                                           true:  will produce one extra repeated, wrap around longitude value (required by GMT -Rg flag)
  *                                           false: will not produce the extra repeated, wrap around longitude value.
@@ -45,7 +45,7 @@
 
 std::pair<std::vector<std::vector<double>>, std::vector<double>>
 CreateGlobeGrid(const double &LonInc, const double &LatInc,
-                const bool &CenterValue=true, const bool &LongitudeWrapAround=false) {
+                const bool &CenterValue=false, const bool &LongitudeWrapAround=false) {
 
     std::pair<std::vector<std::vector<double>>,std::vector<double>> ans;
 
