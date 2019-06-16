@@ -33,7 +33,7 @@ int main(){
     GMT::set("FONT_ANNOT 8p");
 
     // begin plot.
-    GMT::BeginPlot(outfile);
+    GMT::BeginPlot(outfile,"-P",ShellExec("pwd",true)+"/"+string(__FILE__));
 
     // pstitle.
     GMT::MoveReferencePoint(outfile,"-Xc -Yf"+to_string(YSIZE-1)+"i");

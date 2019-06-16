@@ -11,7 +11,10 @@
  * execution of given shell command.
  *
  * input(s):
- * const T &cmd  ----  Input command. Most time T should be a string.
+ * const string &cmd            ----  Input command. Most time T should be a string.
+ * const bool  &removeTrailing  ----  (Optional, default is false)
+ *                                    true:  remove the trailing '\n'.
+ *                                    false: don't remove the trailing '\n'.
  *
  * return(s):
  * string ans  ----  stdout from the Shell command.
@@ -20,13 +23,9 @@
  * Jan 17 2018
  *
  * Key words: Shell, standard output.
- * Notice:    Most command will have a trailing '\n' character
- *            in the return string. I didn't remove it here. When
- *            using the return of this function, callers can
- *            decide to remove them or not.
 *************************************************/
 
-std::string ShellExec(const std::string &cmd) {
+std::string ShellExec(const std::string &cmd, const bool& removeTrailing=false) {
     std::array<char, 128> buffer;
     std::string ans;
     std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
@@ -34,6 +33,10 @@ std::string ShellExec(const std::string &cmd) {
     while (!feof(pipe.get())) {
         if (fgets(buffer.data(), 128, pipe.get()) != NULL)
             ans+=buffer.data();
+    }
+
+    if (removeTrailing) {
+        while (!ans.empty() && ans.back()=='\n') ans.pop_back();
     }
 
     // If all characters are white spaces, return "".

@@ -489,9 +489,12 @@ std::cout << std::endl;
 
 
     // Plot a time stamp at left bottom corner.
-    void timestamp(const std::string &outfile){
-        auto it=std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-        std::string date(ctime(&it));
+    void timestamp(const std::string &outfile, const std::string &additionalText=""){
+        std::string date(__DATE__);
+        date+=" @@ ";
+        date+=__TIME__;
+        date+=" "+std::string(additionalText);
+
         std::vector<Text> texts;
         texts.push_back(Text(0,0,date,4,"LB"));
         MoveReferencePoint(outfile,"-Xf0i -Yf0i");
@@ -505,10 +508,10 @@ std::cout << std::endl;
         return;
     }
 
-    void BeginPlot(const std::string &outfile, const std::string cmd="-P"){
+    void BeginPlot(const std::string &outfile, const std::string cmd="-P", const std::string &additionalText=""){
         remove(outfile.c_str());
         psxy(outfile,std::vector<double> {0},std::vector<double> {0},"-JX1i/1i -R-1/1/-1/1 -K "+cmd);
-        timestamp(outfile);
+        timestamp(outfile,additionalText);
         return;
     }
 
@@ -554,7 +557,7 @@ std::cout << std::endl;
         return;
     }
 
-    std::string BeginEasyPlot(const double &XSIZE=15, const double &YSIZE=15) {
+    std::string BeginEasyPlot(const double &XSIZE=15, const double &YSIZE=15, const std::string &additionalText="") {
 
         char a[]="tmpfile_XXXXXX";
         mkstemp(a);
@@ -570,7 +573,7 @@ std::cout << std::endl;
         set("MAP_TICK_LENGTH_PRIMARY 0.01i");
         set("MAP_TICK_LENGTH_SECONDARY 0.005i");
 
-        BeginPlot(outfile);
+        BeginPlot(outfile,"-P",additionalText);
 
         return outfile;
     }
