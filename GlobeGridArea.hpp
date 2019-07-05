@@ -1,5 +1,5 @@
-#ifndef ASU_AMPLITUDE
-#define ASU_AMPLITUDE
+#ifndef ASU_GLOBEGRIDAREA
+#define ASU_GLOBEGRIDAREA
 
 #include<cmath>
 #include<algorithm>

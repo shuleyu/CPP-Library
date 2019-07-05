@@ -19,9 +19,10 @@
  * const bool &LongitudeWrapAround  ----  (Optional, default is false)
  *                                           true:  will produce one extra repeated, wrap around longitude value (required by GMT -Rg flag)
  *                                           false: will not produce the extra repeated, wrap around longitude value.
+ *                                           If you need to plot this grid use the function provided in GMT.hpp, use true.
  *
  * return(s):
- * pair<vector<vector<double>> , pair<double,double> > ans:
+ * pair<vector<vector<double>> , vector<double> > ans:
  *
  * vector<vector<double>> Grid   ----  Grid[i].size() equals 3.
  *

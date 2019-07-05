@@ -56,20 +56,22 @@ public:    // inherit mode is "private"   --> "private".
     virtual const std::vector<double> &GetTime() const {return time;}
     virtual double PeakAmp() const {return (GetAmp().empty()?0.0/0.0:GetAmp()[GetPeak()]);}
     virtual double PeakTime() const {return (GetTime().empty()?0.0/0.0:GetTime()[GetPeak()]);}
+    virtual void ShiftTime(const double &t){                   // t in sec. t>0: shift to the right.
+        for (std::size_t i=0;i<Size();++i)
+            time[i]+=t;
+    }
     virtual double SignalDuration() const {return EndTime()-BeginTime();}
 
     virtual bool CheckAndCutToWindow(const double &t1, const double &t2);          // t1, t2 in sec.
     virtual void FindPeakAround(const double &t,const double &w=5,
-                                const bool &positiveOnly=false);                 // t, w   in sec.
+                                const bool &positiveOnly=false);                   // t, w   in sec.
     virtual void HannTaper(const double &wl);                                      // wl is  in sec.
     virtual std::size_t LocateTime(const double &t) const;                         // t      in sec.
     virtual void OutputToFile(const std::string &s) const;
     virtual void PrintInfo() const;
     virtual std::pair<double,double> RemoveTrend();
-    virtual void ShiftTime(const double &t){                   // t in sec. t>0: shift to the right.
-        for (std::size_t i=0;i<Size();++i)
-            time[i]+=t;
-    }
+    virtual double SumArea(const double &t1=-std::numeric_limits<double>::max(),
+                           const double &t2=std::numeric_limits<double>::max()) const;
     virtual void ZeroOutHannTaper(const double &wl, const double &zl);             // wl, zl in sec.
 
 
@@ -265,6 +267,15 @@ std::pair<double,double> DigitalSignal::RemoveTrend(){
     return {slope,intercept};
 }
 
+double DigitalSignal::SumArea(const double &t1, const double &t2) const{
+    if (t1>t2) throw std::runtime_error("In SumArea, t2<t1 ...");
+    std::size_t p1=LocateTime(t1),p2=LocateTime(t2);
+    double ans=0;
+    for (std::size_t i=p1+1;i<=p2;++i)
+        ans+=fabs(amp[i-1])*(time[i]-time[i-1]);
+    return ans/(time[p2]-time[p1]);
+}
+
 // taper window half-length is wl, zero half-length is zl.
 void DigitalSignal::ZeroOutHannTaper(const double &wl, const double &zl){
     if ((wl+zl)*2>SignalDuration()) throw std::runtime_error("ZeroOutHanning window too wide.");
@@ -304,7 +315,6 @@ void DigitalSignal::Mask(const double &t1, const double &t2){
         amp[i]=0;
     return;
 }
-
 
 /* -----------------------------------------------------------------------------
 End of member function/operator definitions. -----------------------------------

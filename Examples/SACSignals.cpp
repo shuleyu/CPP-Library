@@ -11,6 +11,7 @@ int main(){
 
 //     SACSignals A("data/SACSignals_in");
     vector<string> infiles{
+        "/home/shule/PROJ/t056.Data/201204141056/201204141056.1C.BLS.HHT.sac",
         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.109C.BHT.sac",
         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.115A.BHT.sac",
         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.116A.BHT.sac",
@@ -65,10 +66,10 @@ int main(){
 //         cout << st[i] << " " << ans.first.first[i] << " " << ans.first.second[i] << endl;
 //     A.CheckAndCutToWindow(A.GetTravelTimes("S"),-50,50);
 //     A.ShiftTime(A.GetTravelTimes("S"));
-    A.DumpWaveforms("/home/shule/new","StationName","201500","_","frs");
+//     A.DumpWaveforms("/home/shule/new","StationName","201500","_","frs");
 
 //     A.NormalizeToSignal();
-//     A.PrintInfo();
+    A.PrintInfo();
 //     A.WaterLevelDecon(A);
 //     A.WaterLevelDecon(B);
 //     A.GaussianBlur(1.3);

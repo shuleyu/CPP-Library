@@ -1,7 +1,7 @@
 #ifndef ASU_SACSIGNALS
 #define ASU_SACSIGNALS
 
-#define MAXL 500000
+#define MAXL 800000
 
 #include<vector>
 #include<string>
@@ -88,6 +88,7 @@ public:
     void Diff();
     void DumpWaveforms(const std::string &dir=".", const std::string &namingConvention="",
                        const std::string &prefix="", const std::string &seperator="_", const std::string &extension="txt") const;
+    void FlipPeakDown();
     void FlipPeakUp();
     std::vector<std::size_t> FindByGcarc(const double &gc, const bool &bulk=false);
     std::vector<std::size_t> FindByStnm(const std::string &st, const bool &bulk=false);
@@ -96,6 +97,7 @@ public:
     std::vector<double> GetDistances(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     std::vector<std::string> GetFileList() const;
     std::vector<std::string> GetNetworkNames() const;
+    std::vector<std::string> GetSACFiles() const;
     std::vector<std::string> GetStationNames() const;
     std::vector<double> GetTravelTimes(const std::string &phase,
                                        const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
@@ -308,6 +310,12 @@ void SACSignals::DumpWaveforms(const std::string &dir, const std::string &naming
     }
 }
 
+void SACSignals::FlipPeakDown() {
+    for (std::size_t i=0;i<Size();++i)
+        data[i].FlipPeakUp();
+    (*this)*=-1;
+}
+
 void SACSignals::FlipPeakUp() {
     for (std::size_t i=0;i<Size();++i)
         data[i].FlipPeakUp();
@@ -445,7 +453,6 @@ std::vector<std::string> SACSignals::GetNetworkNames() const{
         ans.push_back(item.network);
     return ans;
 }
-
 
 std::vector<std::string> SACSignals::GetStationNames() const{
     std::vector<std::string> ans;

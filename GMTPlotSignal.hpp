@@ -19,6 +19,7 @@ namespace GMT {
 
     void psxy(const std::string &outfile,
               const DigitalSignal &item, const std::string &cmd){
+        if (item.Size()==0) return;
         psxy(outfile,item.GetTime(),item.GetAmp(),cmd);
         return;
     }

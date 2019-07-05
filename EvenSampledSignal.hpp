@@ -89,6 +89,7 @@ public:
     void OutputToFile(const std::string &s) const override;
     void PrintInfo() const override;
     std::pair<double,double> RemoveTrend() override final;
+    double SumArea(const double &t1, const double &t2) const override final;
     void ZeroOutHannTaper(const double &wl, const double &zl) override final;
 
 
@@ -302,6 +303,14 @@ std::pair<double,double> EvenSampledSignal::RemoveTrend(){
     return ::RemoveTrend(amp,GetDelta(),BeginTime());
 }
 
+double EvenSampledSignal::SumArea(const double &t1, const double &t2) const {
+    if (t1>t2) throw std::runtime_error("In SumArea, t2<t1 ...");
+    std::size_t p1=LocateTime(t1),p2=LocateTime(t2);
+    double ans=0;
+    for (std::size_t i=p1;i<p2;++i) ans+=fabs(amp[i]);
+    return ans*GetDelta()/(t2-t1);
+}
+
 // taper window half-length is wl, zero half-length is zl.
 void EvenSampledSignal::ZeroOutHannTaper(const double &wl, const double &zl){
     if ((wl+zl)*2>SignalDuration()) throw std::runtime_error("ZeroOutHanning window too wide.");
@@ -323,7 +332,7 @@ double EvenSampledSignal::AbsIntegral() const {
     return ::SimpsonRule(GetAmp().begin(),GetAmp().end(),GetDelta(),f);
 }
 
-// Try to add the signal s2; shift s2 before the addition if dt is given.
+// Try to add the signal s2; shift s2 before the addition for optional input: dt.
 // Will only alter the overlapping part.
 // Sampling rate should be the same.
 // Difference from operator+ : not as strict as operator +, signal length/begin time can be different.

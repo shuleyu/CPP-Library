@@ -355,6 +355,8 @@ std::cout << std::endl;
     }
 
     // psxy with multiple coloms.
+    // third column: color.
+    // fourth column: symbol size.
     template <typename T>
     void psxy(const std::string &outfile, const std::vector<std::vector<T>> &Data,
               const std::string &cmd){

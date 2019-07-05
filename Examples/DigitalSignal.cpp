@@ -9,7 +9,7 @@ using namespace std;
 int main(){
 
 //     DigitalSignal A("data/ShiftPhase_in");
-    DigitalSignal A("data/Signal.txt");
+//     DigitalSignal A("data/Signal.txt");
 //     A.PrintInfo();
 //     cout << A << endl;
 
@@ -76,7 +76,10 @@ int main(){
 //     A.ShiftTimeReferenceToPeak();
 //     cout << A.PeakTime() << endl;
 
-    A.Mask(0,0.5);
-    A.OutputToFile("xx");
+    DigitalSignal A(vector<double>{0,1,3,5,9},vector<double> {1,1,-1,1,1});
+    cout << A << endl << endl;
+
+    cout << A.SumArea() << endl;
+
     return 0;
 }

@@ -21,6 +21,10 @@
  * const int    &N      ----  Requested signal length.
  * const double &dt     ----  Requested sampilng rate.
  * const double &sigma  ----  standard deviation, sigma.
+ * const bool &normalize  ----  (Optional, default if false)
+ *                              true:  will return a gaussian signal with max ampiltude = 1
+ *                              false: will return a gaussian signal with max ampiltude = 1/sigma/sqrt(2*pi)
+ *
  *
  * return(s):
  * vector<double> ans  ----  output Gaussian signal.
