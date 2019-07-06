@@ -91,7 +91,7 @@ TstarOperator(const double &ts, const double &delta, const double &tol=1e-3){
         fftw_execute(p);
 
         // Get answer from the ifft plan.
-        for (int i=0;i<n;++i) ans[i]=exp(M_PI*ts)*In[i];
+        for (int i=0;i<n;++i) ans[i]=In[i];
 
 
         // Destroy the ifft plan.
@@ -107,7 +107,8 @@ TstarOperator(const double &ts, const double &delta, const double &tol=1e-3){
         if ((*MinElement)/(*MaxElement)<tol){
             // Shift the minimum value to the begining of the signal.
             std::rotate(ans.begin(),MinElement,ans.end());
-            Normalize(ans);
+            Normalize(ans); // Before nomalize, the integral (area under the curve) is 1.
+            // After normalize, the peak value is 1.
             return {ans,std::distance(ans.begin(),max_element(ans.begin(),ans.end()))};
         }
         len*=2;

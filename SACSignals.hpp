@@ -88,6 +88,7 @@ public:
     void Diff();
     void DumpWaveforms(const std::string &dir=".", const std::string &namingConvention="",
                        const std::string &prefix="", const std::string &seperator="_", const std::string &extension="txt") const;
+    std::vector<double> EndTime(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     void FlipPeakDown();
     void FlipPeakUp();
     std::vector<std::size_t> FindByGcarc(const double &gc, const bool &bulk=false);
@@ -308,6 +309,18 @@ void SACSignals::DumpWaveforms(const std::string &dir, const std::string &naming
             fpout.close();
         }
     }
+}
+
+std::vector<double> SACSignals::EndTime(const std::vector<std::size_t> &indices) const {
+    std::vector<double> ans;
+    if (indices.empty())
+        for (std::size_t i=0;i<Size();++i) ans.push_back(data[i].EndTime());
+    else
+        for (const auto &i:indices) {
+            if (i>=Size()) continue;
+            ans.push_back(data[i].EndTime());
+        }
+    return ans;
 }
 
 void SACSignals::FlipPeakDown() {

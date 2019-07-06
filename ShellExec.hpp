@@ -29,7 +29,7 @@ std::string ShellExec(const std::string &cmd, const bool& removeTrailing=false) 
     std::array<char, 128> buffer;
     std::string ans;
     std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
-    if (!pipe) throw std::runtime_error("popen() failed!");
+    if (!pipe) throw std::runtime_error("ShellExec popen() failed! Command is: "+cmd);
     while (!feof(pipe.get())) {
         if (fgets(buffer.data(), 128, pipe.get()) != NULL)
             ans+=buffer.data();

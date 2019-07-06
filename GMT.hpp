@@ -1,6 +1,8 @@
 #ifndef ASU_GMT
 #define ASU_GMT
 
+#include<unistd.h>
+
 #include<iostream>
 #include<fstream>
 #include<iterator>
@@ -528,7 +530,7 @@ std::cout << std::endl;
         if (XSIZE>0 && YSIZE>0) {
             int newXSIZE=(int)(XSIZE*72),newYSIZE=(int)(YSIZE*72);
             char a[]="tmpfile_XXXXXX";
-            mkstemp(a);
+            close(mkstemp(a));
             std::string newfile(a),oneline;
 
             std::ifstream fpin(outfile);
@@ -562,7 +564,7 @@ std::cout << std::endl;
     std::string BeginEasyPlot(const double &XSIZE=15, const double &YSIZE=15, const std::string &additionalText="") {
 
         char a[]="tmpfile_XXXXXX";
-        mkstemp(a);
+        close(mkstemp(a));
         std::string outfile(a);
 
         set("PS_MEDIA "+std::to_string(XSIZE)+"ix"+std::to_string(YSIZE)+"i");

@@ -89,7 +89,8 @@ public:
     void OutputToFile(const std::string &s) const override;
     void PrintInfo() const override;
     std::pair<double,double> RemoveTrend() override final;
-    double SumArea(const double &t1, const double &t2) const override final;
+    double SumArea(const double &t1=-std::numeric_limits<double>::max(),
+                   const double &t2=std::numeric_limits<double>::max()) const override final;
     void ZeroOutHannTaper(const double &wl, const double &zl) override final;
 
 
@@ -245,9 +246,10 @@ void EvenSampledSignal::FindPeakAround(const double &t, const double &w, const b
     std::size_t d1=LocateTime(t-w),d2=LocateTime(t+w);
     ++d2;
 
+    peak=d1;
+
     if (positiveOnly) {
-        double Max=GetAmp()[0];
-        peak=d1;
+        double Max=GetAmp()[d1];
         for (std::size_t i=d1+1;i<d2;++i){
             if (Max<GetAmp()[i]) {
                 Max=GetAmp()[i];
@@ -256,10 +258,10 @@ void EvenSampledSignal::FindPeakAround(const double &t, const double &w, const b
         }
     }
     else {
-        double AbsMax=-1;
-        for (std::size_t i=d1;i<d2;++i){
-            if (AbsMax<fabs(GetAmp()[i])) {
-                AbsMax=fabs(GetAmp()[i]);
+        double Max=fabs(GetAmp()[d1]);
+        for (std::size_t i=d1+1;i<d2;++i){
+            if (Max<fabs(GetAmp()[i])) {
+                Max=fabs(GetAmp()[i]);
                 peak=i;
             }
         }
@@ -306,9 +308,11 @@ std::pair<double,double> EvenSampledSignal::RemoveTrend(){
 double EvenSampledSignal::SumArea(const double &t1, const double &t2) const {
     if (t1>t2) throw std::runtime_error("In SumArea, t2<t1 ...");
     std::size_t p1=LocateTime(t1),p2=LocateTime(t2);
+    if (p1==p2) return 0;
+
     double ans=0;
     for (std::size_t i=p1;i<p2;++i) ans+=fabs(amp[i]);
-    return ans*GetDelta()/(t2-t1);
+    return ans/(p2-p1);
 }
 
 // taper window half-length is wl, zero half-length is zl.

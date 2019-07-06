@@ -218,8 +218,8 @@ void DigitalSignal::HannTaper(const double &wl){
 // if requested time outside of signal range, return 0 or Size()-1.
 std::size_t DigitalSignal::LocateTime(const double &t) const {
     if (t<BeginTime() || t>EndTime()) {
-        std::cerr <<  "Warning in " << __func__
-                  << ": request time location outside of the signal ..." << std::endl;
+        //std::cerr <<  "Warning in " << __func__
+        //          << ": request time location outside of the signal ..." << std::endl;
         if (t<BeginTime()) return 0;
         else return Size()-1;
     }

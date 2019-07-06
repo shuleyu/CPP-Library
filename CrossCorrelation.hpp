@@ -75,13 +75,13 @@ std::pair<std::pair<int,double>,std::vector<double>> CrossCorrelation(const T1 X
     // Check signal length.
     int m=std::distance(XBegin,XEnd),n=std::distance(YBegin,YEnd);
     if (m==0 || n==0) {
-        std::cerr <<  "Error in " << __func__ << ": x or y size is zero ..." << std::endl;
+        throw std::runtime_error("Error in " + std::string(__func__) + ": x or y size is zero ...");
         return {};
     }
 
     // Prepare shift limit.
     if (ShiftLimit.first>ShiftLimit.second) {
-        std::cerr <<  "Error in " << __func__ << ": ShiftLimit first > second ..." << std::endl;
+        throw std::runtime_error("Error in " + std::string(__func__) + ": ShiftLimit first > second ...");
         return {};
     }
     int ShiftLeft=std::max(ShiftLimit.first,1-n);

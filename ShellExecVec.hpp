@@ -27,12 +27,13 @@ std::vector<std::string> ShellExecVec(const std::string &cmd) {
     std::array<char,128> buffer;
 
     std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
-    if (!pipe) throw std::runtime_error("popen() failed!");
+    if (!pipe) throw std::runtime_error("ShellExecVec popen() failed! Command is: "+cmd);
 
     while (!feof(pipe.get())) {
         if (fgets(buffer.data(), 128, pipe.get()) != NULL)
             ans.push_back(std::string(buffer.data()));
     }
+
     for (auto &s:ans)
         if (s.back()=='\n')
             s.pop_back();
