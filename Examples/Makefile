@@ -12,7 +12,7 @@ Code     := UniQUEcoDeName
 COMP     := c++ -std=c++17 -Wall -fPIC
 INCDIR   := -I/opt/local/include -I$(SAC)/include -I..
 LIBDIR   := -L/opt/local/lib -L$(SAC)/lib
-LIBS     := -lsac -lsacio -lmlpack -lgmt -lmariadb -larmadillo -lgsl -lgslcblas -lnetcdf -lfftw3 -lm
+LIBS     := -lsac -lsacio -lgmt -lmariadb -larmadillo -lgsl -lgslcblas -lnetcdf -lfftw3 -lm # -lmlpack
 
 # by default, compile all cpp files.
 EGFILES  := $(wildcard *.cpp)
