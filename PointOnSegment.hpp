@@ -5,11 +5,7 @@
 
 /**************************************************************
  * This C++ template return whether given point is on a given
- * straight line segment. Due to rounding error of floating
- * number, the criteria is hard-wired that if the angle between
- * the point and two end point is larger than 179.99 deg)
- * [ cos (179.99 deg) = -0.999999984769129 ], the
- * point will be deemed as on the segment.
+ * line segment.
  *
  * input(s):
  * const pair<T1,T2> &p1   ----  {x1,y1} One end point of the line segment.
