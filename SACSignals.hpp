@@ -6,6 +6,7 @@
 #include<vector>
 #include<string>
 #include<cstring>
+#include<cstdlib>
 #include<fstream>
 #include<sstream>
 #include<map>
@@ -114,8 +115,9 @@ public:
     void NormalizeToGlobal();
     void NormalizeToPeak();
     void NormalizeToSignal();
-    void OutputToSAC(const std::vector<std::size_t> &indices=std::vector<std::size_t> (),
-                     const std::string &prefix="") const;
+    void OutputToSAC(const std::string &prefix="", const std::vector<std::size_t> &indices={},
+                     const std::vector<std::map<std::string,double>> &F={},
+                     const std::vector<std::map<std::string,std::string>> &M={}) const;
     std::vector<double> PeakAmp(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     std::vector<double> PeakTime(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     void PrintInfo() const;
@@ -582,22 +584,24 @@ void SACSignals::NormalizeToSignal(){
         data[i].NormalizeToSignal();
 }
 
-void SACSignals::OutputToSAC(const std::vector<std::size_t> &indices,
-                             const std::string &prefix) const {
+void SACSignals::OutputToSAC(const std::string &prefix, const std::vector<std::size_t> &indices,
+                             const std::vector<std::map<std::string,double>> &F,
+                             const std::vector<std::map<std::string,std::string>> &M) const {
     std::vector<std::size_t> ind;
     if (indices.empty()) {
         ind.resize(Size());
         for (std::size_t i=0;i<Size();++i) ind[i]=i;
     }
     else ind=indices;
+    if (!F.empty() && F.size()!=ind.size()) throw std::runtime_error("Float info length doesn't match.");
+    if (!M.empty() && M.size()!=ind.size()) throw std::runtime_error("String info length doesn't match.");
 
-    char tmpfilename[300];
-    int npts,nerr,prev_size=0;
+    int npts,nerr,prev_size=0,ltrue=true,lfalse;
     float dt,bt,*amp=nullptr;
+    std::size_t k=0;
     for (const std::size_t &i:ind) {
 
-        std::string outfile=prefix+std::to_string(i)+".sac";
-        strcpy(tmpfilename,outfile.c_str());
+        std::string outfile=prefix+std::to_string(i+1)+".sac";
         npts=data[i].Size();
         dt=data[i].GetDelta();
         bt=data[i].BeginTime();
@@ -609,7 +613,31 @@ void SACSignals::OutputToSAC(const std::vector<std::size_t> &indices,
         }
         for (int j=0;j<npts;++j) amp[j]=data[i].GetAmp()[j];
 
-        wsac1(tmpfilename,amp,&npts,&bt,&dt,&nerr,outfile.size());
+        // basic info.
+        newhdr();
+        setnhv((char *)"npts",&npts, &nerr, -1);
+        setfhv((char *)"b", &bt, &nerr, -1);
+        setfhv((char *)"delta", &dt, &nerr, -1);
+        setihv((char *)"iftype", (char *)"itime", &nerr, -1, -1);
+        setlhv((char *)"leven", &ltrue, &nerr, -1);
+        setlhv((char *)"lpspol", &ltrue, &nerr, -1);
+        setlhv((char *)"lcalda", &lfalse, &nerr, -1);
+
+        // headers.
+        if (k<F.size()) {
+            for (const auto &item: F[k]){
+                float tmpval=item.second;
+                setfhv((char *)item.first.c_str(), &tmpval, &nerr, -1);
+            }
+        }
+        if (k<M.size()) {
+            for (const auto &item: M[k]){
+                setkhv((char *)item.first.c_str(), (char *)item.second.c_str(), &nerr, -1, -1);
+            }
+        }
+        ++k;
+
+        wsac0((char *)outfile.c_str(),&dt,amp,&nerr,-1);
     }
     delete [] amp;
 }

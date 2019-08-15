@@ -6,13 +6,10 @@ using namespace std;
 
 int main(){
 
-    double Lon=-361.2,dl=0.2;
+    double Lon=-180,dl=0.2;
 
     // Use function.
-    while (Lon<361.2){
-        cout << Lon << " " << Lon2180(Lon) << endl;
-        Lon+=dl;
-    }
+    cout << Lon << " " << Lon2180(Lon) << endl;
 
     return 0;
 }

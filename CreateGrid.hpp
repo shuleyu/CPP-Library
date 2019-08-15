@@ -4,6 +4,7 @@
 #include<iostream>
 #include<vector>
 #include<cmath>
+#include<algorithm>
 
 /***********************************************************
  * This C++ template returns the 1D grid meshing results.
@@ -67,54 +68,63 @@
 std::vector<double> CreateGrid(const double &lowerbound, const double &upperbound,
                                const double &Para, const int mode){
 
+    double upperBound=upperbound,lowerBound=lowerbound;
+    bool reverseAns=false;
+
+
     // check lower and upper bound.
-    if (upperbound<lowerbound) {
-        std::cerr <<  "Error in " << __func__ << ": lower bound > upper bound ..." << std::endl;
-        return {};
+    if (upperBound<lowerBound) {
+        std::swap(upperBound,lowerBound);
+        reverseAns=true;
     }
 
     if (mode==0){
 
         int N=Para;
-        double Inc=1.0*(upperbound-lowerbound)/(N-1);
+        if (N<=0) throw std::runtime_error("NPTS < 0 ...\n");
 
-        std::vector<double> ans(N,lowerbound);
+        double Inc=1.0*(upperBound-lowerBound)/(N-1);
+
+        std::vector<double> ans(N,lowerBound);
         for (int i=1;i<N;++i) ans[i]=ans[i-1]+Inc;
+        if (reverseAns) std::reverse(ans.begin(),ans.end());
         return ans;
     }
     if (mode==1 || mode==-1){
 
-        double Inc=Para;
+        double Inc=fabs(Para);
 
         if (mode==-1) {
-            double N=1+floor(1.0*(upperbound-lowerbound)/Inc);
-            if (fabs((upperbound-lowerbound-N*Inc))<Inc*1e-6) // float number rounding error?
+            double N=1+floor(1.0*(upperBound-lowerBound)/Inc);
+            if (fabs((upperBound-lowerBound-N*Inc))<Inc*1e-6) // float number rounding error?
                 N+=1;
-            return {N,lowerbound+(N-1)*Inc};
+            return {N,lowerBound+(N-1)*Inc};
         }
 
         std::vector<double> ans;
 
-        double Cur=lowerbound;
+        double Cur=lowerBound;
 
-        while (Cur<=upperbound || Cur-upperbound<Inc*1e-6) {
+        while (Cur<=upperBound || Cur-upperBound<Inc*1e-6) {
             ans.push_back(Cur);
             Cur+=Inc;
         }
+        if (reverseAns) std::reverse(ans.begin(),ans.end());
         return ans;
     }
     if (mode==2 || mode==-2){
 
-        double Inc=Para;
-        int N=1+(int)round((upperbound-lowerbound)/Inc);
-        Inc=1.0*(upperbound-lowerbound)/(N-1);
+        double Inc=fabs(Para);
+
+        int N=1+(int)round((upperBound-lowerBound)/Inc);
+        Inc=1.0*(upperBound-lowerBound)/(N-1);
 
         if (mode==-2) {
             return {1.0*N,Inc};
         }
 
         std::vector<double> ans;
-        double Cur=lowerbound;
+        double Cur=lowerBound;
 
         for (int i=0;i<N;++i) {
             ans.push_back(Cur);
@@ -122,7 +132,9 @@ std::vector<double> CreateGrid(const double &lowerbound, const double &upperboun
         }
 
         // Round-off errors eliminator!
-        ans.back()=upperbound;
+        ans.back()=upperBound;
+
+        if (reverseAns) std::reverse(ans.begin(),ans.end());
         return ans;
     }
 

@@ -71,7 +71,7 @@ public:    // inherit mode is "private"   --> "private".
     virtual void PrintInfo() const;
     virtual std::pair<double,double> RemoveTrend();
     virtual double SumArea(const double &t1=-std::numeric_limits<double>::max(),
-                           const double &t2=std::numeric_limits<double>::max()) const;
+                           const double &t2=std::numeric_limits<double>::max(), const size_t &mode=0) const;
     virtual void ZeroOutHannTaper(const double &wl, const double &zl);             // wl, zl in sec.
 
 
@@ -88,7 +88,10 @@ public:    // inherit mode is "private"   --> "private".
     std::size_t GetPeak() const {return peak;}
 
     bool CheckWindow(const double &t1, const double &t2) const {     // t1, t2 in sec.
-        if (t1>=t2) throw std::runtime_error("Window length <=0.");
+        if (t1>=t2) {
+            std::cerr << "Window length <=0. t1="+std::to_string(t1)+", t2="+std::to_string(t2) << std::endl;
+            return false;
+        }
         if (t1<BeginTime() || t2>EndTime()) return false;
         else return true;
     }
@@ -107,7 +110,8 @@ public:    // inherit mode is "private"   --> "private".
     void ShiftTimeReferenceToPeak() {ShiftTime(-PeakTime());}
     std::size_t Size() const {return GetAmp().size();}
 
-    std::pair<std::size_t,std::size_t> FindAmplevel(const double &level=0.5);
+    std::pair<std::size_t,std::size_t> FindAmplevel(const double &level=0.5) const;
+    std::vector<double> GetAmp(const double &t1, const double &t2) const ;
     void Mask(const double &t1, const double &t2);
 
     DigitalSignal &operator+=(const double &a){
@@ -267,12 +271,34 @@ std::pair<double,double> DigitalSignal::RemoveTrend(){
     return {slope,intercept};
 }
 
-double DigitalSignal::SumArea(const double &t1, const double &t2) const{
+// area under the curve, with different modes according to different operators.
+double DigitalSignal::SumArea(const double &t1, const double &t2, const size_t &mode) const{
     if (t1>t2) throw std::runtime_error("In SumArea, t2<t1 ...");
     std::size_t p1=LocateTime(t1),p2=LocateTime(t2);
+    if (p1==p2) return 0;
+
     double ans=0;
-    for (std::size_t i=p1+1;i<=p2;++i)
-        ans+=fabs(amp[i-1])*(time[i]-time[i-1]);
+
+    switch (mode) {
+
+        case 1: // sum(|p|)
+
+            for (std::size_t i=p1+1;i<=p2;++i)
+                ans+=fabs(amp[i-1])*(time[i]-time[i-1]);
+            break;
+
+        case 2: // sum(p*p)
+
+            for (std::size_t i=p1+1;i<=p2;++i)
+                ans+=amp[i-1]*amp[i-1]*(time[i]-time[i-1]);
+            break;
+            
+        default: // sum(p)
+
+            for (std::size_t i=p1+1;i<=p2;++i)
+                ans+=amp[i-1]*(time[i]-time[i-1]);
+            break;
+    }
     return ans/(time[p2]-time[p1]);
 }
 
@@ -288,7 +314,7 @@ void DigitalSignal::ZeroOutHannTaper(const double &wl, const double &zl){
 
 // Find the amplitude level width move away from peak.
 // Need to define peak.
-std::pair<std::size_t,std::size_t> DigitalSignal::FindAmplevel(const double &level){
+std::pair<std::size_t,std::size_t> DigitalSignal::FindAmplevel(const double &level) const {
 
     if (level<0 || level>=1)
         throw std::runtime_error("Amplitude level is not in [0,1) ...");
@@ -307,6 +333,12 @@ std::pair<std::size_t,std::size_t> DigitalSignal::FindAmplevel(const double &lev
             break;
         }
     return ans;
+}
+
+std::vector<double> DigitalSignal::GetAmp(const double &t1, const double &t2) const {
+    std::size_t p1=LocateTime(t1),p2=LocateTime(t2);
+    if (p1>p2) return {};
+    else return std::vector<double> (GetAmp().begin()+p1,GetAmp().begin()+p2+1);
 }
 
 void DigitalSignal::Mask(const double &t1, const double &t2){

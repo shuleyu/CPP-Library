@@ -22,6 +22,9 @@
  * vector<vector<T>> &p      ----  Input 2D array pointer.
  * const double      &dt     ----  Sampling rate (in sec.)
  * const double      &sigma  ----  Gaussian function parameter (in sec.)
+ * const bool        &minLen50  ----  (Optional, default is false)
+ *                                    true:  the result signal is at leat 50 seconds long.
+ *                                    false: the result signal length is adaptive, stops when amplitude hit 1e-3.
  *
  * return(s):
  * vector<T> &p (in-place)
@@ -33,7 +36,7 @@
 ***********************************************************/
 
 template<typename T>
-void GaussianBlur(std::vector<T> &p, const double &dt, const double &sigma){
+void GaussianBlur(std::vector<T> &p, const double &dt, const double &sigma, const bool &minLen50=false){
 
     // Check p size.
     if (p.empty()) return;
@@ -45,7 +48,9 @@ void GaussianBlur(std::vector<T> &p, const double &dt, const double &sigma){
     }
 
     // Gaussian signal length.
-    double GaussianLength=std::max(50.0,2*sigma*sqrt(2*log(1000)));
+    double GaussianLength=2*sigma*sqrt(2*log(1000));
+    if (minLen50)
+        GaussianLength=std::max(50.0,2*sigma*sqrt(2*log(1000)));
     int GaussianN=1+(int)(GaussianLength/dt);
 
     // Set up the gaussian signal.

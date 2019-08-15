@@ -485,6 +485,18 @@ std::cout << std::endl;
         return;
     }
 
+    template<typename T1, typename T2>
+    void psxy(const std::string &outfile, const std::vector<std::pair<T1,T2>> &data, const std::string &cmd){
+        std::vector<double> X,Y;
+        for (const auto &item: data) {
+            X.push_back(item.first);
+            Y.push_back(item.second);
+        }
+        psxy(outfile,X,Y,cmd);
+        return;
+    }
+
+
     // Move reference point.
     void MoveReferencePoint(const std::string &outfile, const std::string &cmd){
         psxy(outfile,std::vector<double> {0},std::vector<double> {0},"-J -R -O -K "+cmd);

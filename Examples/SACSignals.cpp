@@ -69,7 +69,7 @@ int main(){
 //     A.DumpWaveforms("/home/shule/new","StationName","201500","_","frs");
 
 //     A.NormalizeToSignal();
-    A.PrintInfo();
+//     A.PrintInfo();
 //     A.WaterLevelDecon(A);
 //     A.WaterLevelDecon(B);
 //     A.GaussianBlur(1.3);
@@ -88,7 +88,7 @@ int main(){
 //     cout << S << endl;
 
 //     cout << A.GetFileList()[0] << endl;
-//     A.OutputToSAC(vector<size_t> {0});
+    A.OutputToSAC("Test_",vector<size_t> {0},{{{"gcarc",65.3},{"evdp",532040}}},{{{"kstnm","blah"}}});
 
     return 0;
 }

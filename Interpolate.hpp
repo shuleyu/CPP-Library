@@ -151,4 +151,10 @@ std::vector<double> Interpolate(const std::vector<T1> &x, const std::vector<T2> 
     return yy;
 }
 
+template<typename T1, typename T2>
+double Interpolate(const std::vector<T1> &x, const std::vector<T2> &y, const double &xx, const bool &edgeFlag=false){
+    std::vector<double> tmpVec {xx};
+    return Interpolate(x,y,tmpVec,edgeFlag)[0];
+}
+
 #endif

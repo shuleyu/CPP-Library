@@ -90,7 +90,7 @@ public:
     void PrintInfo() const override;
     std::pair<double,double> RemoveTrend() override final;
     double SumArea(const double &t1=-std::numeric_limits<double>::max(),
-                   const double &t2=std::numeric_limits<double>::max()) const override final;
+                   const double &t2=std::numeric_limits<double>::max(), const size_t &mode=0) const override final;
     void ZeroOutHannTaper(const double &wl, const double &zl) override final;
 
 
@@ -108,9 +108,9 @@ public:
     void AddSignal(const EvenSampledSignal &s2, const double &dt=0);
     void Butterworth(const double &f1, const double &f2, const int &order=2, const int &passes=2);
     std::pair<double,double> CrossCorrelation(const double &t1, const double &t2,
-                                           const EvenSampledSignal &S2, const double &h1, const double &h2,
-                                           const int &Flip=0, const std::pair<int,int> &ShiftLimit=
-                                           {std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}) const;
+                                              const EvenSampledSignal &S2, const double &h1, const double &h2,
+                                              const int &Flip=0, const std::pair<int,int> &ShiftLimit=
+                                              {std::numeric_limits<int>::min(),std::numeric_limits<int>::max()}) const;
     void Convolve(const EvenSampledSignal &item);
     void Diff();
     std::pair<EvenSampledSignal,EvenSampledSignal> FFT(const bool &ReturnAmpAndPhase=true) const;
@@ -305,13 +305,29 @@ std::pair<double,double> EvenSampledSignal::RemoveTrend(){
     return ::RemoveTrend(amp,GetDelta(),BeginTime());
 }
 
-double EvenSampledSignal::SumArea(const double &t1, const double &t2) const {
+// area under the curve, with different modes according to different operators.
+double EvenSampledSignal::SumArea(const double &t1, const double &t2, const size_t &mode) const {
     if (t1>t2) throw std::runtime_error("In SumArea, t2<t1 ...");
     std::size_t p1=LocateTime(t1),p2=LocateTime(t2);
     if (p1==p2) return 0;
 
     double ans=0;
-    for (std::size_t i=p1;i<p2;++i) ans+=fabs(amp[i]);
+
+    switch (mode) {
+
+        case 1: // sum(|p|)
+            for (std::size_t i=p1;i<p2;++i) ans+=fabs(amp[i]);
+            break;
+
+        case 2: // sum(p*p)
+            for (std::size_t i=p1;i<p2;++i) ans+=amp[i]*amp[i];
+            break;
+
+        default: // sum(p)
+            for (std::size_t i=p1;i<p2;++i) ans+=amp[i];
+            break;
+    }
+
     return ans/(p2-p1);
 }
 
@@ -374,13 +390,20 @@ void EvenSampledSignal::Butterworth(const double &f1, const double &f2,
 // Cross correlate current signal with input signal within their own window.
 // Notice we are returning the time shift (in second)
 std::pair<double,double> EvenSampledSignal::CrossCorrelation(const double &t1, const double &t2,
-                                                          const EvenSampledSignal &S2, const double &h1, const double &h2,
-                                                          const int &Flip, const std::pair<int,int> &ShiftLimit) const {
+                                                             const EvenSampledSignal &S2, const double &h1, const double &h2,
+                                                             const int &Flip, const std::pair<int,int> &ShiftLimit) const {
     // Check window position.
-    if (!CheckWindow(t1,t2))
-        throw std::runtime_error("CrossCorrelation window on signal 1 is not proper.");
-    if (!S2.CheckWindow(h1,h2))
-        throw std::runtime_error("CrossCorrelation window on signal 2 is not proper.");
+    if (!CheckWindow(t1,t2)) {
+        std::cerr << "CrossCorrelation window on signal 1 is not proper." << std::endl;
+        //throw std::runtime_error("CrossCorrelation window on signal 1 is not proper.");
+        return {};
+    }
+    if (!S2.CheckWindow(h1,h2)) {
+        std::cerr << "CrossCorrelation window on signal 2 is not proper." << std::endl;
+        // throw std::runtime_error("CrossCorrelation window on signal 2 is not proper.");
+        return {};
+    }
+
 
     auto res=::CrossCorrelation(GetAmp().begin()+LocateTime(t1),
                               GetAmp().begin()+LocateTime(t2)+1,
@@ -744,9 +767,9 @@ StackSignals(const std::vector<EvenSampledSignal> &Signals,
     for (const auto &item:Signals) {
         if (item.Size()!=n)
             throw std::runtime_error("Input signals have different lengths.");
-        if (item.GetDelta()!=dt)
+        if (fabs(item.GetDelta()-dt)>1e-10)
             throw std::runtime_error("Input signals have different sampling rates.");
-        if (item.BeginTime()!=bt)
+        if (fabs(item.BeginTime()-bt)>1e-10)
             throw std::runtime_error("Input signals have different begin times.");
     }
 

@@ -7,13 +7,12 @@ using namespace std;
 int main(){
 
     vector<vector<double>> p={
-        {0,10,5},
-        {2,4,5},
-        {1,5,2}
+        {0,17,5.5},
+        {4,2,1},
     };
 
     // Use function.
-    auto ans=MeshGrid(p,0);
+    auto ans=MeshGrid(p,1);
 
     for (auto &item:ans){
         for (auto &item2:item)

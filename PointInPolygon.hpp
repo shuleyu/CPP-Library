@@ -2,7 +2,7 @@
 #define ASU_POINTINPOLYGON
 
 #include<vector>
-#include<numeric>
+#include<limits>
 
 #include<CrossProduct.hpp>
 #include<PointOnSegment.hpp>

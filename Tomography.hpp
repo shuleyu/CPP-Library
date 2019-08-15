@@ -135,7 +135,7 @@ public:
         if (!lat.empty() && lat[0]>0) ReverseLatitude();
     }
 
-    double GetValueAt(const double &d, double lo, const double &la) const;
+    double GetValueAt(const double &d, double lo, const double &la, const bool &outOfBound=false) const;
     const std::vector<double> &GetDepths() const {return depth;}
     const std::vector<double> &GetLatitudes() const {return lat;}
     const std::vector<double> &GetLongitudes() const {return lon;}
@@ -144,12 +144,15 @@ public:
 
 };
 
-double Tomography::GetValueAt(const double &d, double lo, const double &la) const {
+double Tomography::GetValueAt(const double &d, double lo, const double &la, const bool &outOfBound) const {
 
     if (v.empty())
         throw std::runtime_error("In "+std::string(__func__)+", model is empty.");
 
-    if (d<depth[0] || d>depth.back() || la<lat[0] || la>lat.back()) return 0.0/0.0;
+    if (la<lat[0] || la>lat.back()) return 0.0/0.0;
+    if ((d<=depth[0] || d>=depth.back()) && !outOfBound) return 0.0/0.0;
+    if (d<=depth[0] && outOfBound) return GetValueAt(depth[0]+1e-5,lo,la);
+    if (d>=depth.back() && outOfBound) return GetValueAt(depth.back()-1e-5,lo,la);
 
     std::size_t lat_len=GetLatitudes().size(),lon_len=GetLongitudes().size();
 

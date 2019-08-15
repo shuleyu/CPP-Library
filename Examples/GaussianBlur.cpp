@@ -9,20 +9,23 @@ using namespace std;
 int main(){
 
     double dt=0.025,time,amp,sigma=1.0;
-    vector<double> A;
+    vector<double> A,T;
 
     ifstream fpin("data/GaussianBlur_infile");
 
-    while (fpin >> time >> amp)
+    while (fpin >> time >> amp) {
+        T.push_back(time);
         A.push_back(amp);
+    }
     fpin.close();
 
     // Use function.
-    GaussianBlur(A,dt,sigma);
+    GaussianBlur(A,dt,sigma,true);
 
     ofstream fpout("data/GaussianBlur_out");
+    size_t i=0;
     for (const auto &item:A)
-        fpout << item << '\n';
+        fpout << T[i++] << " " << item << '\n';
     fpout.close();
 
     return 0;
