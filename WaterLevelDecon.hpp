@@ -67,7 +67,6 @@ std::vector<double> WaterLevelDecon(const std::vector<T1> &x, const std::size_t 
     fftw_plan p1=fftw_plan_dft_r2c_1d(NPTS,In,Out,FFTW_MEASURE);
     fftw_plan p2=fftw_plan_dft_c2r_1d(NPTS,Out,In,FFTW_MEASURE);
 
-
     // Step1. Calculate source fft.
 
     // 1. Padding source (at two ends) with zeros, the peak is at center.
@@ -78,6 +77,7 @@ std::vector<double> WaterLevelDecon(const std::vector<T1> &x, const std::size_t 
     fftw_execute(p1);
 
     // Step2. Water-level filled.
+
 
     // 1. Find waterlevel.
     double Amp=0;

@@ -104,7 +104,7 @@ public:    // inherit mode is "private"   --> "private".
     }
     double MaxVal() const {return *std::max_element(GetAmp().begin(),GetAmp().end());}
     double MinVal() const {return *std::min_element(GetAmp().begin(),GetAmp().end());}
-    void NormalizeToPeak() {*this/=fabs(GetAmp()[GetPeak()]);}
+    void NormalizeToPeak() {*this/=fabs(PeakAmp());}
     void NormalizeToSignal() {*this/=MaxAmp();}
     void SetBeginTime(const double &t) {ShiftTime(-BeginTime()+t);}
     void ShiftTimeReferenceToPeak() {ShiftTime(-PeakTime());}
@@ -113,6 +113,7 @@ public:    // inherit mode is "private"   --> "private".
     std::pair<std::size_t,std::size_t> FindAmplevel(const double &level=0.5) const;
     std::vector<double> GetAmp(const double &t1, const double &t2) const ;
     void Mask(const double &t1, const double &t2);
+    void NormalizeToWindow(const double &t1, const double &t2);
 
     DigitalSignal &operator+=(const double &a){
         for (std::size_t i=0;i<Size();++i) amp[i]+=a;
@@ -345,6 +346,14 @@ void DigitalSignal::Mask(const double &t1, const double &t2){
     std::size_t p1=LocateTime(t1),p2=LocateTime(t2);
     for (std::size_t i=p1;i<=p2;++i)
         amp[i]=0;
+    return;
+}
+
+void DigitalSignal::NormalizeToWindow(const double &t1, const double &t2){
+    size_t w=LocateTime(t1),v=LocateTime(t2);
+    double maxAmp=-std::numeric_limits<double>::max();
+    for (size_t i=w;i<v;++i) maxAmp=std::max(maxAmp,fabs(GetAmp()[i]));
+    *this/=maxAmp;
     return;
 }
 

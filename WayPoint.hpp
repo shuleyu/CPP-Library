@@ -3,6 +3,7 @@
 
 #include<cmath>
 
+#include<FindAz.hpp>
 #include<Lon2180.hpp>
 
 /**************************************************************
@@ -84,6 +85,11 @@ std::pair<double,double> WayPoint(const double &lon, const double &lat,
     plon*=180/M_PI;
 
     return {Lon2180(plon),plat};
+}
+
+std::pair<double,double> WayPoint(const double &lon1, const double &lat1,
+                                  const double &lon2, const double &lat2, const double &dist){
+    return WayPoint(lon1, lat1, FindAz(lon1, lat1, lon2, lat2), dist);
 }
 
 #endif

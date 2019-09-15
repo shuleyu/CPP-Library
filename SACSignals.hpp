@@ -1,7 +1,7 @@
 #ifndef ASU_SACSIGNALS
 #define ASU_SACSIGNALS
 
-#define MAXL 800000
+#define MAXL 5000001
 
 #include<vector>
 #include<string>
@@ -19,6 +19,9 @@ extern "C"{
 #include<sac.h>
 }
 
+#include<Lon2360.hpp>
+#include<GcpDistance.hpp>
+#include<FindAz.hpp>
 #include<SortWithIndex.hpp>
 #include<ReorderUseIndex.hpp>
 #include<EvenSampledSignal.hpp>
@@ -29,15 +32,34 @@ extern "C"{
 
 struct SACMetaData{
     std::string stnm,network;
-    double gcarc;
+    double gcarc,az,evde,evlo,evla,stlo,stla;
     std::map<std::string,double> tt;           // all travel times avaliable in the sac file header.
-    SACMetaData (const std::string &s, const std::string &n, const double &g,
-                 const std::map<std::string,double> &m) : stnm(s),network(n),gcarc(g),tt(m) {}
+
+    SACMetaData () : SACMetaData("") {}
+
+    SACMetaData (const std::string &s) : SACMetaData(s,"") {}
+
+    SACMetaData (const std::string &s, const std::string &n) : SACMetaData(s,n,0) {}
+
+    SACMetaData (const std::string &s, const std::string &n, const double &g) : SACMetaData(s,n,g,0) {}
+
+    SACMetaData (const std::string &s, const std::string &n, const double &g, const double &a) :
+                 SACMetaData(s,n,g,a,0,0,0,0,0) {}
+
+    SACMetaData (const std::string &s, const std::string &n, const double &g, const double &a,
+                 const double &ede, const double &elo, const double &ela, const double &slo, const double &sla) :
+                 SACMetaData(s,n,g,a,ede,elo,ela,slo,sla,std::map<std::string, double> ()) {}
+
+    SACMetaData (const std::string &s, const std::string &n, const double &g, const double &a,
+                 const double &ede, const double &elo, const double &ela, const double &slo, const double &sla,
+                 const std::map<std::string,double> &m) : stnm(s),network(n),gcarc(g),az(a),
+                                                          evde(ede), evlo(elo), evla(ela), stlo(slo), stla(sla), tt(m) {}
 };
 
 std::ostream &operator<<(std::ostream &os, const SACMetaData &item){
     std::cout << "Network: |" << item.network << "|\n";
     std::cout << "StationName: |" << item.stnm << "|\n";
+    std::cout << "Az: |" << item.az << "|\n";
     std::cout << "Gcarc: |" << item.gcarc << "|\n";
     std::cout << "TravelTimes: " << '\n';
     for (const auto &item2:item.tt)
@@ -73,6 +95,7 @@ public:
     void AmplitudeDivision(const std::vector<double> &scales);
     void Butterworth(const double &f1, const double &f2, const int &order=2, const int &passes=2);
     std::vector<double> BeginTime(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
+    void CheckAz(const double &d1=0, const double &d2=0);
     void CheckDist(const double &d1=-1, const double &d2=181);
     void CheckPhase(const std::string &phase, const double &t1=0,
                     const double &t2=std::numeric_limits<double>::max());
@@ -96,6 +119,7 @@ public:
     std::vector<std::size_t> FindByStnm(const std::string &st, const bool &bulk=false);
     std::vector<std::size_t> FindByNetwork(const std::string &nt, const bool &bulk=false);
     void GaussianBlur(const double &sigma=1);
+    double GetDistance(const std::size_t &index=0) const;
     std::vector<double> GetDistances(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     std::vector<std::string> GetFileList() const;
     std::vector<std::string> GetNetworkNames() const;
@@ -122,6 +146,8 @@ public:
     std::vector<double> PeakTime(const std::vector<std::size_t> &indices=std::vector<std::size_t> ()) const;
     void PrintInfo() const;
     void PrintListInfo() const;
+    void ReCalcAz();
+    void ReCalcDist();
     void RemoveRecords(const std::vector<std::size_t> &indices);
     std::vector<std::pair<double,double>> RemoveTrend();
     bool SameSamplingRate () const;
@@ -244,6 +270,23 @@ std::vector<double> SACSignals::BeginTime(const std::vector<std::size_t> &indice
     return ans;
 }
 
+void SACSignals::CheckAz(const double &d1, const double &d2){
+    if (d1==d2) return;
+
+    double lowerBound=Lon2360(d1), upperBound=Lon2360(d2);
+
+    std::vector<std::size_t> BadIndices;
+    if (lowerBound>upperBound) {
+        for (std::size_t i=0;i<Size();++i)
+            if (Lon2360(mdata[i].az)<lowerBound && Lon2360(mdata[i].az)>upperBound) BadIndices.push_back(i);
+    }
+    else {
+        for (std::size_t i=0;i<Size();++i)
+            if (Lon2360(mdata[i].az)<lowerBound || Lon2360(mdata[i].az)>upperBound) BadIndices.push_back(i);
+    }
+    RemoveRecords(BadIndices);
+}
+
 void SACSignals::CheckDist(const double &d1, const double &d2){
     std::vector<std::size_t> BadIndices;
     for (std::size_t i=0;i<Size();++i)
@@ -261,6 +304,7 @@ void SACSignals::CheckPhase(const std::string &phase, const double &t1, const do
     RemoveRecords(BadIndices);
 }
 
+// negative shift time: item is shifting forward.
 std::pair<std::vector<double>,std::vector<double>>
 SACSignals::CrossCorrelation(const std::vector<double> &t1, const std::vector<double> &t2,
                              const EvenSampledSignal &item, const double &h1, const double &h2,
@@ -348,7 +392,7 @@ std::vector<std::size_t> SACSignals::FindByGcarc(const double &gc, const bool &b
         auto cmp=[](const SACMetaData &m1, const SACMetaData &m2){
             return m1.gcarc<m2.gcarc;
         };
-        SACMetaData dummy("","",gc,std::map<std::string, double> ());
+        SACMetaData dummy("","",gc);
         auto it1=std::lower_bound(mdata.begin(),mdata.end(),dummy,cmp);
         auto it2=std::upper_bound(mdata.begin(),mdata.end(),dummy,cmp);
         if (it1==it2) {
@@ -392,7 +436,7 @@ std::vector<std::size_t> SACSignals::FindByNetwork(const std::string &nt, const 
         auto cmp=[](const SACMetaData &m1, const SACMetaData &m2){
             return m1.network<m2.network;
         };
-        SACMetaData dummy("",nt,0,std::map<std::string, double> ());
+        SACMetaData dummy("",nt);
         auto it1=std::lower_bound(mdata.begin(),mdata.end(),dummy,cmp);
         auto it2=std::upper_bound(mdata.begin(),mdata.end(),dummy,cmp);
         for (auto it=it1;it!=it2;++it)
@@ -417,7 +461,7 @@ std::vector<std::size_t> SACSignals::FindByStnm(const std::string &st, const boo
         auto cmp=[](const SACMetaData &m1, const SACMetaData &m2){
             return m1.stnm<m2.stnm;
         };
-        SACMetaData dummy(st,"",0,std::map<std::string, double> ());
+        SACMetaData dummy(st);
         auto it1=std::lower_bound(mdata.begin(),mdata.end(),dummy,cmp);
         auto it2=std::upper_bound(mdata.begin(),mdata.end(),dummy,cmp);
         for (auto it=it1;it!=it2;++it)
@@ -439,6 +483,11 @@ std::vector<std::size_t> SACSignals::FindByStnm(const std::string &st, const boo
 void SACSignals::GaussianBlur(const double &sigma){
     for (std::size_t i=0;i<Size();++i)
         data[i].GaussianBlur(sigma);
+}
+
+double SACSignals::GetDistance(const std::size_t &index) const {
+    if (index>=Size()) return 0.0/0.0;
+    return mdata[index].gcarc;
 }
 
 std::vector<double> SACSignals::GetDistances(const std::vector<std::size_t> &indices) const{
@@ -479,19 +528,27 @@ std::vector<std::string> SACSignals::GetStationNames() const{
 
 std::vector<double> SACSignals::GetTravelTimes(const std::string &phase,
                                                const std::vector<std::size_t> &indices) const {
+
+    // Notice: if phase = "S" or "P", this will also return Sdiff and Pdiff travel times.
+    std::string phase2="xxxx";
+    if (phase=="S") phase2="Sdiff";
+    if (phase=="P") phase2="Pdiff";
+
     std::vector<double> ans;
     if (indices.empty())
         for (const auto &item:mdata) {
-            auto it=item.tt.find(phase);
-            if (it==item.tt.end()) ans.push_back(-1);
-            else ans.push_back(it->second);
+            auto it=item.tt.find(phase), it2=item.tt.find(phase2);
+            if (it!=item.tt.end()) ans.push_back(it->second);
+            else if (it2!=item.tt.end()) ans.push_back(it2->second);
+            else ans.push_back(-1);
         }
     else
         for (const auto &i:indices){
             if (i>=Size()) continue;
-            auto it=mdata[i].tt.find(phase);
-            if (it==mdata[i].tt.end()) ans.push_back(-1);
-            else ans.push_back(it->second);
+            auto it=mdata[i].tt.find(phase), it2=mdata[i].tt.find(phase2);
+            if (it!=mdata[i].tt.end()) ans.push_back(it->second);
+            else if (it2!=mdata[i].tt.end()) ans.push_back(it2->second);
+            else ans.push_back(-1);
         }
     return ans;
 }
@@ -684,6 +741,18 @@ void SACSignals::PrintListInfo() const {
     std::cout << "Read from file: " << GetFileListName() << '\n';
     std::cout << "Current valid trace nubmer: " << Size() << '\n';
 }
+
+
+void SACSignals::ReCalcAz(){
+    for (std::size_t i=0; i<Size(); ++i)
+        mdata[i].az=FindAz(mdata[i].evlo, mdata[i].evla, mdata[i].stlo, mdata[i].stla);
+}
+
+void SACSignals::ReCalcDist(){
+    for (std::size_t i=0; i<Size(); ++i)
+        mdata[i].gcarc=GcpDistance(mdata[i].evlo, mdata[i].evla, mdata[i].stlo, mdata[i].stla);
+}
+
 
 void SACSignals::RemoveRecords(const std::vector<std::size_t> &indices){
     if (indices.empty()) return;
@@ -891,40 +960,48 @@ SACSignals::XCorrStack(const std::vector<double> &center_time, const double &t1,
 
 
     // prepare output.
-    std::vector<double> ccc(GoodIndex.size(),0),shift(GoodIndex.size(),0);
 
     // Do the cross-correlation loop.
     EvenSampledSignal S=S0,STD;
     for (int loop=0;loop<loopN;++loop){
 
         std::vector<EvenSampledSignal> TmpData;
+        std::vector<double> ccc;
+        double newBeginTime=-std::numeric_limits<double>::max();
+        double newEndTime=std::numeric_limits<double>::max();
         for (std::size_t i=0;i<GoodIndex.size();++i) {
 
             std::size_t j=GoodIndex[i];
 
             auto res=S.CrossCorrelation(t1,t2,data[j],center_time[j]+t1,center_time[j]+t2);
-            shift[i]=-res.first;
-            ccc[i]=res.second;
 
-            auto Tmp=EvenSampledSignal(data[j]);
-            Tmp.CheckAndCutToWindow(center_time[j]+shift[i]+t1,center_time[j]+shift[i]+t2);
-            Tmp.SetBeginTime(t1);
-            Tmp.NormalizeToSignal();
-
-            TmpData.push_back(Tmp);
+            auto Tmp=data[j];
+            if (Tmp.CheckWindow(center_time[j]+t1-res.first,center_time[j]+t2-res.first)) {
+                ccc.push_back(res.second);
+                Tmp.ShiftTime(-res.first);
+                Tmp.NormalizeToWindow(t1,t2);
+                newBeginTime=std::max(newBeginTime,Tmp.BeginTime());
+                newEndTime=std::min(newEndTime,Tmp.EndTime());
+                TmpData.push_back(Tmp);
+            }
+        }
+        for (auto &item: TmpData) {
+            item.CheckAndCutToWindow(newBeginTime,newEndTime);
+            item.SetBeginTime(newBeginTime);
         }
         std::tie(S,STD)=StackSignals(TmpData,ccc);
     }
 
-    std::vector<double> CCC(Size(),0),Shift(Size(),0);
-
+    // Traces not contributing to ESW have ccc=nan.
+    std::vector<double> CCC(Size(),0.0/0.0),AlignTime(Size(),0);
     for (std::size_t i=0;i<GoodIndex.size();++i) {
         std::size_t j=GoodIndex[i];
-        Shift[j]=shift[i];
-        CCC[j]=ccc[i];
+        auto res=S.CrossCorrelation(t1,t2,data[j],center_time[j]+t1,center_time[j]+t2);
+        AlignTime[j]=-res.first;
+        CCC[j]=res.second;
     }
 
-    return {{Shift,CCC},{S,STD}};
+    return {{AlignTime,CCC},{S,STD}};
 }
 
 /* -----------------------------------------------------------------------------
@@ -937,13 +1014,14 @@ std::istream &operator>>(std::istream &is, SACSignals &item){
     item.Clear();
     std::string sacfilename;
     char file[300],stnm1[20],netwk1[20],p[20];
-    char st[6]="kstnm",kt[7]="knetwk",gc[6]="gcarc";
+    char st[6]="kstnm",kt[7]="knetwk",gc[6]="gcarc",ede[5]="evdp",elo[5]="evlo",ela[5]="evla",slo[5]="stlo",sla[5]="stla",azimuth[3]="az";
     char tname[][3]={"t0","t1","t2","t3","t4","t5","t6","t7","t8","t9"};
     char pname[][4]={"kt0","kt1","kt2","kt3","kt4","kt5","kt6","kt7","kt8","kt9"};
     std::string stnm,netwk;
     std::map<std::string,double> M;
     int rawnpts,maxl=MAXL,nerr;
-    float rawbeg,rawdel,rawdata[MAXL],gcarc,t;
+    float rawbeg,rawdel,gcarc,t,evde,evlo,evla,stlo,stla,az;
+    float *rawdata = new float[MAXL];
     std::vector<double> D;
 
     while (is >> sacfilename){
@@ -958,7 +1036,8 @@ std::istream &operator>>(std::istream &is, SACSignals &item){
         item.data.push_back(Tmp);
 
         // deal with headers, we only pull these headers:
-        // network code, station code, gcarc, traveltimes.
+        // network code, station code, gcarc, traveltimes,
+        // event lon/lat, station lon/lat.
         M.clear();
 
         // to hide SAC warning.
@@ -984,6 +1063,12 @@ std::istream &operator>>(std::istream &is, SACSignals &item){
             if (tmpstr!="-12345") M[tmpstr]=t;
         }
         getfhv(gc,&gcarc,&nerr,5);
+        getfhv(ede,&evde,&nerr,4);
+        getfhv(elo,&evlo,&nerr,4);
+        getfhv(ela,&evla,&nerr,4);
+        getfhv(slo,&stlo,&nerr,4);
+        getfhv(sla,&stla,&nerr,4);
+        getfhv(azimuth,&az,&nerr,2);
 
         // to hide SAC warning
         fflush(stdout);
@@ -991,8 +1076,9 @@ std::istream &operator>>(std::istream &is, SACSignals &item){
         close(stdoutfd);
         // to hide SAC warning
 
-        item.mdata.push_back(SACMetaData(stnm,netwk,gcarc,M));
+        item.mdata.push_back(SACMetaData(stnm,netwk,gcarc,az,evde,evlo,evla,stlo,stla,M));
     }
+    delete [] rawdata;
 
     return is;
 }

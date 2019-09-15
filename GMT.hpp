@@ -80,7 +80,6 @@ namespace GMT { // the order of the function definition matters: dependencies sh
             std::size_t n=(std::size_t)res[0]+4;
             inc[0]=res[1]; // X increment.
 
-
             // Create plot data.
             GMT_GRID *grid=(GMT_GRID *)GMT_Create_Data(API,GMT_IS_GRID,GMT_IS_SURFACE,
                                                        GMT_CONTAINER_ONLY,NULL,wesn,inc,
@@ -112,13 +111,41 @@ namespace GMT { // the order of the function definition matters: dependencies sh
             grid->header->BC[2]=2;
             grid->header->BC[3]=2;
 
+            // periodic along latitude direction.
+            if (m==5) {
+                for (std::size_t X=2;X<n-2;++X) {
+                    aux_data[X]=aux_data[X+(m-3)*n];
+                    aux_data[X+n]=aux_data[X+(m-3)*n];
+                    aux_data[X+(m-2)*n]=aux_data[X+(m-3)*n];
+                    aux_data[X+(m-1)*n]=aux_data[X+(m-3)*n];
+                }
+            }
+            else {
+                for (std::size_t X=2;X<n-2;++X) {
+                    aux_data[X]=aux_data[X+(m-2)*n-2*n];
+                    aux_data[X+n]=aux_data[X+(m-2)*n-n];
+                    aux_data[X+(m-2)*n]=aux_data[X+2*n];
+                    aux_data[X+(m-1)*n]=aux_data[X+3*n];
+                }
+            }
+
 
             // periodic along longitude (x) direction.
-            for (std::size_t Y=0;Y<m;++Y) {
-                aux_data[(m-1-Y)*n+0]=aux_data[(m-1-Y)*n+n-4];
-                aux_data[(m-1-Y)*n+1]=aux_data[(m-1-Y)*n+n-3];
-                aux_data[(m-1-Y)*n+n-1]=aux_data[(m-1-Y)*n+3];
-                aux_data[(m-1-Y)*n+n-2]=aux_data[(m-1-Y)*n+2];
+            if (n==5) {
+                for (std::size_t Y=0;Y<m;++Y) {
+                    aux_data[(m-1-Y)*n+0]  =aux_data[(m-1-Y)*n+2];
+                    aux_data[(m-1-Y)*n+1]  =aux_data[(m-1-Y)*n+2];
+                    aux_data[(m-1-Y)*n+n-1]=aux_data[(m-1-Y)*n+2];
+                    aux_data[(m-1-Y)*n+n-2]=aux_data[(m-1-Y)*n+2];
+                }
+            }
+            else {
+                for (std::size_t Y=0;Y<m;++Y) {
+                    aux_data[(m-1-Y)*n+0]=aux_data[(m-1-Y)*n+n-4];
+                    aux_data[(m-1-Y)*n+1]=aux_data[(m-1-Y)*n+n-3];
+                    aux_data[(m-1-Y)*n+n-1]=aux_data[(m-1-Y)*n+3];
+                    aux_data[(m-1-Y)*n+n-2]=aux_data[(m-1-Y)*n+2];
+                }
             }
 
             // Get the virtual file.
@@ -189,6 +216,7 @@ std::cout << std::endl;
 
     // gmt set.
     void set(const std::string &cmd){
+
         void *API=GMT_Create_Session(__func__,2,0,NULL);
         char *command=strdup(cmd.c_str());
         GMT_Call_Module(API,"set",GMT_MODULE_CMD,command);
@@ -472,6 +500,14 @@ std::cout << std::endl;
 
     // Functions(templates) dependent on others.
 
+    void psxy(const std::string &outfile, const std::string &cmd){
+        void *API=GMT_Create_Session(__func__,2,0,NULL);
+        char *command=strdup((" "+cmd+" ->>"+outfile).c_str());
+        GMT_Call_Module(API,"psxy",GMT_MODULE_CMD,command);
+        GMT_Destroy_Session(API);
+        return;
+    }
+
     template<typename T>
     void psxy(const std::string &outfile, const std::vector<T> &X,
               const std::vector<T> &Y, const std::string &cmd){
@@ -578,6 +614,9 @@ std::cout << std::endl;
         char a[]="tmpfile_XXXXXX";
         close(mkstemp(a));
         std::string outfile(a);
+        remove(outfile.c_str());
+        outfile="."+outfile;
+
 
         set("PS_MEDIA "+std::to_string(XSIZE)+"ix"+std::to_string(YSIZE)+"i");
         set("MAP_FRAME_PEN 0.4p,black");

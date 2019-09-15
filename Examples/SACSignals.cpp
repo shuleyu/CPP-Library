@@ -11,14 +11,15 @@ int main(){
 
 //     SACSignals A("data/SACSignals_in");
     vector<string> infiles{
-        "/home/shule/PROJ/t056.Data/201204141056/201204141056.1C.BLS.HHT.sac",
-        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.109C.BHT.sac",
-        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.115A.BHT.sac",
-        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.116A.BHT.sac",
-        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A03T.BHT.sac",
-        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A04T.BHT.sac",
-        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A09T.BHT.sac",
-        "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A15T.BHT.sac"
+        "/home/shule/PROJ/t056.Data/200502050334/200502050334.XO.BS15A.HHT.sac"
+//         "/home/shule/PROJ/t056.Data/201204141056/201204141056.1C.BLS.HHT.sac",
+//         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.109C.BHT.sac",
+//         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.115A.BHT.sac",
+//         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.TA.116A.BHT.sac",
+//         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A03T.BHT.sac",
+//         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A04T.BHT.sac",
+//         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A09T.BHT.sac",
+//         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A15T.BHT.sac"
     };
     SACSignals A(infiles);
 
@@ -69,7 +70,9 @@ int main(){
 //     A.DumpWaveforms("/home/shule/new","StationName","201500","_","frs");
 
 //     A.NormalizeToSignal();
-//     A.PrintInfo();
+    A.ReCalcAz();
+    A.CheckAz(310,320);
+    A.PrintInfo();
 //     A.WaterLevelDecon(A);
 //     A.WaterLevelDecon(B);
 //     A.GaussianBlur(1.3);

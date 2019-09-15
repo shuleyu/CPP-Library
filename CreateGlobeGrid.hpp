@@ -55,19 +55,32 @@ CreateGlobeGrid(const double &LonInc, const double &LatInc,
     std::size_t M=ParaLat[0],N=ParaLon[0];
     if (!LongitudeWrapAround) --N;
 
+    //if (CenterValue) --M;
+
     ans.second.push_back(N);
     ans.second.push_back(M);
     ans.second.push_back(ParaLon[1]);
     ans.second.push_back(ParaLat[1]);
 
+    //ans.first=std::vector<std::vector<double>> (M*N+(CenterValue?2:0),std::vector<double> (3,0));
     ans.first=std::vector<std::vector<double>> (M*N,std::vector<double> (3,0));
 
+    //double LonBegin=0,LatBegin=-90+(CenterValue?ParaLat[1]/2:0);
     double LonBegin=0,LatBegin=-90;
     if (CenterValue) LonBegin+=ans.second[2]/2;
     for (std::size_t i=0;i<M*N;++i) {
         ans.first[i][0]=LonBegin+ans.second[2]*(i/M);
         ans.first[i][1]=LatBegin+ans.second[3]*(i%M);
     }
+
+    /*
+    if (CenterValue) {
+        ans.first[M*N][0]=0;
+        ans.first[M*N][1]=-90;
+        ans.first[M*N+1][0]=0;
+        ans.first[M*N+1][1]=90;
+    }
+    */
 
     return ans;
 }
