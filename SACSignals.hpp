@@ -9,6 +9,7 @@
 #include<cstdlib>
 #include<fstream>
 #include<sstream>
+#include<set>
 #include<map>
 #include<cstdio>
 #include<fcntl.h>
@@ -78,7 +79,8 @@ public:
 
     // Constructor/Destructors.
     SACSignals ();
-    SACSignals (const SACSignals &item) = default;
+    SACSignals (const SACSignals &item, const std::vector<std::size_t> &indices={});
+    SACSignals (const SACSignals &item, const std::set<std::size_t> &indices);
     SACSignals (const std::string &infile);                 // a file contains path(s) to SAC file(s).
     SACSignals (const std::vector<std::string> &infiles);   // a vector contains paths(s) to SAC file(s).
     ~SACSignals () = default;
@@ -209,6 +211,23 @@ SACSignals::SACSignals (){
     sorted_by="None";
 }
 
+SACSignals::SACSignals (const SACSignals &item, const std::vector<std::size_t> &indices) {
+    this->Clear();
+    if (indices.empty()) *this=item;
+    else {
+        for (std::size_t i=0; i<indices.size(); ++i) {
+            if (indices[i]>=item.Size()) continue;
+            this->data.push_back(item.data[indices[i]]);
+            this->mdata.push_back(item.mdata[indices[i]]);
+        }
+    }
+    sorted_by="None";
+}
+
+SACSignals::SACSignals (const SACSignals &item, const std::set<std::size_t> &indices) {
+    *this=SACSignals(item, std::vector<size_t> (indices.begin(),indices.end()));
+    sorted_by="None";
+}
 
 SACSignals::SACSignals (const std::string &infile){
     std::ifstream fpin(infile);

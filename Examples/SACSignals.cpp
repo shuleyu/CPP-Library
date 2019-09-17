@@ -22,6 +22,9 @@ int main(){
 //         "/home/shule/PROJ/t041.DATA/NorthAmerican/200608250044/200608250044.XQ.A15T.BHT.sac"
     };
     SACSignals A(infiles);
+    auto B=SACSignals(A,set<size_t> {0,0});
+    B.PrintInfo();
+
 
 
 //     A.SortByGcarc();
@@ -70,9 +73,9 @@ int main(){
 //     A.DumpWaveforms("/home/shule/new","StationName","201500","_","frs");
 
 //     A.NormalizeToSignal();
-    A.ReCalcAz();
-    A.CheckAz(310,320);
-    A.PrintInfo();
+//     A.ReCalcAz();
+//     A.CheckAz(310,320);
+//     A.PrintInfo();
 //     A.WaterLevelDecon(A);
 //     A.WaterLevelDecon(B);
 //     A.GaussianBlur(1.3);
@@ -91,7 +94,7 @@ int main(){
 //     cout << S << endl;
 
 //     cout << A.GetFileList()[0] << endl;
-    A.OutputToSAC("Test_",vector<size_t> {0},{{{"gcarc",65.3},{"evdp",532040}}},{{{"kstnm","blah"}}});
+//     A.OutputToSAC("Test_",vector<size_t> {0},{{{"gcarc",65.3},{"evdp",532040}}},{{{"kstnm","blah"}}});
 
     return 0;
 }
