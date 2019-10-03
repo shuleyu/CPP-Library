@@ -28,6 +28,7 @@ protected: // inherit mode is "private"               --> "private".
     std::vector<double> amp;
     std::size_t peak;
     std::string filename;
+    int tag;
     double amp_multiplier;
 
 
@@ -51,9 +52,17 @@ public:    // inherit mode is "private"   --> "private".
     virtual void Identify () const {std::cout << "Using DigitalSignal methods." << std::endl;}
 
     virtual double BeginTime() const {return (GetTime().empty()?0.0/0.0:GetTime()[0]);}
+    virtual bool CheckWindow(const double &t1, const double &t2) const {     // t1, t2 in sec.
+        if (t1>=t2) {
+            std::cerr << "Window length <=0. t1="+std::to_string(t1)+", t2="+std::to_string(t2) << std::endl;
+            return false;
+        }
+        if (t1<BeginTime() || t2>EndTime()) return false;
+        else return true;
+    }
     virtual void Clear() {*this=DigitalSignal ();}
     virtual double EndTime() const {return (GetTime().empty()?0.0/0.0:GetTime().back());}
-    virtual const std::vector<double> &GetTime() const {return time;}
+    virtual std::vector<double> GetTime() const {return time;}
     virtual double PeakAmp() const {return (GetAmp().empty()?0.0/0.0:GetAmp()[GetPeak()]);}
     virtual double PeakTime() const {return (GetTime().empty()?0.0/0.0:GetTime()[GetPeak()]);}
     virtual void ShiftTime(const double &t){                   // t in sec. t>0: shift to the right.
@@ -84,17 +93,9 @@ public:    // inherit mode is "private"   --> "private".
 
     const std::vector<double> &GetAmp() const {return amp;}
     double GetAmpMultiplier() const {return amp_multiplier;}
+    double GetTag() const {return tag;}
     const std::string &GetFileName() const {return filename;}
     std::size_t GetPeak() const {return peak;}
-
-    bool CheckWindow(const double &t1, const double &t2) const {     // t1, t2 in sec.
-        if (t1>=t2) {
-            std::cerr << "Window length <=0. t1="+std::to_string(t1)+", t2="+std::to_string(t2) << std::endl;
-            return false;
-        }
-        if (t1<BeginTime() || t2>EndTime()) return false;
-        else return true;
-    }
     void FlipPeakUp() {if (GetAmp()[GetPeak()]<0) *this*=-1;}
     double MaxAmp() const {
         return fabs(*std::max_element(GetAmp().begin(),GetAmp().end(),
@@ -107,12 +108,13 @@ public:    // inherit mode is "private"   --> "private".
     void NormalizeToPeak() {*this/=fabs(PeakAmp());}
     void NormalizeToSignal() {*this/=MaxAmp();}
     void SetBeginTime(const double &t) {ShiftTime(-BeginTime()+t);}
+    void SetTag(const int &i) {tag=i;}
     void ShiftTimeReferenceToPeak() {ShiftTime(-PeakTime());}
     std::size_t Size() const {return GetAmp().size();}
 
     std::pair<std::size_t,std::size_t> FindAmplevel(const double &level=0.5) const;
     std::vector<double> GetAmp(const double &t1, const double &t2) const ;
-    void Mask(const double &t1, const double &t2);
+    void Mask(const double &t1=-std::numeric_limits<double>::max(), const double &t2=std::numeric_limits<double>::max());
     void NormalizeToWindow(const double &t1, const double &t2);
 
     DigitalSignal &operator+=(const double &a){
@@ -144,6 +146,7 @@ public:    // inherit mode is "private"   --> "private".
 DigitalSignal::DigitalSignal () {
     peak=-1;
     amp_multiplier=1;
+    tag=0;
     filename="";
 }
 
@@ -151,6 +154,7 @@ DigitalSignal::DigitalSignal (const std::string &infile) {
     std::ifstream fpin(infile);
     fpin >> *this;
     fpin.close();
+    tag=0;
     filename=infile;
 }
 
@@ -159,6 +163,7 @@ DigitalSignal::DigitalSignal (const std::vector<double> &ti, const std::vector<d
     amp=am;
     peak=-1;
     amp_multiplier=1;
+    tag=0;
     filename="";
 }
 
@@ -400,6 +405,7 @@ std::istream &operator>>(std::istream &is, DigitalSignal &item){
         }
     }
     item.peak=-1;
+    item.tag=0;
     item.amp_multiplier=1;
     return is;
 }

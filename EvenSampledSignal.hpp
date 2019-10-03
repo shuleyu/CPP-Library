@@ -50,9 +50,6 @@ protected:
                                               */
     double delta=0,begin_time=0;
 
-    // An auxiliary data designed for GetTime();
-    std::vector<double> aux_time;
-
     void AddStripSignal(const EvenSampledSignal &s2, const double &dt=0, const bool &flag=true);
 
 public:
@@ -74,6 +71,15 @@ public:
     void Identify () const override {std::cout << "Using EvenSampledSignal methods" << std::endl;}
 
     double BeginTime() const override final {return begin_time;}
+    bool CheckWindow(const double &t1, const double &t2) const { // t1, t2 in sec.
+        if (t1>=t2) {
+            std::cerr << "Window length <=0. t1="+std::to_string(t1)+", t2="+std::to_string(t2) << std::endl;
+            return false;
+        }
+        // Because of round-off errors, let's do this in EvenSampledSignal:
+        if (t1+GetDelta()/2.0<BeginTime() || t2>EndTime()+GetDelta()/2.0) return false;
+        else return true;
+    }
     void Clear() override {*this=EvenSampledSignal ();}
     double EndTime() const override final {return BeginTime()+SignalDuration();}
     double PeakAmp() const override final {return GetAmp()[GetPeak()];}
@@ -83,7 +89,7 @@ public:
 
     bool CheckAndCutToWindow(const double &t1, const double &t2) override final;
     void FindPeakAround(const double &t, const double &w=5, const bool &positiveOnly=false) override final;
-    const std::vector<double> &GetTime() const override final;
+    std::vector<double> GetTime() const override final;
     void HannTaper(const double &wl) override final;
     std::size_t LocateTime(const double &t) const override final;
     void OutputToFile(const std::string &s) const override;
@@ -268,12 +274,14 @@ void EvenSampledSignal::FindPeakAround(const double &t, const double &w, const b
     }
 }
 
-const std::vector<double> &EvenSampledSignal::GetTime() const {
-    std::vector<double> &time=const_cast<std::vector<double> &> (aux_time);
-    if (time.size()!=Size()) time.resize(Size());
-    for (std::size_t i=0;i<Size();++i) time[i]=BeginTime()+i*GetDelta();
-    return aux_time;
+std::vector<double> EvenSampledSignal::GetTime() const {
+    std::vector<double> ans;
+    if (Size()!=0)
+        for (std::size_t i=0;i<Size();++i)
+            ans.push_back(BeginTime()+i*GetDelta());
+    return ans;
 }
+
 
 // cos (-pi,pi) shaped taper at two ends.
 void EvenSampledSignal::HannTaper(const double &wl){

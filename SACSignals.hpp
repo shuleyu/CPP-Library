@@ -138,6 +138,10 @@ public:
     void Interpolate(const double &dt);
     void KeepRecords(const std::vector<std::size_t> &indices);
     EvenSampledSignal MakeNeatStack() const;
+    void Mask(const double &t1=-std::numeric_limits<double>::max(),
+              const double &t2=std::numeric_limits<double>::max(),
+              const size_t &index=std::numeric_limits<size_t>::max());
+    void Mask(const std::vector<double> &t1, const std::vector<double> &t2, const std::vector<size_t> &indicies={});
     void NormalizeToGlobal();
     void NormalizeToPeak();
     void NormalizeToSignal();
@@ -163,6 +167,7 @@ public:
                             const std::vector<double> &na=std::vector<double> (),
                             const std::vector<double> &sa=std::vector<double> ()) const;
     void StripSignal(const EvenSampledSignal &s2, const std::vector<double> &dt={});
+    void StripSignal(const std::vector<EvenSampledSignal> &s, const std::vector<double> &dt={});
     void WaterLevelDecon(const EvenSampledSignal &s, const double &wl=0.1);
     void WaterLevelDecon(SACSignals &D, const double &wl=0.1);
 
@@ -638,6 +643,27 @@ EvenSampledSignal SACSignals::MakeNeatStack() const {
     return ans;
 }
 
+void SACSignals::Mask(const double &t1, const double &t2, const size_t &index) {
+    std::vector<double> T1(Size(),t1),T2(Size(),t2);
+    if (index>Size()) Mask(T1,T2); // default value. Mask all.
+    else Mask(T1,T2,{index});
+}
+
+void SACSignals::Mask(const std::vector<double> &t1, const std::vector<double> &t2, const std::vector<size_t> &indicies){
+
+    for (std::size_t i: indicies)
+        if (i>Size())
+            throw std::runtime_error("Mask indicies vector value error.");
+
+    if (t1.size() != Size() || t2.size() != Size())
+        throw std::runtime_error("Mask input vector length error.");
+
+    if (indicies.empty())
+        for (std::size_t i=0;i<Size();++i) data[i].Mask(t1[i],t2[i]);
+    else
+        for (std::size_t i: indicies) data[i].Mask(t1[i],t2[i]);
+}
+
 void SACSignals::NormalizeToGlobal(){
     double MaxOriginalAmp=-1;
     for (std::size_t i=0;i<Size();++i)
@@ -863,6 +889,22 @@ void SACSignals::StripSignal(const EvenSampledSignal &s2, const std::vector<doub
     return;
 }
 
+void SACSignals::StripSignal(const std::vector<EvenSampledSignal> &s, const std::vector<double> &dt){
+
+    if (Size()!=s.size())
+        throw std::runtime_error("Strip signal number of signals are different.");
+
+    if (!dt.empty() && Size()!=dt.size())
+        throw std::runtime_error("Strip signal time shift have different size.");
+
+    if (dt.empty())
+        for (std::size_t i=0;i<Size();++i)
+            data[i].StripSignal(s[i]);
+    else
+        for (std::size_t i=0;i<Size();++i)
+            data[i].StripSignal(s[i],dt[i]);
+}
+
 void SACSignals::WaterLevelDecon(const EvenSampledSignal &s, const double &wl){
     for (std::size_t i=0;i<Size();++i)
         data[i].WaterLevelDecon(s,wl);
@@ -967,14 +1009,31 @@ SACSignals::XCorrStack(const std::vector<double> &center_time, const double &t1,
             GoodIndex.push_back(i);
 
 
-    // First stack: directly stack the windowed section.
+
+    // First stack: align at the peak within their window, then stack according to polarity.
     EvenSampledSignal S0;
     for (const auto &i:GoodIndex) {
-        auto Tmp=EvenSampledSignal(data[i]);
-        Tmp.CheckAndCutToWindow(center_time[i]+t1,center_time[i]+t2);
-        Tmp.SetBeginTime(t1);
-        Tmp.NormalizeToSignal();
-        S0+=Tmp;
+        auto Tmp=data[i];
+        Tmp.ShiftTime(-center_time[i]);
+        Tmp.FindPeakAround(t1+(t2-t1)/2,(t2-t1)/2);
+        Tmp.ShiftTimeReferenceToPeak();
+        Tmp.NormalizeToPeak();
+        Tmp.FlipPeakUp();
+        if (Tmp.CheckAndCutToWindow(t1,t2)){
+            if (Tmp.PeakAmp()>0) S0+=Tmp;
+            else S0-=Tmp;
+        }
+    }
+
+    // First stack second try: directly stack the windowed section.
+    if (S0.Size()==0) {
+        for (const auto &i:GoodIndex) {
+            auto Tmp=data[i];
+            Tmp.ShiftTime(-center_time[i]);
+            Tmp.CheckAndCutToWindow(t1,t2);
+            Tmp.NormalizeToSignal();
+            S0+=Tmp;
+        }
     }
 
 
@@ -988,36 +1047,38 @@ SACSignals::XCorrStack(const std::vector<double> &center_time, const double &t1,
         std::vector<double> ccc;
         double newBeginTime=-std::numeric_limits<double>::max();
         double newEndTime=std::numeric_limits<double>::max();
-        for (std::size_t i=0;i<GoodIndex.size();++i) {
+        for (const auto &i: GoodIndex) {
 
-            std::size_t j=GoodIndex[i];
+            auto res=S.CrossCorrelation(t1,t2,data[i],center_time[i]+t1,center_time[i]+t2);
 
-            auto res=S.CrossCorrelation(t1,t2,data[j],center_time[j]+t1,center_time[j]+t2);
+            auto Tmp=data[i];
+            Tmp.ShiftTime(-center_time[i]);
 
-            auto Tmp=data[j];
-            if (Tmp.CheckWindow(center_time[j]+t1-res.first,center_time[j]+t2-res.first)) {
+            if (Tmp.CheckWindow(t1-res.first,t2-res.first)) {
                 ccc.push_back(res.second);
-                Tmp.ShiftTime(-res.first);
+                Tmp.ShiftTime(res.first);
                 Tmp.NormalizeToWindow(t1,t2);
                 newBeginTime=std::max(newBeginTime,Tmp.BeginTime());
                 newEndTime=std::min(newEndTime,Tmp.EndTime());
                 TmpData.push_back(Tmp);
             }
         }
+
+        newEndTime=newBeginTime+GetDelta()*floor((newEndTime-newBeginTime)/GetDelta());
         for (auto &item: TmpData) {
             item.CheckAndCutToWindow(newBeginTime,newEndTime);
             item.SetBeginTime(newBeginTime);
         }
+
         std::tie(S,STD)=StackSignals(TmpData,ccc);
     }
 
     // Traces not contributing to ESW have ccc=nan.
     std::vector<double> CCC(Size(),0.0/0.0),AlignTime(Size(),0);
-    for (std::size_t i=0;i<GoodIndex.size();++i) {
-        std::size_t j=GoodIndex[i];
-        auto res=S.CrossCorrelation(t1,t2,data[j],center_time[j]+t1,center_time[j]+t2);
-        AlignTime[j]=-res.first;
-        CCC[j]=res.second;
+    for (const auto &i: GoodIndex) {
+        auto res=S.CrossCorrelation(t1,t2,data[i],center_time[i]+t1,center_time[i]+t2);
+        AlignTime[i]=-res.first;
+        CCC[i]=res.second;
     }
 
     return {{AlignTime,CCC},{S,STD}};

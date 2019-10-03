@@ -204,7 +204,7 @@ std::cout << std::endl;
             // Free spaces (aux_data seem to be deleted by GMT_Destroy_Session?).
             delete [] command;
             GMT_Close_VirtualFile(API,filename);
-            GMT_Destroy_Data(API,grid);
+            GMT_Destroy_Data(API,&grid);
             GMT_Destroy_Session(API);
 
             return;
@@ -328,7 +328,7 @@ std::cout << std::endl;
         }
 
         // Free spaces (txt seem to be deleted by GMT_Destroy_Session?).
-        GMT_Destroy_Data(API,txt);
+        GMT_Destroy_Data(API,&txt);
         GMT_Destroy_Session(API);
         return;
     }
@@ -378,7 +378,7 @@ std::cout << std::endl;
         // Free spaces (X,Y seem to be deleted by GMT_Destroy_Session?).
         delete [] command;
         GMT_Close_VirtualFile(API,filename);
-        GMT_Destroy_Data(API,vec);
+        GMT_Destroy_Data(API,&vec);
         GMT_Destroy_Session(API);
 
         return;
@@ -430,7 +430,7 @@ std::cout << std::endl;
         // Free spaces (Xs seem to be deleted by GMT_Destroy_Session?).
         delete [] command;
         GMT_Close_VirtualFile(API,filename);
-        GMT_Destroy_Data(API,vec);
+        GMT_Destroy_Data(API,&vec);
         GMT_Destroy_Session(API);
 
         return;
@@ -475,7 +475,7 @@ std::cout << std::endl;
         // Free spaces (X seem to be deleted by GMT_Destroy_Session?).
         delete [] command;
         GMT_Close_VirtualFile(API,filename);
-        GMT_Destroy_Data(API,vec);
+        GMT_Destroy_Data(API,&vec);
         GMT_Destroy_Session(API);
 
         return;
@@ -631,6 +631,27 @@ std::cout << std::endl;
         BeginPlot(outfile,"-P",additionalText);
 
         return outfile;
+    }
+
+    void ps2pdf(const std::string &filename, const std::string &output, const bool &removePsFile=true){
+        ShellExec("ps2pdf "+filename+" "+output.substr(0,output.find_last_of("."))+".pdf");
+        if (removePsFile) remove(filename.c_str());
+        return;
+    }
+
+    void ps2pdf(const std::vector<std::string> &filenames, const std::string &output, const bool &removePsFiles=true){
+        char a[]="tmpfile_XXXXXX";
+        close(mkstemp(a));
+        std::string tmpfile(a);
+        remove(tmpfile.c_str());
+        tmpfile="."+tmpfile;
+
+		for (const auto &file: filenames) {
+			ShellExec("cat "+file+" >> "+tmpfile);
+			if (removePsFiles) remove(file.c_str());
+		}   
+        ps2pdf(tmpfile, output);
+        return;
     }
 
 }
